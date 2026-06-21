@@ -1,0 +1,27 @@
+:root {
+  --preview-bg: #06090f;
+  --preview-bg-2: #0b1220;
+  --preview-panel: rgba(13, 22, 34, 0.72);
+  --preview-panel-strong: rgba(17, 29, 45, 0.88);
+  --preview-line: rgba(153, 217, 255, 0.16);
+  --preview-line-strong: rgba(153, 217, 255, 0.28);
+  --preview-text: #eef7ff;
+  --preview-muted: #9eb1c4;
+  --preview-soft: #c7d7e8;
+  --preview-cyan: #53e7ff;
+  --preview-teal: #2ff0b6;
+  --preview-blue: #75a7ff;
+  --preview-amber: #ffd36a;
+  --preview-violet: #a98bff;
+  --preview-danger: #ff6b8a;
+  --preview-radius-sm: 8px;
+  --preview-radius: 18px;
+  --preview-radius-lg: 28px;
+  --preview-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  --preview-glow: 0 0 42px rgba(83, 231, 255, 0.24);
+  --preview-width: min(1180px, calc(100vw - 40px));
+  --preview-font-display: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --preview-font-data: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas,
+    monospace;
+}
