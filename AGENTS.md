@@ -363,6 +363,8 @@ AI 在每次开发任务完成后必须：
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
 | 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅ |
+| 接口验证 | 招新报名闭环 18/18 ✅ |
+| 稳定 tag | mvp-recruitment-workflow-20260622 |
 
 ## 容器化开发规范
 
@@ -411,6 +413,7 @@ docker compose ps                  # 确认所有服务运行
 | 2026-06-22 | 容器化改造 | 拆分 application.yml 为 local/docker profile；新增 GET /api/health 健康检查；创建 backend/web/admin-web/deploy/nginx 四个 Dockerfile；创建 deploy/docker-compose.yml（MySQL + Redis + Backend + Nginx）；创建 Nginx 统一托管配置；创建 .env.example；更新 .gitignore；更新 README.md / AGENTS.md / deploy/README.md；修复 admin-web 路由 base 支持 /admin/ 路径 |
 | 2026-06-22 | 第一阶段项目骨架初始化 | 创建后端(Spring Boot)、前台(Vue3)、后台(Vue3+ElementPlus)三个项目，完成注册/登录/获取当前用户认证闭环，62个文件 |
 | 2026-06-22 | 招新报名闭环 MVP | 新增 `lab_apply_record` 表；后端新增 recruit 模块（ApplyRecord entity/mapper/service + ApplyController + AdminApplyController）；前台新增招新报名页面(`/recruit`)和我的报名页面(`/my-application`)；后台报名管理重写为完整功能（列表/筛选/详情/审核）；修复 admin-web 响应拦截器 code 校验 bug (0→200)；更新 README.md 和 AGENTS.md |
+| 2026-06-22 | 第二阶段收尾验收 | 全链路 API 验证 18/18 通过；三模块构建验证通过（backend mvn ✅ / web vite ✅ / admin-web vite ✅）；Docker Compose 4 容器正常启动；/api/health / web / admin-web / doc.html 全部 200；localhost 残留检查通过；新增 scripts/verify-recruitment-flow.sh 自动化验证脚本；README.md 新增安全提示、接口验证脚本说明、手工验证步骤；AGENTS.md 更新验收记录；提交 tag mvp-recruitment-workflow-20260622 |
 
 ## 当前已知问题
 
@@ -426,7 +429,7 @@ docker compose ps                  # 确认所有服务运行
 
 ## 下一步建议
 
-1. 完成招新报名分支的提交、推送、代码审查与合并
+1. 合并当前分支到 main（经过代码审查后）
 2. 实现技术方向 CRUD + 前台展示
 3. 实现核心成员 CRUD + 前台展示
 4. 实现项目成果 CRUD + 前台展示
@@ -437,6 +440,7 @@ docker compose ps                  # 确认所有服务运行
 9. 完善报名状态流转（增加更多中间状态约束和校验）
 10. 生产环境 Nginx 配置 HTTPS 和证书管理
 11. 引入 Redis 业务依赖（如 Session 共享、缓存）
+12. 为 `lab_apply_record` 表添加用户唯一约束索引
 
 ## 验收命令
 
@@ -463,4 +467,7 @@ curl http://localhost/api/health
 
 # 检查 Git 状态
 git branch --show-current && git status --short
+
+# 接口验证脚本
+bash scripts/verify-recruitment-flow.sh
 ```

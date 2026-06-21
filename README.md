@@ -150,6 +150,9 @@ Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`：
 - 创建 `sys_user` 表
 - 插入默认管理员账号：`admin` / `admin123`
 
+> ⚠️ **仅用于本地开发演示。** 生产环境必须修改默认密码。
+> 生产部署前务必：修改 `deploy/.env` 中的 `MYSQL_ROOT_PASSWORD`、`MYSQL_PASSWORD`、`JWT_SECRET`，并创建新的管理员账号替换默认账号。
+
 手动初始化（本地开发）：
 
 ```bash
@@ -352,3 +355,35 @@ docker compose --env-file .env up -d --build
 docker compose exec mysql mysql -u root -p < backend/sql/init.sql
 # 输入 MYSQL_ROOT_PASSWORD
 ```
+
+### 接口验证脚本
+
+项目提供了自动化验证脚本，用于本地开发时快速验证招新报名闭环：
+
+```bash
+# 确保 Docker 服务已启动
+cd deploy && docker compose --env-file .env up -d --build
+
+# 运行验证脚本
+bash scripts/verify-recruitment-flow.sh
+
+# 或指定其他地址
+BASE_URL=http://localhost:8080 bash scripts/verify-recruitment-flow.sh
+```
+
+脚本会依次验证：注册 → 登录 → 获取当前用户 → 提交报名 → 查看报名 → 修改报名 → 管理员审核 → 状态变更 → 权限隔离。
+
+### 手工验证步骤
+
+如果不使用脚本，也可以按以下步骤手工验证：
+
+1. 访问 http://localhost/register 注册一个普通用户账号
+2. 使用注册的账号登录 http://localhost/login
+3. 登录后访问 http://localhost/recruit 填写并提交报名表
+4. 访问 http://localhost/my-application 查看报名状态（应为「待审核」）
+5. 在待审核状态下点击编辑按钮，修改报名信息
+6. 访问 http://localhost/admin/login 使用管理员账号登录（`admin` / `admin123`）
+7. 进入后台报名管理 http://localhost/admin/recruit
+8. 点击行查看报名详情，选择审核状态并填写备注提交
+9. 切换回普通用户，刷新 http://localhost/my-application 查看状态变化
+10. 尝试用普通用户 Token 访问 `GET /api/admin/applications`，应返回 500 无权限
