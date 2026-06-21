@@ -1,6 +1,8 @@
 package cn.edu.nynu.codelab.common;
 
-import cn.edu.nynu.codelab.common.Result;
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -41,6 +43,24 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         log.warn("参数绑定失败: {}", message);
         return Result.error(400, message);
+    }
+
+    /**
+     * 处理未登录异常。
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public Result<?> handleNotLogin(NotLoginException e) {
+        log.warn("未登录访问受保护接口: {}", e.getMessage());
+        return Result.error(401, "未登录或登录已过期");
+    }
+
+    /**
+     * 处理无权限/角色不足异常。
+     */
+    @ExceptionHandler({NotRoleException.class, NotPermissionException.class})
+    public Result<?> handleForbidden(Exception e) {
+        log.warn("权限不足: {}", e.getMessage());
+        return Result.error(403, "无权限访问");
     }
 
     /**

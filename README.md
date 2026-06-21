@@ -59,7 +59,7 @@ mvn spring-boot:run
 # mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-3. 启动前台（端口 3000）：
+3. 启动前台（端口 5173）：
 
 ```bash
 cd web
@@ -67,7 +67,7 @@ npm install
 npm run dev
 ```
 
-4. 启动后台（默认 Vite 端口）：
+4. 启动后台（端口 5174）：
 
 ```bash
 cd admin-web
@@ -76,8 +76,8 @@ npm run dev
 ```
 
 5. 访问：
-   - 前台：http://localhost:3000
-   - 后台：http://localhost:5173/admin/
+   - 前台：http://localhost:5173
+   - 后台：http://localhost:5174/admin/
    - API 文档：http://localhost:8080/doc.html
 
 ### 方式二：Docker Compose（容器化启动）
@@ -123,15 +123,16 @@ docker compose down -v
 | 变量 | 默认值 | 说明 |
 |---|---|---|
 | `SPRING_PROFILES_ACTIVE` | `docker` | Spring 激活的 profile |
-| `BACKEND_PORT` | `8080` | 后端端口 |
-| `MYSQL_ROOT_PASSWORD` | `change_me_root` | MySQL root 密码，**生产必须修改** |
+| `SERVER_PORT` | `8080` | 后端容器内端口；如修改需同步 Nginx upstream |
+| `BACKEND_PORT` | `8080` | 后端宿主机映射端口 |
+| `MYSQL_ROOT_PASSWORD` | 空 | MySQL root 密码，**启动前必须填写，生产必须使用强密码** |
 | `MYSQL_DATABASE` | `nynu_code_lab` | 数据库名 |
 | `MYSQL_USER` | `nynu` | 数据库用户 |
-| `MYSQL_PASSWORD` | `change_me_user` | 数据库密码，**生产必须修改** |
+| `MYSQL_PASSWORD` | 空 | 数据库密码，**启动前必须填写，生产必须使用强密码** |
 | `MYSQL_PORT` | `3306` | MySQL 端口 |
 | `REDIS_PORT` | `6379` | Redis 端口 |
 | `REDIS_PASSWORD` | (空) | Redis 密码（当前未使用） |
-| `JWT_SECRET` | `change_me_...` | JWT 签名密钥，**生产必须修改**（`openssl rand -base64 64`） |
+| `JWT_SECRET` | 空 | JWT 签名密钥，**启动前必须填写，生产必须使用 `openssl rand -base64 64` 生成** |
 | `NGINX_PORT` | `80` | Nginx 对外端口 |
 
 ## Profile 说明
@@ -148,6 +149,9 @@ docker compose down -v
 Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`：
 - 创建 `nynu_code_lab` 数据库（utf8mb4）
 - 创建 `sys_user` 表
+- 创建 `lab_apply_record` 表（含 `uk_apply_active_user` 非撤回报名唯一约束）
+- 创建 `lab_article` 表
+- 创建 `lab_project` 表
 - 插入默认管理员账号：`admin` / `admin123`
 
 > ⚠️ **仅用于本地开发演示。** 生产环境必须修改默认密码。
@@ -480,8 +484,12 @@ docker compose exec mysql mysql -u root -p < backend/sql/init.sql
 docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/01-add-article-table.sql
 # 仅创建 lab_project 表
 docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/02-add-project-table.sql
+# 为 lab_apply_record 添加非撤回报名唯一约束
+docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/03-add-apply-active-user-unique-key.sql
 # 输入 MYSQL_ROOT_PASSWORD
 ```
+
+执行 `03-add-apply-active-user-unique-key.sql` 前，如果历史数据中同一用户已有多条非撤回报名记录，需要先人工合并或将重复记录置为 `WITHDRAWN`，否则唯一索引会创建失败。
 
 ### 接口验证脚本
 
@@ -529,4 +537,18 @@ bash scripts/verify-project-flow.sh
 7. 进入后台报名管理 http://localhost/admin/recruit
 8. 点击行查看报名详情，选择审核状态并填写备注提交
 9. 切换回普通用户，刷新 http://localhost/my-application 查看状态变化
-10. 尝试用普通用户 Token 访问 `GET /api/admin/applications`，应返回 500 无权限
+10. 尝试用普通用户 Token 访问 `GET /api/admin/applications`，应返回项目统一结构，业务码为 403
+
+## 当前未实现模块
+
+截至第六阶段验收，成员管理、技术方向管理、站点配置和文件上传仍未实现；前台 `/contact`、`/members`、`/directions`、`/about` 尚无真实 Vue 路由页面。项目封面、文章封面和 Markdown 图片当前仅支持外部 URL 字段，不支持本地上传。
+
+文件上传模块未实现，因此当前不存在上传目录、上传静态资源路径或上传文件入库逻辑；生产环境不要把用户上传文件提交到 Git。
+
+## 生产环境安全提示
+
+- 默认管理员账号 `admin/admin123` 只用于本地开发演示，生产环境必须修改密码或创建新的管理员账号后禁用默认账号。
+- `deploy/.env` 不允许提交到 Git；生产环境必须填写强随机 `MYSQL_ROOT_PASSWORD`、`MYSQL_PASSWORD` 和 `JWT_SECRET`。
+- `JWT_SECRET` 建议使用 `openssl rand -base64 64` 生成，不要使用文档中的占位符。
+- Nginx 当前未内置 HTTPS 配置；生产环境需要配置正式域名、SSL 证书、HTTPS 跳转和证书续期策略。
+- 证书、私钥、服务器账号、真实数据库密码、真实 Token 密钥不得写入 README、AGENTS 或提交到 Git。

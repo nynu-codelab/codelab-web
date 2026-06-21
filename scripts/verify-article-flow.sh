@@ -262,10 +262,10 @@ else
     # 17a. 普通用户访问后台文章列表
     USER_ACCESS_ADMIN=$(curl -s "$BASE_URL/api/admin/articles" -H "Authorization: Bearer $USER_TOKEN")
     ADMIN_CODE=$(echo "$USER_ACCESS_ADMIN" | python3 -c "import sys,json; print(json.load(sys.stdin).get('code',''))" 2>/dev/null)
-    if [ "$ADMIN_CODE" != "200" ]; then
+    if [ "$ADMIN_CODE" = "401" ] || [ "$ADMIN_CODE" = "403" ]; then
         pass "普通用户无法访问后台文章接口（code=$ADMIN_CODE）"
     else
-        fail "普通用户不应能访问后台文章接口" ""
+        fail "普通用户访问后台文章接口应返回 401/403" "got code=$ADMIN_CODE"
     fi
 
     # 17b. 游客可访问前台文章列表
