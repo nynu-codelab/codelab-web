@@ -1,8 +1,9 @@
 {
-  "name": "nynu-se-lab-admin",
+  "name": "nynu-code-lab-admin-web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "NYNU Code Lab admin console",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",

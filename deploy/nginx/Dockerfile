@@ -3,7 +3,7 @@
 # 构建 web（前台）和 admin-web（后台）静态资源，由 Nginx 统一托管
 # ============================================================
 # 构建上下文：项目根目录
-# docker build -f deploy/nginx/Dockerfile -t nynu-se-lab-nginx .
+# docker build -f deploy/nginx/Dockerfile -t nynu-code-lab-nginx .
 # ============================================================
 
 # --- Stage 1: 构建前台 web ---

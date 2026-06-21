@@ -1,13 +1,13 @@
-package cn.edu.nynu.selab.user.mapper;
+package cn.edu.nynu.codelab.user.mapper;
 
-import cn.edu.nynu.selab.user.entity.User;
+import cn.edu.nynu.codelab.user.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户 Mapper
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Mapper
 public interface UserMapper extends BaseMapper<User> {

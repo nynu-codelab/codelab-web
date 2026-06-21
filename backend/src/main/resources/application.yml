@@ -10,6 +10,8 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
+  application:
+    name: nynu-code-lab
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   sql:
@@ -36,7 +38,7 @@ sa-token:
   token-name: Authorization
   token-style: tik
   is-print: false
-  jwt-secret-key: ${JWT_SECRET:nynu_se_lab_jwt_secret_key_2026}
+  jwt-secret-key: ${JWT_SECRET:nynu_code_lab_jwt_secret_key_2026}
   token-prefix: ""
 
 knife4j:

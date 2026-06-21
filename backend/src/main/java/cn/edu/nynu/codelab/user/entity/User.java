@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.user.entity;
+package cn.edu.nynu.codelab.user.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * 用户实体
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Data
 @TableName("sys_user")

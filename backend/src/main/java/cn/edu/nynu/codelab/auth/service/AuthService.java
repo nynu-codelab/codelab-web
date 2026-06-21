@@ -1,15 +1,15 @@
-package cn.edu.nynu.selab.auth.service;
+package cn.edu.nynu.codelab.auth.service;
 
-import cn.edu.nynu.selab.auth.dto.LoginDTO;
-import cn.edu.nynu.selab.auth.dto.RegisterDTO;
-import cn.edu.nynu.selab.user.entity.User;
+import cn.edu.nynu.codelab.auth.dto.LoginDTO;
+import cn.edu.nynu.codelab.auth.dto.RegisterDTO;
+import cn.edu.nynu.codelab.user.entity.User;
 
 import java.util.Map;
 
 /**
  * 认证服务接口
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 public interface AuthService {
 

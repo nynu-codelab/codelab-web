@@ -1,20 +1,20 @@
-package cn.edu.nynu.selab;
+package cn.edu.nynu.codelab;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * 南阳师范学院软件工程实验室 - 后端启动类
+ * 南阳师范学院Code Lab 实验室 - 后端启动类
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @SpringBootApplication
-@MapperScan("cn.edu.nynu.selab.**.mapper")
-public class SelabApplication {
+@MapperScan("cn.edu.nynu.codelab.**.mapper")
+public class CodelabApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SelabApplication.class, args);
+        SpringApplication.run(CodelabApplication.class, args);
     }
 
 }

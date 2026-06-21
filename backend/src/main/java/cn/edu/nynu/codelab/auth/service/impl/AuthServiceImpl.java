@@ -1,12 +1,12 @@
-package cn.edu.nynu.selab.auth.service.impl;
+package cn.edu.nynu.codelab.auth.service.impl;
 
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.nynu.selab.auth.dto.LoginDTO;
-import cn.edu.nynu.selab.auth.dto.RegisterDTO;
-import cn.edu.nynu.selab.auth.service.AuthService;
-import cn.edu.nynu.selab.user.entity.User;
-import cn.edu.nynu.selab.user.mapper.UserMapper;
+import cn.edu.nynu.codelab.auth.dto.LoginDTO;
+import cn.edu.nynu.codelab.auth.dto.RegisterDTO;
+import cn.edu.nynu.codelab.auth.service.AuthService;
+import cn.edu.nynu.codelab.user.entity.User;
+import cn.edu.nynu.codelab.user.mapper.UserMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * 认证服务实现
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Slf4j
 @Service

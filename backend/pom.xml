@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>cn.edu.nynu</groupId>
-    <artifactId>selab-backend</artifactId>
+    <artifactId>nynu-code-lab-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>selab-backend</name>
-    <description>NYNU Software Engineering Lab Backend</description>
+    <name>nynu-code-lab-backend</name>
+    <description>NYNU Code Lab Backend</description>
 
     <properties>
         <java.version>17</java.version>

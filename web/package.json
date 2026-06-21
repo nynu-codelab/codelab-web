@@ -1,8 +1,9 @@
 {
-  "name": "nynu-se-lab-web",
+  "name": "nynu-code-lab-web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "NYNU Code Lab public website",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",

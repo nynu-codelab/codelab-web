@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.common;
+package cn.edu.nynu.codelab.common;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 健康检查接口 — 供 Docker Compose healthcheck 和运维监控使用
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @RestController
 public class HealthController {
@@ -19,7 +19,7 @@ public class HealthController {
     public Result<Map<String, Object>> health() {
         Map<String, Object> status = new LinkedHashMap<>();
         status.put("status", "UP");
-        status.put("service", "nynu-se-lab-backend");
+        status.put("service", "nynu-code-lab-backend");
         status.put("timestamp", LocalDateTime.now().toString());
         return Result.success(status);
     }

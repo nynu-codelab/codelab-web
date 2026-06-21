@@ -18,7 +18,7 @@
 ## 项目结构
 
 ```
-nynu-se-lab/
+nynu-code-lab/
 ├── backend/                     # Spring Boot 后端
 │   ├── Dockerfile
 │   ├── sql/                     # 数据库初始化脚本
@@ -125,7 +125,7 @@ docker compose down -v
 | `SPRING_PROFILES_ACTIVE` | `docker` | Spring 激活的 profile |
 | `BACKEND_PORT` | `8080` | 后端端口 |
 | `MYSQL_ROOT_PASSWORD` | `change_me_root` | MySQL root 密码，**生产必须修改** |
-| `MYSQL_DATABASE` | `nynu_se_lab` | 数据库名 |
+| `MYSQL_DATABASE` | `nynu_code_lab` | 数据库名 |
 | `MYSQL_USER` | `nynu` | 数据库用户 |
 | `MYSQL_PASSWORD` | `change_me_user` | 数据库密码，**生产必须修改** |
 | `MYSQL_PORT` | `3306` | MySQL 端口 |
@@ -146,7 +146,7 @@ docker compose down -v
 ## 数据库初始化
 
 Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`：
-- 创建 `nynu_se_lab` 数据库（utf8mb4）
+- 创建 `nynu_code_lab` 数据库（utf8mb4）
 - 创建 `sys_user` 表
 - 插入默认管理员账号：`admin` / `admin123`
 
@@ -154,6 +154,50 @@ Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`：
 
 ```bash
 mysql -u root -p < backend/sql/init.sql
+```
+
+## 从旧项目名迁移
+
+本项目原名 `nynu-se-lab`（南阳师范学院软件工程实验室），已于 2026-06-22 完成工程级重命名。
+
+如果你之前使用过旧名称的项目：
+
+### 1. 本地目录重命名
+
+```bash
+cd /Users/zengbohan/Documents/project
+mv nynu-se-lab nynu-code-lab
+cd nynu-code-lab
+```
+
+### 2. 重建 Docker 数据卷
+
+旧数据卷中数据库名为 `nynu_se_lab`，新版本使用 `nynu_code_lab`。如果你没有需要保留的数据，直接清理重建：
+
+```bash
+cd deploy
+docker compose down -v    # 删除旧数据卷
+docker compose up -d --build
+```
+
+如果你有需要保留的数据，可以手动迁移：
+
+```bash
+# 1. 导出旧数据库
+docker compose exec mysql mysqldump -u root -p nynu_se_lab > old_data.sql
+
+# 2. 清理并重建
+docker compose down -v
+docker compose up -d --build
+
+# 3. 在新数据库名中导入
+docker compose exec -T mysql mysql -u root -p nynu_code_lab < old_data.sql
+```
+
+### 3. 更新 Git 远程仓库（如果已改名）
+
+```bash
+git remote set-url origin git@gitee.com:zeng-bohan-66/nynu-code-lab.git
 ```
 
 ## 常见问题

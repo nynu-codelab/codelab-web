@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.config;
+package cn.edu.nynu.codelab.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * <p>该问题影响 Spring Boot 3.3+ / Spring Framework 6.1+。
  * 待 MyBatis-Plus 上游修复后可移除此类。</p>
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Component
 public class MybatisPlusSpringFix implements BeanFactoryPostProcessor {

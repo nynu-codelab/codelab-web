@@ -1,9 +1,9 @@
-package cn.edu.nynu.selab.auth.controller;
+package cn.edu.nynu.codelab.auth.controller;
 
-import cn.edu.nynu.selab.auth.dto.LoginDTO;
-import cn.edu.nynu.selab.auth.dto.RegisterDTO;
-import cn.edu.nynu.selab.auth.service.AuthService;
-import cn.edu.nynu.selab.common.Result;
+import cn.edu.nynu.codelab.auth.dto.LoginDTO;
+import cn.edu.nynu.codelab.auth.dto.RegisterDTO;
+import cn.edu.nynu.codelab.auth.service.AuthService;
+import cn.edu.nynu.codelab.common.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 认证接口
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @RestController
 @RequestMapping("/api/auth")

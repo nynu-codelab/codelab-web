@@ -1,13 +1,13 @@
 -- =============================================
--- NYNU SE Lab 数据库初始化脚本
+-- NYNU Code Lab 数据库初始化脚本
 -- =============================================
 
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS nynu_se_lab
+CREATE DATABASE IF NOT EXISTS nynu_code_lab
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
 
-USE nynu_se_lab;
+USE nynu_code_lab;
 
 -- 创建用户表
 DROP TABLE IF EXISTS sys_user;
