@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nynu.codelab.recruit.mapper.ApplyRecordMapper">
+    <resultMap id="BaseResultMap" type="cn.edu.nynu.codelab.recruit.entity.ApplyRecord">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="real_name" property="realName"/>
+        <result column="grade" property="grade"/>
+        <result column="major" property="major"/>
+        <result column="class_name" property="className"/>
+        <result column="phone" property="phone"/>
+        <result column="qq" property="qq"/>
+        <result column="direction" property="direction"/>
+        <result column="has_programming_basis" property="hasProgrammingBasis"/>
+        <result column="skills" property="skills"/>
+        <result column="introduction" property="introduction"/>
+        <result column="reason" property="reason"/>
+        <result column="weekly_available_time" property="weeklyAvailableTime"/>
+        <result column="portfolio_url" property="portfolioUrl"/>
+        <result column="status" property="status"/>
+        <result column="review_remark" property="reviewRemark"/>
+        <result column="reviewer_id" property="reviewerId"/>
+        <result column="reviewed_at" property="reviewedAt"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+</mapper>

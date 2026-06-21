@@ -39,7 +39,7 @@ sa-token:
   token-style: tik
   is-print: false
   jwt-secret-key: ${JWT_SECRET:nynu_code_lab_jwt_secret_key_2026}
-  token-prefix: ""
+  token-prefix: "Bearer"
 
 knife4j:
   enable: true
