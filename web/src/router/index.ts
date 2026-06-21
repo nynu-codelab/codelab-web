@@ -24,6 +24,18 @@ const router = createRouter({
       name: 'user',
       component: () => import('@/views/UserCenterView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/recruit',
+      name: 'recruit',
+      component: () => import('@/views/RecruitView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/my-application',
+      name: 'myApplication',
+      component: () => import('@/views/MyApplicationView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

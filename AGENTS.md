@@ -9,7 +9,7 @@
 | 中文名称 | 南阳师范学院 Code Lab 实验室 |
 | Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
-| 当前工作分支 | feature/init-project-skeleton |
+| 当前工作分支 | chore/engineering-rename-nynu-code-lab |
 
 ## 项目定位
 
@@ -354,11 +354,11 @@ AI 在每次开发任务完成后必须：
 | 项 | 状态 |
 |---|---|
 | 分支 | `chore/engineering-rename-nynu-code-lab` |
-| 阶段 | 工程重命名（当前） |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现（注册/登录/获取当前用户） |
-| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心占位页已实现 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理占位页已实现 |
-| 数据库 | `sys_user` 表 DDL 已编写，init.sql 已准备 |
+| 阶段 | 招新报名闭环 MVP（当前） |
+| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现（提交/查看/修改/后台审核） |
+| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名页面已实现 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理页面已实现，报名管理已对接真实数据 |
+| 数据库 | `sys_user` + `lab_apply_record` 表 DDL 已编写，init.sql 已更新 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
@@ -410,28 +410,33 @@ docker compose ps                  # 确认所有服务运行
 | 2026-06-22 | 容器化验收 + 提交固定 | 全链路验收通过：docker compose config ✅ / 4容器正常启动 ✅ / backend 1.749s 启动 ✅ / /api/health 200 ✅ / web 200 ✅ / admin-web 200 ✅ / localhost残留检查通过 ✅ / .gitignore 敏感文件排除 ✅ / MyBatisPlusSpringFix 兼容性修复确认有效 / Spring Boot 3.3.7 + MyBatis-Plus 3.5.16 / 提交 chore: add dockerized development environment |
 | 2026-06-22 | 容器化改造 | 拆分 application.yml 为 local/docker profile；新增 GET /api/health 健康检查；创建 backend/web/admin-web/deploy/nginx 四个 Dockerfile；创建 deploy/docker-compose.yml（MySQL + Redis + Backend + Nginx）；创建 Nginx 统一托管配置；创建 .env.example；更新 .gitignore；更新 README.md / AGENTS.md / deploy/README.md；修复 admin-web 路由 base 支持 /admin/ 路径 |
 | 2026-06-22 | 第一阶段项目骨架初始化 | 创建后端(Spring Boot)、前台(Vue3)、后台(Vue3+ElementPlus)三个项目，完成注册/登录/获取当前用户认证闭环，62个文件 |
+| 2026-06-22 | 招新报名闭环 MVP | 新增 `lab_apply_record` 表；后端新增 recruit 模块（ApplyRecord entity/mapper/service + ApplyController + AdminApplyController）；前台新增招新报名页面(`/recruit`)和我的报名页面(`/my-application`)；后台报名管理重写为完整功能（列表/筛选/详情/审核）；修复 admin-web 响应拦截器 code 校验 bug (0→200)；更新 README.md 和 AGENTS.md |
 
 ## 当前已知问题
 
 - 数据库密码和 JWT 密钥已改为环境变量注入，但 deploy/.env 需手动从 .env.example 复制并修改
-- 前台/后台页面均为占位页面，暂无真实数据交互（除登录注册）
+- 前台/后台用户管理页面仍为占位页面（UsersView.vue），未对接真实 API
 - 缺少修改密码接口（需求文档中已规划 `POST /api/auth/change-password`）
 - 缺少退出登录接口（需求文档中已规划 `POST /api/auth/logout`）
 - Redis 服务已在 Docker Compose 中预留，但后端 pom.xml 未引入 Redis 依赖，当前业务未使用
 - Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书
 - 前端容器构建跳过 `vue-tsc` 类型检查以加速构建，CI 中应单独运行类型检查
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
+- 报名表 `lab_apply_record` 对用户的唯一约束仅在 Service 层实现（非数据库唯一索引），极端并发情况下可能存在竞态条件
 
 ## 下一步建议
 
-0. 完成工程重命名分支的提交、推送、代码审查与合并
-1. 实现完整的招新报名流程（提交报名 → 我的报名 → 后台审核）
-2. 创建 `lab_apply_record` 表并生成对应实体/Mapper/Service
-3. 完善修改密码和退出登录功能
-4. 前台个人中心页面引入真实数据
-5. 后台报名管理页面实现完整的状态流转
-6. 生产环境 Nginx 配置 HTTPS 和证书管理
-7. 引入 Redis 业务依赖（如 Session 共享、缓存）
+1. 完成招新报名分支的提交、推送、代码审查与合并
+2. 实现技术方向 CRUD + 前台展示
+3. 实现核心成员 CRUD + 前台展示
+4. 实现项目成果 CRUD + 前台展示
+5. 实现学习文章（Markdown 编辑/渲染）模块
+6. 完善修改密码和退出登录功能
+7. 前台个人中心引入更多真实数据
+8. 后台用户管理页面实现真实数据对接
+9. 完善报名状态流转（增加更多中间状态约束和校验）
+10. 生产环境 Nginx 配置 HTTPS 和证书管理
+11. 引入 Redis 业务依赖（如 Session 共享、缓存）
 
 ## 验收命令
 

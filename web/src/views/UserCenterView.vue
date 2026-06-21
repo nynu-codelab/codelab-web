@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <div class="profile-card">
+        <router-link to="/my-application" class="profile-card card-link">
           <div class="card-icon" style="background-color: rgba(129, 199, 132, 0.15);">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#81c784" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
@@ -46,8 +46,7 @@
           </div>
           <h3>我的报名</h3>
           <p>查看招新报名记录和状态</p>
-          <span class="card-placeholder">暂无报名记录</span>
-        </div>
+        </router-link>
 
         <div class="profile-card">
           <div class="card-icon" style="background-color: rgba(255, 183, 77, 0.15);">
@@ -260,6 +259,14 @@ onMounted(async () => {
 
 .card-logout {
   cursor: pointer;
+}
+
+.card-link {
+  display: block;
+}
+
+.card-link:hover {
+  border-color: rgba(100, 181, 246, 0.3);
 }
 
 .card-logout:hover {

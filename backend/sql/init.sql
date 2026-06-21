@@ -35,3 +35,36 @@ CREATE TABLE sys_user (
 -- 插入管理员账号（密码 admin123 的 BCrypt 加密）
 INSERT INTO sys_user (username, password, real_name, phone, grade, major, class_name, role, status)
 VALUES ('admin', '$2b$12$Y/o9Q/YAkuXUl/yvknO6/.9KGNCkKwPs9bbpA1wDSzm5BMKpqIO7C', '系统管理员', '13800000000', '', '', '', 'ADMIN', 1);
+
+-- =============================================
+-- 招新报名表
+-- =============================================
+DROP TABLE IF EXISTS lab_apply_record;
+CREATE TABLE lab_apply_record (
+    id                    BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    user_id               BIGINT       NOT NULL                COMMENT '关联用户ID',
+    real_name             VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '真实姓名',
+    grade                 VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT '年级',
+    major                 VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '专业',
+    class_name            VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '班级',
+    phone                 VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT '手机号',
+    qq                    VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT 'QQ号',
+    direction             VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '意向技术方向',
+    has_programming_basis TINYINT      NOT NULL DEFAULT 0      COMMENT '是否有编程基础：0-否，1-是',
+    skills                VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '已掌握技术',
+    introduction          VARCHAR(2000) NOT NULL DEFAULT ''    COMMENT '个人介绍',
+    reason                VARCHAR(2000) NOT NULL DEFAULT ''    COMMENT '加入实验室的原因',
+    weekly_available_time VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '每周可投入时间',
+    portfolio_url         VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '项目/作品链接',
+    status                VARCHAR(30)  NOT NULL DEFAULT 'PENDING' COMMENT '审核状态：PENDING/PRELIMINARY_PASSED/INTERVIEWING/PASSED/REJECTED/WITHDRAWN',
+    review_remark         VARCHAR(1000) NOT NULL DEFAULT ''    COMMENT '审核备注',
+    reviewer_id           BIGINT       DEFAULT NULL            COMMENT '审核人ID',
+    reviewed_at           DATETIME     DEFAULT NULL            COMMENT '审核时间',
+    deleted               TINYINT      NOT NULL DEFAULT 0      COMMENT '逻辑删除：0-未删除，1-已删除',
+    create_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    KEY idx_user_id (user_id),
+    KEY idx_status (status),
+    KEY idx_deleted (deleted)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='招新报名表';

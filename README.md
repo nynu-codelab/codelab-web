@@ -263,3 +263,92 @@ docker compose logs --tail=100 nginx
 # 查看所有服务日志
 docker compose logs
 ```
+
+## 核心功能说明
+
+### 注册与登录
+
+系统支持两种角色：普通用户（USER）和管理员（ADMIN）。
+
+- **普通用户注册**：访问前台 `/register` 页面，填写用户名、密码、姓名、手机号、年级、专业、班级即可注册。
+- **普通用户登录**：访问前台 `/login` 页面，使用用户名+密码登录。
+- **管理员登录**：访问后台 `/admin/login`，使用管理员账号登录（默认：`admin` / `admin123`）。
+- **获取当前用户**：`GET /api/auth/me`，返回当前登录用户的详细信息。
+- 密码使用 BCrypt 加密存储，登录后返回 JWT Token。
+
+### 招新报名闭环
+
+完整流程：**注册/登录 → 提交报名 → 查看我的报名 → 后台审核报名**
+
+1. 登录后访问 `/recruit` 填写报名表（姓名、年级、专业、班级、手机号、QQ号、意向技术方向、编程基础、已掌握技术、个人介绍、加入原因、每周可投入时间、项目链接）
+2. 提交后在 `/my-application` 查看报名状态
+3. 待审核（PENDING）状态下可修改报名信息
+4. 管理员在后台 `/admin/recruit` 查看报名列表，点击行查看详情，选择审核状态并填写备注提交
+5. 审核状态流转：待审核 → 初筛通过 → 面试中 → 已通过 / 未通过 / 已撤回
+
+约束：
+- 一个用户只能有一条有效报名记录（已撤回的不计入）
+- 普通用户只能查看和修改自己的报名
+- 只有管理员才能访问后台报名管理接口
+- 审核结果仅在系统内展示（无短信/邮件/QQ通知）
+
+### 访问地址
+
+| 入口 | 地址 |
+|------|------|
+| 前台首页 | http://localhost |
+| 前台注册 | http://localhost/register |
+| 前台登录 | http://localhost/login |
+| 招新报名 | http://localhost/recruit（需登录） |
+| 我的报名 | http://localhost/my-application（需登录） |
+| 个人中心 | http://localhost/user（需登录） |
+| 后台登录 | http://localhost/admin/login |
+| 后台报名管理 | http://localhost/admin/recruit（需管理员） |
+| API 文档 | http://localhost/doc.html |
+
+### 核心接口说明
+
+**认证接口（已有）：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| POST | `/api/auth/register` | 用户注册 | 无 |
+| POST | `/api/auth/login` | 用户登录（含管理员） | 无 |
+| GET | `/api/auth/me` | 获取当前用户信息 | 需登录 |
+
+**报名接口（新增）：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| POST | `/api/applications` | 提交报名 | 需登录 |
+| GET | `/api/applications/my` | 查看我的报名 | 需登录 |
+| PUT | `/api/applications/my` | 修改我的报名（仅PENDING） | 需登录 |
+
+**管理后台报名接口（新增）：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| GET | `/api/admin/applications` | 报名列表（?status=筛选） | ADMIN |
+| GET | `/api/admin/applications/{id}` | 报名详情 | ADMIN |
+| PUT | `/api/admin/applications/{id}/review` | 审核报名 | ADMIN |
+
+### 数据库初始化说明
+
+Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`，创建以下表：
+- `sys_user` — 系统用户表（含默认管理员 admin/admin123）
+- `lab_apply_record` — 招新报名记录表
+
+如果数据库已初始化过（数据卷已存在），新表不会自动创建。请根据需要执行：
+
+**方式一：重建数据卷（会清空所有数据）**
+```bash
+cd deploy
+docker compose down -v
+docker compose --env-file .env up -d --build
+```
+
+**方式二：手动执行 SQL**
+```bash
+docker compose exec mysql mysql -u root -p < backend/sql/init.sql
+# 输入 MYSQL_ROOT_PASSWORD
+```

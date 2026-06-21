@@ -9,7 +9,7 @@
           <a href="#">技术方向</a>
           <a href="#">项目成果</a>
           <a href="#">学习文章</a>
-          <a href="#">招新报名</a>
+          <router-link to="/recruit">招新报名</router-link>
           <template v-if="userStore.isLoggedIn">
             <router-link to="/user" class="btn-user">个人中心</router-link>
             <a href="#" class="btn-logout" @click.prevent="handleLogout">退出</a>
