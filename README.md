@@ -305,8 +305,11 @@ docker compose logs
 | 招新报名 | http://localhost/recruit（需登录） |
 | 我的报名 | http://localhost/my-application（需登录） |
 | 个人中心 | http://localhost/user（需登录） |
+| 文章列表 | http://localhost/articles |
+| 文章详情 | http://localhost/articles/{id} |
 | 后台登录 | http://localhost/admin/login |
 | 后台报名管理 | http://localhost/admin/recruit（需管理员） |
+| 后台文章管理 | http://localhost/admin/articles（需管理员） |
 | API 文档 | http://localhost/doc.html |
 
 ### 核心接口说明
@@ -335,11 +338,59 @@ docker compose logs
 | GET | `/api/admin/applications/{id}` | 报名详情 | ADMIN |
 | PUT | `/api/admin/applications/{id}/review` | 审核报名 | ADMIN |
 
+**文章接口（新增）：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| GET | `/api/articles` | 已发布文章列表（?category=筛选） | 无 |
+| GET | `/api/articles/{id}` | 已发布文章详情 | 无 |
+
+**管理后台文章接口（新增）：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| GET | `/api/admin/articles` | 文章列表（?status=筛选） | ADMIN |
+| GET | `/api/admin/articles/{id}` | 文章详情 | ADMIN |
+| POST | `/api/admin/articles` | 创建文章 | ADMIN |
+| PUT | `/api/admin/articles/{id}` | 编辑文章 | ADMIN |
+| PUT | `/api/admin/articles/{id}/publish` | 发布文章 | ADMIN |
+| PUT | `/api/admin/articles/{id}/offline` | 下架文章 | ADMIN |
+| DELETE | `/api/admin/articles/{id}` | 删除文章（软删除） | ADMIN |
+
+### 文章 / Markdown 学习分享
+
+**文章状态：** 草稿（DRAFT）→ 已发布（PUBLISHED）→ 已下架（OFFLINE）
+
+**完整流程：**
+
+1. 管理员登录后台 http://localhost/admin/login
+2. 进入文章管理 http://localhost/admin/articles
+3. 新建文章：填写标题、摘要、分类、标签、Markdown 正文，保存草稿
+4. 草稿文章不会在前台展示
+5. 点击"发布"将文章状态改为已发布
+6. 前台 http://localhost/articles 可看到已发布文章列表
+7. 点击文章进入详情页 http://localhost/articles/{id}，Markdown 正确渲染
+8. 管理员可随时"下架"文章（前台不可见）
+9. 管理员可"删除"文章（软删除，前台不可见）
+
+**Markdown 渲染安全策略：**
+
+- 使用 `markdown-it` 进行 Markdown → HTML 转换
+- 配置 `html: false`，关闭原始 HTML 标签解析，防止 XSS 攻击
+- 文章正文中嵌入的 HTML 标签会被转义显示，不会执行
+- 文章封面仅支持 URL 字段，不支持图片上传
+- 第一版支持基础 Markdown 语法：标题、列表、代码块、链接、表格、引用等
+
+**分类和标签：**
+- 分类：自由文本字段，例如「学习笔记」「技术分享」「项目复盘」
+- 标签：JSON 数组字符串格式，例如 `["Java","Spring Boot"]`
+
 ### 数据库初始化说明
 
 Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`，创建以下表：
 - `sys_user` — 系统用户表（含默认管理员 admin/admin123）
 - `lab_apply_record` — 招新报名记录表
+- `lab_article` — 文章表
 
 如果数据库已初始化过（数据卷已存在），新表不会自动创建。请根据需要执行：
 
@@ -350,9 +401,16 @@ docker compose down -v
 docker compose --env-file .env up -d --build
 ```
 
-**方式二：手动执行 SQL**
+**方式二：手动执行完整初始化 SQL**
 ```bash
 docker compose exec mysql mysql -u root -p < backend/sql/init.sql
+# 输入 MYSQL_ROOT_PASSWORD
+```
+
+**方式三：仅追加新表（不影响已有数据）**
+```bash
+# 仅创建 lab_article 表
+docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/01-add-article-table.sql
 # 输入 MYSQL_ROOT_PASSWORD
 ```
 
@@ -372,6 +430,14 @@ BASE_URL=http://localhost:8080 bash scripts/verify-recruitment-flow.sh
 ```
 
 脚本会依次验证：注册 → 登录 → 获取当前用户 → 提交报名 → 查看报名 → 修改报名 → 管理员审核 → 状态变更 → 权限隔离。
+
+### 文章闭环验证脚本
+
+```bash
+bash scripts/verify-article-flow.sh
+```
+
+脚本会依次验证：管理员创建草稿 → 编辑 → 草稿前台不可见 → 发布 → 前台列表可见 → 详情Markdown渲染 → 下架 → 前台不可见 → 删除 → 普通用户权限隔离。
 
 ### 手工验证步骤
 
