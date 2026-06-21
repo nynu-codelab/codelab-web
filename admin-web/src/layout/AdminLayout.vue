@@ -27,6 +27,10 @@
           <el-icon><Document /></el-icon>
           <template #title>报名管理</template>
         </el-menu-item>
+        <el-menu-item index="/articles">
+          <el-icon><Reading /></el-icon>
+          <template #title>文章管理</template>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -71,6 +75,7 @@ import {
   DataAnalysis,
   User,
   Document,
+  Reading,
   Fold,
   Expand,
   ArrowDown,

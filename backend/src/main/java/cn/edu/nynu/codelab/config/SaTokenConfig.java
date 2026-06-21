@@ -33,6 +33,7 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/auth/register",
                         "/api/auth/login",
                         "/api/health",
+                        "/api/articles/**",
                         "/api/portal/**",
                         "/doc.html",
                         "/v3/**",
