@@ -2,7 +2,7 @@
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
       <div class="aside-logo" @click="toggleCollapse">
-        <span v-show="!isCollapse" class="logo-text">软件工程实验室</span>
+        <span v-show="!isCollapse" class="logo-text">Code Lab</span>
         <span class="logo-icon">⚙</span>
       </div>
 

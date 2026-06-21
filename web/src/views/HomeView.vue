@@ -3,7 +3,7 @@
     <!-- 导航栏 -->
     <header class="navbar">
       <div class="navbar-inner">
-        <router-link to="/" class="logo">软工实验室</router-link>
+        <router-link to="/" class="logo">Code Lab</router-link>
         <nav class="nav-links">
           <router-link to="/">首页</router-link>
           <a href="#">技术方向</a>
@@ -25,7 +25,7 @@
     <!-- 主体内容 -->
     <main class="hero">
       <div class="hero-content">
-        <h1 class="hero-title">南阳师范学院软件工程实验室</h1>
+        <h1 class="hero-title">南阳师范学院 Code Lab 实验室</h1>
         <p class="hero-subtitle">
           探索软件工程前沿，培养卓越技术人才
         </p>
@@ -38,9 +38,9 @@
     <!-- 页脚 -->
     <footer class="footer">
       <div class="footer-inner">
-        <p class="footer-copy">&copy; {{ currentYear }} 南阳师范学院软件工程实验室</p>
+        <p class="footer-copy">&copy; {{ currentYear }} 南阳师范学院 Code Lab 实验室</p>
         <p class="footer-disclaimer">
-          本网站为南阳师范学院软件工程实验室自建展示站，非学校官方门户网站。
+          本网站为南阳师范学院 Code Lab 实验室自建展示站，非学校官方门户网站。
         </p>
       </div>
     </footer>

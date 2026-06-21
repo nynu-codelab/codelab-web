@@ -2,7 +2,7 @@
   <div class="register-page">
     <div class="register-card">
       <h2 class="card-title">注册</h2>
-      <p class="card-subtitle">加入软件工程实验室</p>
+      <p class="card-subtitle">加入 Code Lab 实验室</p>
 
       <form class="register-form" @submit.prevent="handleSubmit">
         <div class="form-row">

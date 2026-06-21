@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-card">
       <h2 class="card-title">登录</h2>
-      <p class="card-subtitle">欢迎回到软件工程实验室</p>
+      <p class="card-subtitle">欢迎回到 Code Lab 实验室</p>
 
       <form class="login-form" @submit.prevent="handleSubmit">
         <div class="form-group">

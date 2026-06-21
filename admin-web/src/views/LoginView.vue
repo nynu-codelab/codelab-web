@@ -4,7 +4,7 @@
     <el-card class="login-card" shadow="always">
       <template #header>
         <div class="login-header">
-          <h1 class="login-title">南阳师范学院软件工程实验室</h1>
+          <h1 class="login-title">南阳师范学院 Code Lab 实验室</h1>
           <p class="login-subtitle">后台管理系统</p>
         </div>
       </template>
