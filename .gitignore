@@ -29,3 +29,13 @@ admin-web/components.d.ts
 # === Env ===
 .env.local
 .env.*.local
+.env
+deploy/.env
+
+# === Secrets & Keys ===
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+*.truststore

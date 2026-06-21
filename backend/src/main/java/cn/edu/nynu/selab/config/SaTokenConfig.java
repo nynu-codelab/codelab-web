@@ -32,6 +32,7 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                 .excludePathPatterns(
                         "/api/auth/register",
                         "/api/auth/login",
+                        "/api/health",
                         "/api/portal/**",
                         "/doc.html",
                         "/v3/**",
