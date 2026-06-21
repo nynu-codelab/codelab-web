@@ -9,7 +9,7 @@
 | 中文名称 | 南阳师范学院 Code Lab 实验室 |
 | Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
-| 当前工作分支 | chore/engineering-rename-nynu-code-lab |
+| 当前工作分支 | feat/article-markdown-sharing |
 
 ## 项目定位
 
@@ -353,17 +353,17 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `chore/engineering-rename-nynu-code-lab` |
-| 阶段 | 招新报名闭环 MVP（当前） |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现（提交/查看/修改/后台审核） |
-| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名页面已实现 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理页面已实现，报名管理已对接真实数据 |
-| 数据库 | `sys_user` + `lab_apply_record` 表 DDL 已编写，init.sql 已更新 |
+| 分支 | `feat/article-markdown-sharing` |
+| 阶段 | 招新报名闭环 MVP + 文章管理/Markdown学习分享（当前） |
+| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程） |
+| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情页面已实现，Markdown 渲染已实现 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理页面已实现 |
+| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` 表 DDL 已编写，init.sql 已更新 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
 | 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅ |
-| 接口验证 | 招新报名闭环 18/18 ✅ |
+| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ |
 | 稳定 tag | mvp-recruitment-workflow-20260622 |
 
 ## 容器化开发规范
@@ -414,6 +414,8 @@ docker compose ps                  # 确认所有服务运行
 | 2026-06-22 | 第一阶段项目骨架初始化 | 创建后端(Spring Boot)、前台(Vue3)、后台(Vue3+ElementPlus)三个项目，完成注册/登录/获取当前用户认证闭环，62个文件 |
 | 2026-06-22 | 招新报名闭环 MVP | 新增 `lab_apply_record` 表；后端新增 recruit 模块（ApplyRecord entity/mapper/service + ApplyController + AdminApplyController）；前台新增招新报名页面(`/recruit`)和我的报名页面(`/my-application`)；后台报名管理重写为完整功能（列表/筛选/详情/审核）；修复 admin-web 响应拦截器 code 校验 bug (0→200)；更新 README.md 和 AGENTS.md |
 | 2026-06-22 | 第二阶段收尾验收 | 全链路 API 验证 18/18 通过；三模块构建验证通过（backend mvn ✅ / web vite ✅ / admin-web vite ✅）；Docker Compose 4 容器正常启动；/api/health / web / admin-web / doc.html 全部 200；localhost 残留检查通过；新增 scripts/verify-recruitment-flow.sh 自动化验证脚本；README.md 新增安全提示、接口验证脚本说明、手工验证步骤；AGENTS.md 更新验收记录；提交 tag mvp-recruitment-workflow-20260622 |
+| 2026-06-22 | 第三阶段文章管理+Markdown学习分享 | 新增 lab_article 表；后端新增 article 模块（Article entity/mapper/service + ArticleController + AdminArticleController）；SaTokenConfig 排除 /api/articles/** 公开访问；前台新增文章列表(/articles)和文章详情(/articles/:id)页面并使用 markdown-it 渲染（html:false 防XSS）；后台新增文章管理页面（列表/创建/编辑/发布/下架/删除）；HomeView 导航"学习文章"改为真实路由；更新 init.sql；新增 01-add-article-table.sql 迁移脚本；新增 scripts/verify-article-flow.sh（23/23 PASS） |
+| 2026-06-22 | 全量回归验收 | 招募+文章双脚本全通过（18+23=41项）；三模块构建全通过；Docker Compose 4容器全healthy；localhost残留检查通过；Markdown XSS 安全确认（html:false）；DB 三表完整验证；README/AGENTS/需求文档同步更新；scripts/ 目录恢复（verify-recruitment-flow.sh + verify-article-flow.sh） |
 
 ## 当前已知问题
 
@@ -426,21 +428,27 @@ docker compose ps                  # 确认所有服务运行
 - 前端容器构建跳过 `vue-tsc` 类型检查以加速构建，CI 中应单独运行类型检查
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
 - 报名表 `lab_apply_record` 对用户的唯一约束仅在 Service 层实现（非数据库唯一索引），极端并发情况下可能存在竞态条件
+- 文章标签使用 JSON 字符串存储，未做独立标签表或标签管理功能
+- 文章封面仅支持 URL 字段，不支持文件上传；Markdown 图片同样依赖外部 URL
+- 文章分类使用自由文本字段，未做分类管理功能
+- 文章浏览量直接在详情接口中递增，无防刷机制
+- 前台文章列表未做分页，文章数量较多时性能可能不足
 
 ## 下一步建议
 
-1. 合并当前分支到 main（经过代码审查后）
+1. 合并当前分支 feat/article-markdown-sharing 到 main（经过代码审查后）
 2. 实现技术方向 CRUD + 前台展示
 3. 实现核心成员 CRUD + 前台展示
 4. 实现项目成果 CRUD + 前台展示
-5. 实现学习文章（Markdown 编辑/渲染）模块
-6. 完善修改密码和退出登录功能
-7. 前台个人中心引入更多真实数据
-8. 后台用户管理页面实现真实数据对接
-9. 完善报名状态流转（增加更多中间状态约束和校验）
-10. 生产环境 Nginx 配置 HTTPS 和证书管理
-11. 引入 Redis 业务依赖（如 Session 共享、缓存）
-12. 为 `lab_apply_record` 表添加用户唯一约束索引
+5. 完善修改密码和退出登录功能
+6. 前台个人中心引入更多真实数据
+7. 后台用户管理页面实现真实数据对接
+8. 完善报名状态流转（增加更多中间状态约束和校验）
+9. 生产环境 Nginx 配置 HTTPS 和证书管理
+10. 引入 Redis 业务依赖（如 Session 共享、缓存）
+11. 为 `lab_apply_record` 表添加用户唯一约束索引
+12. 文章列表加分页、分类筛选优化
+13. 实现文件上传功能（文章封面、项目封面、成员头像等）
 
 ## 验收命令
 
