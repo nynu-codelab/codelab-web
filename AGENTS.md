@@ -483,4 +483,6 @@ git branch --show-current && git status --short
 
 # 接口验证脚本
 bash scripts/verify-recruitment-flow.sh
+bash scripts/verify-article-flow.sh
+bash scripts/verify-project-flow.sh
 ```
