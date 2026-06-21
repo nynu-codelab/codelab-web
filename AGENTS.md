@@ -9,7 +9,7 @@
 | 中文名称 | 南阳师范学院 Code Lab 实验室 |
 | Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
-| 当前工作分支 | feat/article-markdown-sharing |
+| 当前工作分支 | release/mvp-production-readiness |
 
 ## 项目定位
 
@@ -353,18 +353,19 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `feat/project-showcase` |
-| 阶段 | 第四阶段：项目成果展示闭环（当前） |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程） |
-| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情/项目列表/项目详情页面已实现，Markdown 渲染已实现，首页精选项目已实现 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理/项目管理页面已实现 |
-| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新 |
+| 分支 | `release/mvp-production-readiness` |
+| 阶段 | 第六阶段：上线前全量验收 + 安全加固 + 准生产部署准备（当前） |
+| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403 |
+| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情/项目列表/项目详情页面已实现，Markdown 渲染已实现，首页精选项目已实现；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理/项目管理页面已实现；本地开发端口 5174 |
+| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
 | 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅ |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
-| 稳定 tag | stable-after-project-showcase-20260622 |
+| 页面访问 | `/`、登录注册、招新、我的报名、文章、项目、后台路由经 Nginx history fallback 均返回 200；成员/方向/联系/上传相关路由仅返回 SPA 壳，功能未实现 |
+| 稳定 tag | stable-mvp-production-ready-20260622 |
 
 ## 容器化开发规范
 
@@ -408,6 +409,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 第六阶段上线前全量验收 + 安全加固 | 新建 `release/mvp-production-readiness`；补齐 `docs/requirements.md` 并修复需求文档重复命名；权限异常从通用 500 改为统一业务码 401/403；`lab_apply_record` 新增 `active_user_id` 生成列与 `uk_apply_active_user` 唯一约束并新增 `03-add-apply-active-user-unique-key.sql`；同步 `backend/sql/init.sql` 与 `deploy/mysql/init/01-init.sql`；`deploy/.env.example` 敏感变量改为空并补充 `SERVER_PORT`；新增根目录 `.env.example`；本地 Vite 端口统一为 web 5173 / admin-web 5174；修正验证脚本权限断言；README/deploy 文档补齐准生产环境变量、迁移、Markdown、安全和未实现模块说明；Docker Compose、页面访问、三闭环脚本、权限、SQL、Markdown、Nginx 验收通过 |
 | 2026-06-22 | 第四阶段项目成果展示 | 新增 lab_project 表；后端新增 project 模块（Project entity/mapper/service + ProjectController + AdminProjectController）；前台新增项目列表(/projects)和项目详情(/projects/:id)页面并使用 markdown-it 渲染（html:false 防XSS）；首页新增精选项目区域(GET /api/projects/featured)；后台新增项目管理页面（列表/创建/编辑/发布/下架/删除）；SaTokenConfig 排除 /api/projects/** 公开访问；更新 init.sql；新增 02-add-project-table.sql 迁移脚本；新增 scripts/verify-project-flow.sh |
 | 2026-06-22 | 工程级重命名 | 旧工程标识 `nynu-se-lab` → 新工程标识 `nynu-code-lab`；正式展示名：南阳师范学院 Code Lab 实验室 / NYNU Code Lab；数据库名 `nynu_se_lab` → `nynu_code_lab`；Java 包名 `cn.edu.nynu.selab` → `cn.edu.nynu.codelab`；Maven artifactId `selab-backend` → `nynu-code-lab-backend`；前端 package name 同步更新；Docker container/network/image name 同步更新；根目录从 `nynu-se-lab` 重命名为 `nynu-code-lab`；Docker service key 保留不变（mysql/redis/backend/nginx）；Git remote 已更新为 `git@gitee.com:zeng-bohan-66/nynu-code-lab.git`；README/AGENTS/docs 全部同步更新；三模块构建验证通过 |
 | 2026-06-22 | 容器化验收 + 提交固定 | 全链路验收通过：docker compose config ✅ / 4容器正常启动 ✅ / backend 1.749s 启动 ✅ / /api/health 200 ✅ / web 200 ✅ / admin-web 200 ✅ / localhost残留检查通过 ✅ / .gitignore 敏感文件排除 ✅ / MyBatisPlusSpringFix 兼容性修复确认有效 / Spring Boot 3.3.7 + MyBatis-Plus 3.5.16 / 提交 chore: add dockerized development environment |
@@ -420,7 +422,7 @@ docker compose ps                  # 确认所有服务运行
 
 ## 当前已知问题
 
-- 数据库密码和 JWT 密钥已改为环境变量注入，但 deploy/.env 需手动从 .env.example 复制并修改
+- 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥
 - 前台/后台用户管理页面仍为占位页面（UsersView.vue），未对接真实 API
 - 缺少修改密码接口（需求文档中已规划 `POST /api/auth/change-password`）
 - 缺少退出登录接口（需求文档中已规划 `POST /api/auth/logout`）
@@ -428,7 +430,7 @@ docker compose ps                  # 确认所有服务运行
 - Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书
 - 前端容器构建跳过 `vue-tsc` 类型检查以加速构建，CI 中应单独运行类型检查
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
-- 报名表 `lab_apply_record` 对用户的唯一约束仅在 Service 层实现（非数据库唯一索引），极端并发情况下可能存在竞态条件
+- 报名表 `lab_apply_record` 已通过 `uk_apply_active_user` 约束非撤回报名唯一；历史库执行迁移前如果已有重复非撤回记录，需要先人工清理
 - 文章标签使用 JSON 字符串存储，未做独立标签表或标签管理功能
 - 文章封面仅支持 URL 字段，不支持文件上传；Markdown 图片同样依赖外部 URL
 - 文章分类使用自由文本字段，未做分类管理功能
@@ -438,22 +440,24 @@ docker compose ps                  # 确认所有服务运行
 - 项目成员/负责人使用文本字段，未与系统用户表关联
 - 项目浏览量直接在详情接口中递增，无防刷机制
 - 前台项目列表未做分页
+- 前台 `/contact`、`/members`、`/directions`、`/about` 尚无真实 Vue 路由页面；Nginx 刷新返回 200 仅代表 SPA fallback 正常
+- 后台成员、方向、站点配置、上传页面和对应后端接口未实现
+- 文件上传模块未实现，当前没有上传目录、上传权限控制或上传静态资源映射
 
 ## 下一步建议
 
-1. 合并当前分支 feat/project-showcase 到 main（经过代码审查后）
-2. 实现技术方向 CRUD + 前台展示
-3. 实现核心成员 CRUD + 前台展示
-4. 完善修改密码和退出登录功能
-5. 前台个人中心引入更多真实数据
-6. 后台用户管理页面实现真实数据对接
-7. 完善报名状态流转（增加更多中间状态约束和校验）
-8. 生产环境 Nginx 配置 HTTPS 和证书管理
+1. 将 `release/mvp-production-readiness` 部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
+2. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
+3. 实现技术方向 CRUD + 前台展示
+4. 实现核心成员 CRUD + 前台展示
+5. 完善修改密码和退出登录功能
+6. 前台个人中心引入更多真实数据
+7. 后台用户管理页面实现真实数据对接
+8. 完善报名状态流转（增加更多中间状态约束和校验）
 9. 引入 Redis 业务依赖（如 Session 共享、缓存）
-10. 为 `lab_apply_record` 表添加用户唯一约束索引
-11. 文章列表加分页、分类筛选优化
-12. 项目列表加分页优化
-13. 实现文件上传功能（文章封面、项目封面、成员头像等）
+10. 文章列表加分页、分类筛选优化
+11. 项目列表加分页优化
+12. 实现文件上传功能（文章封面、项目封面、成员头像等）
 
 ## 验收命令
 
@@ -485,4 +489,8 @@ git branch --show-current && git status --short
 bash scripts/verify-recruitment-flow.sh
 bash scripts/verify-article-flow.sh
 bash scripts/verify-project-flow.sh
+
+# 已初始化数据库的增量迁移
+cd deploy
+docker compose --env-file .env exec -T mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < ../backend/sql/migrations/03-add-apply-active-user-unique-key.sql
 ```

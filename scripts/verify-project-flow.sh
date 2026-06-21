@@ -35,6 +35,10 @@ check_code() {
     echo "$1" | python3 -c "import sys,json; code=json.load(sys.stdin).get('code',-1); sys.exit(0 if code==200 else 1)" 2>/dev/null
 }
 
+get_code() {
+    echo "$1" | python3 -c "import sys,json; print(json.load(sys.stdin).get('code',''))" 2>/dev/null
+}
+
 # ---------- 1. 管理员登录 ----------
 info "1. 管理员登录"
 ADMIN_RESP=$(curl -s -X POST "${BASE_URL}/api/auth/login" \
@@ -242,10 +246,11 @@ fi
 # ---------- 19. 普通用户访问后台项目接口 ----------
 info "19. 普通用户访问后台项目列表（应被拒绝）"
 USER_LIST=$(curl -s "${BASE_URL}/api/admin/projects" -H "Authorization: Bearer ${USER_TOKEN}")
-if echo "$USER_LIST" | grep -q '"code":500'; then
-  pass "普通用户被拒绝访问后台项目列表"
+USER_LIST_CODE=$(get_code "$USER_LIST")
+if [ "$USER_LIST_CODE" = "401" ] || [ "$USER_LIST_CODE" = "403" ]; then
+  pass "普通用户被拒绝访问后台项目列表（code=${USER_LIST_CODE}）"
 else
-  fail "普通用户权限隔离" "应被拒绝但返回: $USER_LIST"
+  fail "普通用户权限隔离" "应返回 401/403，实际响应: $USER_LIST"
 fi
 
 # ---------- 20. 游客访问已发布项目列表 ----------

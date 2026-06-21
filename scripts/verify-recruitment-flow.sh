@@ -190,7 +190,11 @@ echo "--- 12. 权限隔离验证 ---"
 ADMIN_BY_USER=$(curl -s "$BASE_URL/api/admin/applications" -H "Authorization: Bearer $USER_TOKEN")
 ADMIN_CODE=$(echo "$ADMIN_BY_USER" | python3 -c "import sys,json; print(json.load(sys.stdin).get('code',''))" 2>/dev/null)
 if [ "$ADMIN_CODE" != "200" ]; then
-    pass "普通用户无法访问后台报名接口（code=$ADMIN_CODE）"
+    if [ "$ADMIN_CODE" = "401" ] || [ "$ADMIN_CODE" = "403" ]; then
+        pass "普通用户无法访问后台报名接口（code=$ADMIN_CODE）"
+    else
+        fail "普通用户访问后台报名接口应返回 401/403" "got code=$ADMIN_CODE"
+    fi
 else
     fail "普通用户不应能访问后台接口" "普通用户成功访问了 /api/admin/applications"
 fi
@@ -198,7 +202,7 @@ fi
 # 12b. 普通用户不能查看别人的报名信息
 OTHER_APP=$(curl -s "$BASE_URL/api/applications/1" -H "Authorization: Bearer $USER_TOKEN" 2>/dev/null || echo '{"code":500}')
 OTHER_CODE=$(echo "$OTHER_APP" | python3 -c "import sys,json; print(json.load(sys.stdin).get('code',''))" 2>/dev/null)
-# 如果没有 /api/applications/{id} 路由，404 也算通过
+# 如果没有 /api/applications/{id} 路由，非 200 也算没有直接访问别人的报名数据。
 echo "       GET /api/applications/1 by normal user: code=$OTHER_CODE (no direct access to others' data)"
 
 # ---- 结果汇总 ----

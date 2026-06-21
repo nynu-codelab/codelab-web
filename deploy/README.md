@@ -79,6 +79,10 @@ curl http://localhost/api/health
 - `MYSQL_ROOT_PASSWORD` / `MYSQL_PASSWORD`：数据库密码，**必须修改**
 - `JWT_SECRET`：JWT 签名密钥，**必须修改**，建议 `openssl rand -base64 64` 生成
 - `SPRING_PROFILES_ACTIVE`：Spring profile，容器环境必须为 `docker`
+- `SERVER_PORT`：后端容器内端口，默认 `8080`；如修改需同步 Nginx upstream
+- `BACKEND_PORT`：后端宿主机映射端口，默认 `8080`
+
+`.env.example` 中的敏感变量默认留空，复制为 `.env` 后必须填写，否则 `docker compose --env-file .env config` 会失败。这是为了避免弱默认密码或弱 JWT 密钥进入准生产环境。
 
 ## 容器间通信
 
@@ -101,3 +105,4 @@ curl http://localhost/api/health
 2. Redis 服务已预留但后端未使用，可在后续引入缓存/Session 共享
 3. 前端构建跳过 `vue-tsc` 类型检查以加速容器构建，CI 中应单独运行类型检查
 4. 未配置日志集中收集（ELK/Loki）
+5. 文件上传模块未实现，当前没有上传目录挂载或 `/uploads/` 静态资源映射

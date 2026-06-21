@@ -63,7 +63,9 @@ CREATE TABLE lab_apply_record (
     deleted               TINYINT      NOT NULL DEFAULT 0      COMMENT '逻辑删除：0-未删除，1-已删除',
     create_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    active_user_id        BIGINT GENERATED ALWAYS AS (CASE WHEN deleted = 0 AND status <> 'WITHDRAWN' THEN user_id ELSE NULL END) STORED COMMENT '用于限制非撤回报名唯一',
     PRIMARY KEY (id),
+    UNIQUE KEY uk_apply_active_user (active_user_id),
     KEY idx_user_id (user_id),
     KEY idx_status (status),
     KEY idx_deleted (deleted)
