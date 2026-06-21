@@ -1,6 +1,6 @@
-package cn.edu.nynu.selab.common;
+package cn.edu.nynu.codelab.common;
 
-import cn.edu.nynu.selab.common.Result;
+import cn.edu.nynu.codelab.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * 全局异常处理器
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Slf4j
 @RestControllerAdvice

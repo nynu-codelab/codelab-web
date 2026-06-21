@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.common;
+package cn.edu.nynu.codelab.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * 统一返回结果
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Data
 @NoArgsConstructor

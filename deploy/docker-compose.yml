@@ -1,5 +1,5 @@
 # ============================================================
-# NYNU SE Lab Docker Compose 配置
+# NYNU Code Lab Docker Compose 配置
 # ============================================================
 # 启动：  docker compose --env-file .env up -d --build
 # 查看：  docker compose ps
@@ -12,11 +12,11 @@ services:
   # ==================== MySQL 8 ====================
   mysql:
     image: mysql:8.0
-    container_name: nynu-se-lab-mysql
+    container_name: nynu-code-lab-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-nynu_se_lab}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nynu_code_lab}
       MYSQL_USER: ${MYSQL_USER:-nynu}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
     ports:
@@ -31,12 +31,12 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - se-lab-net
+      - nynu-code-lab-net
 
   # ==================== Redis（预留，当前未使用） ====================
   redis:
     image: redis:7-alpine
-    container_name: nynu-se-lab-redis
+    container_name: nynu-code-lab-redis
     restart: unless-stopped
     command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass ${REDIS_PASSWORD}}
     ports:
@@ -49,7 +49,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - se-lab-net
+      - nynu-code-lab-net
     # 注释：当前后端尚未引入 Redis 业务依赖，此服务为后续功能预留。
     # 如需禁用 Redis，执行：docker compose --profile no-redis up
     profiles:
@@ -60,14 +60,14 @@ services:
   backend:
     build:
       context: ../backend
-    container_name: nynu-se-lab-backend
+    container_name: nynu-code-lab-backend
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
       SERVER_PORT: ${BACKEND_PORT:-8080}
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-nynu_se_lab}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nynu_code_lab}
       MYSQL_USER: ${MYSQL_USER:-nynu}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
@@ -77,21 +77,21 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - se-lab-net
+      - nynu-code-lab-net
 
   # ==================== Nginx 统一入口 ====================
   nginx:
     build:
       context: ..
       dockerfile: deploy/nginx/Dockerfile
-    container_name: nynu-se-lab-nginx
+    container_name: nynu-code-lab-nginx
     restart: unless-stopped
     ports:
       - "${NGINX_PORT:-80}:80"
     depends_on:
       - backend
     networks:
-      - se-lab-net
+      - nynu-code-lab-net
 
 # ==================== 数据卷 ====================
 volumes:
@@ -102,5 +102,5 @@ volumes:
 
 # ==================== 容器网络 ====================
 networks:
-  se-lab-net:
+  nynu-code-lab-net:
     driver: bridge

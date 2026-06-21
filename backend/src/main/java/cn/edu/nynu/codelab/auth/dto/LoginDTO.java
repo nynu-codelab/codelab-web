@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.auth.dto;
+package cn.edu.nynu.codelab.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * 登录请求 DTO
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Data
 public class LoginDTO {

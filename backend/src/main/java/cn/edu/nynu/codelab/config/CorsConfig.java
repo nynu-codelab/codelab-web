@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.config;
+package cn.edu.nynu.codelab.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.web.filter.CorsFilter;
 /**
  * 跨域配置（开发阶段允许所有来源）
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Configuration
 public class CorsConfig {

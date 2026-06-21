@@ -82,8 +82,8 @@ curl http://localhost/api/health
 
 ## 容器间通信
 
-所有容器通过 `se-lab-net` 桥接网络通信，使用 Docker Compose 服务名：
-- 后端连接 MySQL：`jdbc:mysql://mysql:3306/nynu_se_lab`
+所有容器通过 `nynu-code-lab-net` 桥接网络通信，使用 Docker Compose 服务名：
+- 后端连接 MySQL：`jdbc:mysql://mysql:3306/nynu_code_lab`
 - 后端连接 Redis：`redis:6379`（预留）
 - Nginx 代理后端：`http://backend:8080`
 

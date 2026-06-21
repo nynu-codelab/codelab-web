@@ -1,9 +1,9 @@
 # ============================================================
-# NYNU SE Lab 前台 Web Dockerfile — 仅构建静态资源
+# NYNU Code Lab 前台 Web Dockerfile — 仅构建静态资源
 # 构建产物 dist/ 供 deploy/nginx/Dockerfile 使用
 # ============================================================
-# 单独构建：docker build -t nynu-se-lab-web .
-# 提取产物：docker create --name tmp nynu-se-lab-web && docker cp tmp:/app/dist ./dist && docker rm tmp
+# 单独构建：docker build -t nynu-code-lab-web .
+# 提取产物：docker create --name tmp nynu-code-lab-web && docker cp tmp:/app/dist ./dist && docker rm tmp
 # ============================================================
 
 FROM node:20-alpine AS builder

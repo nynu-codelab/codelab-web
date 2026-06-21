@@ -1,4 +1,4 @@
-package cn.edu.nynu.selab.config;
+package cn.edu.nynu.codelab.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 /**
  * MyBatis-Plus 自动填充处理器
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {

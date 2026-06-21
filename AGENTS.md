@@ -4,16 +4,16 @@
 
 | 项 | 值 |
 |---|---|
-| 项目名称 | nynu-se-lab |
-| 全称 | Nanyang Normal University Software Engineering Lab |
-| 中文名称 | 南阳师范学院软件工程实验室官网与招新管理系统 |
-| Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-se-lab.git |
+| 项目名称 | nynu-code-lab |
+| 全称 | Nanyang Normal University Code Lab |
+| 中文名称 | 南阳师范学院 Code Lab 实验室 |
+| Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
 | 当前工作分支 | feature/init-project-skeleton |
 
 ## 项目定位
 
-本项目是南阳师范学院软件工程实验室**自建展示站与招新管理系统**，不是学校官方门户网站。
+本项目是南阳师范学院 Code Lab 实验室**自建展示站与招新管理系统**，不是学校官方门户网站。
 
 核心目标：
 - 实验室对外展示（技术方向、核心成员、项目成果、学习文章）
@@ -22,7 +22,7 @@
 
 网站页脚必须保留声明：
 
-> 本网站为南阳师范学院软件工程实验室自建展示站，非学校官方门户网站。
+> 本网站为南阳师范学院 Code Lab 实验室自建展示站，非学校官方门户网站。
 
 ## 技术栈约定
 
@@ -39,7 +39,7 @@
 | 密码加密 | BCrypt（通过 Sa-Token 内置或 Spring Security Crypto） |
 | 接口文档 | Knife4j / OpenAPI 3 |
 | 简化代码 | Lombok |
-| 基础包名 | `cn.edu.nynu.selab` |
+| 基础包名 | `cn.edu.nynu.codelab` |
 
 ### 前台 web
 
@@ -70,11 +70,11 @@
 ## 目录结构约定
 
 ```
-nynu-se-lab/
+nynu-code-lab/
 ├── backend/                 # Spring Boot 后端（端口 8080）
 │   ├── pom.xml
 │   ├── sql/                 # 数据库初始化脚本
-│   └── src/main/java/cn/edu/nynu/selab/
+│   └── src/main/java/cn/edu/nynu/codelab/
 │       ├── common/          # Result, GlobalExceptionHandler
 │       ├── config/          # CORS, MyBatis-Plus, Sa-Token
 │       ├── auth/            # 认证：注册、登录、获取当前用户
@@ -131,7 +131,7 @@ nynu-se-lab/
 每个业务模块按如下结构组织：
 
 ```
-cn.edu.nynu.selab.<module>/
+cn.edu.nynu.codelab.<module>/
 ├── controller/    # 接口控制器
 ├── service/       # 业务接口
 │   └── impl/      # 业务实现
@@ -353,8 +353,8 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `feature/init-project-skeleton` |
-| 阶段 | 第一阶段 - 基础框架（已完成）+ 容器化改造（已完成） |
+| 分支 | `chore/engineering-rename-nynu-code-lab` |
+| 阶段 | 工程重命名（当前） |
 | 后端 | Spring Boot 项目已初始化，认证闭环已实现（注册/登录/获取当前用户） |
 | 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心占位页已实现 |
 | 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理占位页已实现 |
@@ -384,7 +384,7 @@ AI 在每次开发任务完成后必须：
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:nynu_se_lab}?...
+    url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:nynu_code_lab}?...
     username: ${MYSQL_USER:nynu}
     password: ${MYSQL_PASSWORD:change_me}
 ```
@@ -406,6 +406,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 工程级重命名 | 旧工程标识 `nynu-se-lab` → 新工程标识 `nynu-code-lab`；正式展示名：南阳师范学院 Code Lab 实验室 / NYNU Code Lab；数据库名 `nynu_se_lab` → `nynu_code_lab`；Java 包名 `cn.edu.nynu.selab` → `cn.edu.nynu.codelab`；Maven artifactId `selab-backend` → `nynu-code-lab-backend`；前端 package name 同步更新；Docker container/network/image name 同步更新；根目录从 `nynu-se-lab` 重命名为 `nynu-code-lab`；Docker service key 保留不变（mysql/redis/backend/nginx）；Git remote 已更新为 `git@gitee.com:zeng-bohan-66/nynu-code-lab.git`；README/AGENTS/docs 全部同步更新；三模块构建验证通过 |
 | 2026-06-22 | 容器化验收 + 提交固定 | 全链路验收通过：docker compose config ✅ / 4容器正常启动 ✅ / backend 1.749s 启动 ✅ / /api/health 200 ✅ / web 200 ✅ / admin-web 200 ✅ / localhost残留检查通过 ✅ / .gitignore 敏感文件排除 ✅ / MyBatisPlusSpringFix 兼容性修复确认有效 / Spring Boot 3.3.7 + MyBatis-Plus 3.5.16 / 提交 chore: add dockerized development environment |
 | 2026-06-22 | 容器化改造 | 拆分 application.yml 为 local/docker profile；新增 GET /api/health 健康检查；创建 backend/web/admin-web/deploy/nginx 四个 Dockerfile；创建 deploy/docker-compose.yml（MySQL + Redis + Backend + Nginx）；创建 Nginx 统一托管配置；创建 .env.example；更新 .gitignore；更新 README.md / AGENTS.md / deploy/README.md；修复 admin-web 路由 base 支持 /admin/ 路径 |
 | 2026-06-22 | 第一阶段项目骨架初始化 | 创建后端(Spring Boot)、前台(Vue3)、后台(Vue3+ElementPlus)三个项目，完成注册/登录/获取当前用户认证闭环，62个文件 |
@@ -423,6 +424,7 @@ docker compose ps                  # 确认所有服务运行
 
 ## 下一步建议
 
+0. 完成工程重命名分支的提交、推送、代码审查与合并
 1. 实现完整的招新报名流程（提交报名 → 我的报名 → 后台审核）
 2. 创建 `lab_apply_record` 表并生成对应实体/Mapper/Service
 3. 完善修改密码和退出登录功能

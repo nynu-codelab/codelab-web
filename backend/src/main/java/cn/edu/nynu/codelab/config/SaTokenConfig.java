@@ -1,10 +1,10 @@
-package cn.edu.nynu.selab.config;
+package cn.edu.nynu.codelab.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.nynu.selab.user.entity.User;
-import cn.edu.nynu.selab.user.mapper.UserMapper;
+import cn.edu.nynu.codelab.user.entity.User;
+import cn.edu.nynu.codelab.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Sa-Token 配置
  *
- * @author NYNU SE Lab
+ * @author NYNU Code Lab
  */
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer, StpInterface {

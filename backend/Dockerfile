@@ -1,8 +1,8 @@
 # ============================================================
-# NYNU SE Lab 后端 Dockerfile — 多阶段构建
+# NYNU Code Lab 后端 Dockerfile — 多阶段构建
 # ============================================================
-# 构建：docker build -t nynu-se-lab-backend .
-# 运行：docker run -e SPRING_PROFILES_ACTIVE=docker -p 8080:8080 nynu-se-lab-backend
+# 构建：docker build -t nynu-code-lab-backend .
+# 运行：docker run -e SPRING_PROFILES_ACTIVE=docker -p 8080:8080 nynu-code-lab-backend
 # ============================================================
 
 # --- Stage 1: Maven 构建 ---
