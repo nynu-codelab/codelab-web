@@ -363,8 +363,8 @@ AI 在每次开发任务完成后必须：
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
 | 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅ |
-| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环待运行 |
-| 稳定 tag | stable-after-article-regression-20260622 |
+| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
+| 稳定 tag | stable-after-project-showcase-20260622 |
 
 ## 容器化开发规范
 
