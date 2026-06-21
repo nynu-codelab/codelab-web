@@ -304,16 +304,29 @@ docker compose logs
 | 入口 | 地址 |
 |------|------|
 | 前台首页 | http://localhost |
+| 实验室介绍 | http://localhost/about |
+| 技术方向 | http://localhost/directions |
+| 核心成员 | http://localhost/members |
+| 项目成果 | http://localhost/projects |
+| 学习文章 | http://localhost/articles |
 | 前台注册 | http://localhost/register |
 | 前台登录 | http://localhost/login |
 | 招新报名 | http://localhost/recruit（需登录） |
 | 我的报名 | http://localhost/my-application（需登录） |
-| 个人中心 | http://localhost/user（需登录） |
-| 文章列表 | http://localhost/articles |
+| 个人中心 | http://localhost/profile（需登录，`/user` 兼容旧路径） |
+| 联系我们 | http://localhost/contact |
+| 视觉预览保留页 | http://localhost/design-preview |
 | 文章详情 | http://localhost/articles/{id} |
+| 项目详情 | http://localhost/projects/{id} |
 | 后台登录 | http://localhost/admin/login |
+| 后台数据概览 | http://localhost/admin/dashboard（需管理员） |
 | 后台报名管理 | http://localhost/admin/recruit（需管理员） |
 | 后台文章管理 | http://localhost/admin/articles（需管理员） |
+| 后台项目管理 | http://localhost/admin/projects（需管理员） |
+| 后台成员管理占位 | http://localhost/admin/members（需管理员） |
+| 后台方向管理占位 | http://localhost/admin/directions（需管理员） |
+| 后台站点配置占位 | http://localhost/admin/site（需管理员） |
+| 后台文件上传占位 | http://localhost/admin/upload（需管理员） |
 | API 文档 | http://localhost/doc.html |
 
 ### 核心接口说明
@@ -488,12 +501,36 @@ http://localhost/design-preview
 
 新增依赖：无。当前预览页完全使用 Vue 3 + CSS 实现，避免为了背景动效引入过重依赖。
 
-后续如确认该视觉方向，可按以下顺序推广到全站：
+该方向已在 `refactor/apply-high-impact-frontend` 分支推广到正式前台和后台，但 `/design-preview` 仍保留为视觉参考页，便于后续对照设计方向。
 
-1. 将 `design-tokens.css` 沉淀为前台正式设计变量。
-2. 将导航、页脚、按钮、卡片、动效容器抽成正式公共组件。
-3. 先重构正式首页，再逐步迁移项目、文章、招新、个人中心等页面。
-4. 后台管理端保留 Element Plus，但可同步统一色彩、间距、密度和品牌识别。
+### 正式高冲击前端视觉系统
+
+当前正式前台已将预览方向推广到以下页面：
+
+- `/`、`/about`、`/directions`、`/members`、`/projects`、`/projects/{id}`
+- `/articles`、`/articles/{id}`、`/recruit`、`/my-application`
+- `/login`、`/register`、`/profile`（`/user` 兼容旧路径）、`/contact`、404
+
+后台管理端保留 Element Plus，不混用其他 UI 组件库，并同步改造：
+
+- `/admin/login`、`/admin/dashboard`、`/admin/users`
+- `/admin/recruit`、`/admin/articles`、`/admin/projects`
+- `/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 占位入口
+
+实现策略：
+
+- 前台沉淀 `web/src/styles/design-tokens.css`、`animations.css`、`markdown.css` 和 `components/app/*` 复用组件。
+- 后台新增 `admin-web/src/styles/design-tokens.css` 与 `admin.css`，通过 Element Plus 变量和全局选择器统一表格、弹窗、表单和按钮质感。
+- 动效继续以 CSS 为主：动态网格、光晕、扫描线、鼠标跟随光效、滚动进入动画、按钮流光、卡片轻微浮起。
+- 所有动效遵守 `prefers-reduced-motion`，移动端降低 hover 和背景动效强度。
+- 未新增运行时依赖；本次没有引入 GSAP、Three.js 或新的 UI 组件库。
+
+继续推进到全站深水区时建议：
+
+1. 接入成员、方向、站点配置和文件上传真实接口后，把占位页替换为真实管理页面。
+2. 为文章和项目列表增加分页、分类筛选和更稳定的空状态。
+3. 对后台表格密度、批量操作、审核流转和草稿编辑体验做专项 UX 打磨。
+4. 补充 E2E 页面级回归，覆盖登录、报名、文章、项目和后台审核的主要点击路径。
 
 ### 数据库初始化说明
 
@@ -581,7 +618,7 @@ bash scripts/verify-project-flow.sh
 
 ## 当前未实现模块
 
-截至第六阶段验收，成员管理、技术方向管理、站点配置和文件上传仍未实现；前台 `/contact`、`/members`、`/directions`、`/about` 尚无真实 Vue 路由页面。项目封面、文章封面和 Markdown 图片当前仅支持外部 URL 字段，不支持本地上传。
+截至本次高冲击视觉推广，前台 `/about`、`/directions`、`/members`、`/contact` 已有正式 Vue 路由页面；后台 `/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 已有占位路由。成员管理、技术方向管理、站点配置和文件上传对应后端接口仍未实现，因此这些页面不接真实数据。项目封面、文章封面和 Markdown 图片当前仅支持外部 URL 字段，不支持本地上传。
 
 文件上传模块未实现，因此当前不存在上传目录、上传静态资源路径或上传文件入库逻辑；生产环境不要把用户上传文件提交到 Git。
 

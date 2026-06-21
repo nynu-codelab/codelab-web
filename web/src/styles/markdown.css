@@ -1,0 +1,117 @@
+.app-markdown {
+  color: var(--app-soft);
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.app-markdown :where(h1, h2, h3, h4) {
+  color: var(--app-text-strong);
+  margin-top: 34px;
+  margin-bottom: 16px;
+  font-weight: 720;
+  line-height: 1.3;
+}
+
+.app-markdown h1 {
+  font-size: 30px;
+}
+
+.app-markdown h2 {
+  font-size: 25px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(153, 217, 255, 0.14);
+}
+
+.app-markdown h3 {
+  font-size: 21px;
+}
+
+.app-markdown h4 {
+  font-size: 18px;
+}
+
+.app-markdown p,
+.app-markdown ul,
+.app-markdown ol,
+.app-markdown blockquote,
+.app-markdown pre,
+.app-markdown table {
+  margin-bottom: 18px;
+}
+
+.app-markdown ul,
+.app-markdown ol {
+  padding-left: 24px;
+}
+
+.app-markdown li {
+  margin-bottom: 7px;
+}
+
+.app-markdown code {
+  padding: 2px 7px;
+  border: 1px solid rgba(83, 231, 255, 0.14);
+  border-radius: 6px;
+  color: var(--app-cyan);
+  background: rgba(83, 231, 255, 0.08);
+  font-family: var(--app-font-data);
+  font-size: 13px;
+}
+
+.app-markdown pre {
+  overflow-x: auto;
+  padding: 20px 22px;
+  border: 1px solid rgba(153, 217, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(3, 9, 16, 0.78);
+}
+
+.app-markdown pre code {
+  padding: 0;
+  border: 0;
+  color: var(--app-text);
+  background: transparent;
+}
+
+.app-markdown blockquote {
+  padding: 14px 18px;
+  border-left: 3px solid var(--app-cyan);
+  border-radius: 0 var(--app-radius-sm) var(--app-radius-sm) 0;
+  color: var(--app-soft);
+  background: rgba(83, 231, 255, 0.06);
+}
+
+.app-markdown a {
+  color: var(--app-cyan);
+  border-bottom: 1px solid rgba(83, 231, 255, 0.28);
+}
+
+.app-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: var(--app-radius-sm);
+}
+
+.app-markdown th,
+.app-markdown td {
+  border: 1px solid rgba(153, 217, 255, 0.14);
+  padding: 11px 14px;
+  text-align: left;
+}
+
+.app-markdown th {
+  color: var(--app-text-strong);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.app-markdown hr {
+  border: 0;
+  border-top: 1px solid rgba(153, 217, 255, 0.14);
+  margin: 34px 0;
+}
+
+.app-markdown img {
+  max-width: 100%;
+  border-radius: var(--app-radius);
+}

@@ -1,7 +1,11 @@
 <template>
-  <div class="projects-page">
+  <div class="projects-page admin-page">
     <div class="page-header">
-      <h2 class="page-title">项目管理</h2>
+      <div>
+        <span class="admin-page-kicker">Projects</span>
+        <h2 class="page-title">项目管理</h2>
+        <p class="admin-page-copy">维护项目草稿、发布、下架、删除和首页精选展示。</p>
+      </div>
       <el-button type="primary" @click="showCreate">新建项目</el-button>
     </div>
 
@@ -367,9 +371,9 @@ onMounted(() => {
 }
 
 .page-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #303133;
+  font-size: 26px;
+  font-weight: 780;
+  color: var(--admin-text-strong);
   margin: 0;
 }
 

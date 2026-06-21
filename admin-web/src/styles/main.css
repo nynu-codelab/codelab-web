@@ -1,3 +1,6 @@
+@import "./design-tokens.css";
+@import "./admin.css";
+
 *,
 *::before,
 *::after {
@@ -12,8 +15,8 @@ body {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   font-size: 14px;
-  color: #303133;
-  background-color: #f5f7fa;
+  color: var(--admin-text);
+  background-color: var(--admin-bg);
 }
 
 #app {

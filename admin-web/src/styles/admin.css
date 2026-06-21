@@ -1,0 +1,173 @@
+body {
+  color: var(--admin-text);
+  background:
+    radial-gradient(circle at 14% 10%, rgba(83, 231, 255, 0.16), transparent 28rem),
+    radial-gradient(circle at 86% 8%, rgba(169, 139, 255, 0.13), transparent 30rem),
+    linear-gradient(135deg, var(--admin-bg), var(--admin-bg-2) 54%, #05070c);
+}
+
+.admin-page {
+  min-height: 100%;
+}
+
+.admin-page-header,
+.page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.admin-page-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--admin-cyan);
+  font-family: var(--admin-font-data);
+  font-size: 12px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.admin-page-kicker::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor);
+}
+
+.page-title,
+.admin-page-title {
+  color: var(--admin-text-strong) !important;
+  font-size: 26px !important;
+  font-weight: 780 !important;
+  line-height: 1.18;
+  margin: 0 !important;
+}
+
+.admin-page-copy {
+  max-width: 680px;
+  margin-top: 8px;
+  color: var(--admin-muted);
+  line-height: 1.7;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius);
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(18px);
+}
+
+.admin-empty-panel {
+  display: grid;
+  gap: 12px;
+  min-height: 260px;
+  align-content: center;
+  padding: 32px;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius);
+  color: var(--admin-muted);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--admin-surface);
+  box-shadow: var(--admin-shadow);
+}
+
+.admin-empty-panel h3 {
+  color: var(--admin-text-strong);
+  font-size: 24px;
+}
+
+.el-card {
+  border: 1px solid var(--admin-line) !important;
+  border-radius: var(--admin-radius) !important;
+  color: var(--admin-text);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--admin-surface) !important;
+  box-shadow: var(--admin-shadow) !important;
+  backdrop-filter: blur(22px);
+}
+
+.el-card__header {
+  border-bottom-color: var(--admin-line) !important;
+}
+
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: rgba(83, 231, 255, 0.08);
+  --el-table-header-text-color: var(--admin-text-strong);
+  --el-table-text-color: var(--admin-text);
+  --el-table-border-color: rgba(153, 217, 255, 0.12);
+  --el-table-row-hover-bg-color: rgba(83, 231, 255, 0.08);
+  background: transparent !important;
+}
+
+.el-table th.el-table__cell,
+.el-table tr,
+.el-table td.el-table__cell {
+  background: transparent !important;
+}
+
+.el-dialog {
+  --el-dialog-bg-color: rgba(10, 17, 28, 0.98);
+  --el-text-color-primary: var(--admin-text-strong);
+  --el-text-color-regular: var(--admin-text);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius) !important;
+  box-shadow: var(--admin-shadow);
+}
+
+.el-dialog__header,
+.el-dialog__footer {
+  border-color: var(--admin-line);
+}
+
+.el-form-item__label,
+.el-descriptions__label {
+  color: var(--admin-muted) !important;
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  border: 1px solid rgba(153, 217, 255, 0.16) !important;
+  border-radius: var(--admin-radius-sm) !important;
+  background: rgba(4, 10, 18, 0.72) !important;
+  box-shadow: none !important;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  color: var(--admin-text) !important;
+}
+
+.el-button--primary {
+  border-color: rgba(83, 231, 255, 0.58) !important;
+  color: #041017 !important;
+  background: linear-gradient(135deg, var(--admin-cyan), var(--admin-teal)) !important;
+  box-shadow: 0 16px 44px rgba(47, 240, 182, 0.18);
+}
+
+.el-button:not(.el-button--primary):not(.is-link) {
+  border-color: rgba(153, 217, 255, 0.2) !important;
+  color: var(--admin-text) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+@media (max-width: 720px) {
+  .admin-page-header,
+  .page-header {
+    display: grid;
+    align-items: start;
+  }
+}

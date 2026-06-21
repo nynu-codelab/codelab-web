@@ -274,6 +274,26 @@ HTTPS 证书
 
 不建议做得过于官方、陈旧或像普通学院通知网站。
 
+当前高冲击视觉方向已确认并推广到正式前台与后台管理端：
+
+```text
+高端深色科技感
+年轻技术团队
+工程指挥舱气质
+动态光网与终端窗口
+玻璃拟态卡片
+清爽但不寡淡
+```
+
+实现要求：
+
+- 前台使用统一设计 token、动态背景、玻璃卡片、滚动进入动画、按钮流光和 Markdown 阅读样式。
+- 后台继续统一使用 Element Plus，不引入第二套 UI 组件库，通过后台设计 token 统一壳层、表格、弹窗、表单和按钮视觉。
+- 动效优先使用 CSS，不为了背景或装饰引入过重依赖；当前不使用 GSAP、Three.js。
+- 移动端必须可用，不横向溢出，动画可降级。
+- 尊重 `prefers-reduced-motion`。
+- 不编造真实成员姓名、真实联系方式、虚假成员数量或虚假项目数据。
+
 ### 5.1 前台页面清单
 
 第一版前台页面包括：
@@ -1618,9 +1638,10 @@ Token 统一处理
 
 ```text
 ✅ 首页已整合招新入口、学习文章、精选项目和页脚非官方声明
+✅ 前台 /about、/directions、/members、/contact 已补齐正式 Vue 路由页面
+✅ 后台 /admin/members、/admin/directions、/admin/site、/admin/upload 已补齐占位路由
 ✅ Docker Compose / Nginx / 环境变量 / 数据库初始化文档已具备基础部署说明
 🔲 站点配置管理未实现
-🔲 联系我们独立页面未实现
 🔲 成员管理未实现
 🔲 技术方向管理未实现
 🔲 文件上传未实现
@@ -1636,6 +1657,17 @@ Token 统一处理
 
 ### 16.8 当前版本信息
 
-- **分支**：`release/mvp-production-readiness`
-- **标签**：`stable-after-project-showcase-20260622`（当前最新稳定 tag，待第六阶段验收完成后更新）
-- **验证状态**：招募 18/18 ✅ / 文章 23/23 ✅ / 项目成果 21/21 ✅
+- **分支**：`refactor/apply-high-impact-frontend`
+- **标签**：`stable-mvp-production-ready-20260622`（稳定基线 tag；当前分支为视觉推广重构分支，未合并 main）
+- **验证状态**：招募 18/18 ✅ / 文章 23/23 ✅ / 项目成果 21/21 ✅ / 前台构建 ✅ / 后台构建 ✅ / 后端打包 ✅ / Docker Compose ✅
+
+### 16.9 高冲击视觉正式推广（2026-06-22）
+
+```text
+✅ 保留 /design-preview 作为视觉参考页
+✅ 前台正式页面应用高冲击视觉系统：/、/about、/directions、/members、/projects、/articles、/recruit、/my-application、/login、/register、/profile、/contact、404
+✅ 后台管理端应用同一品牌方向：登录、管理壳层、数据概览、用户、报名、文章、项目、成员/方向/站点/上传占位页
+✅ 后端接口字段、接口路径、数据库字段、Docker Compose 核心配置未修改
+✅ 新增依赖：无
+✅ 无 Figma 链接，未使用 Figma
+```

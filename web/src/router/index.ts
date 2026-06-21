@@ -15,6 +15,26 @@ const router = createRouter({
       component: () => import('@/views/design/DesignPreviewView.vue')
     },
     {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/AboutView.vue')
+    },
+    {
+      path: '/directions',
+      name: 'directions',
+      component: () => import('@/views/DirectionsView.vue')
+    },
+    {
+      path: '/members',
+      name: 'members',
+      component: () => import('@/views/MembersView.vue')
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('@/views/ContactView.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue')
@@ -27,6 +47,12 @@ const router = createRouter({
     {
       path: '/user',
       name: 'user',
+      component: () => import('@/views/UserCenterView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
       component: () => import('@/views/UserCenterView.vue'),
       meta: { requiresAuth: true }
     },
@@ -61,6 +87,11 @@ const router = createRouter({
       path: '/projects/:id',
       name: 'projectDetail',
       component: () => import('@/views/projects/ProjectDetailView.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: () => import('@/views/NotFoundView.vue')
     }
   ]
 })

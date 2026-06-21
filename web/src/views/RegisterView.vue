@@ -1,140 +1,119 @@
 <template>
-  <div class="register-page">
-    <div class="register-card">
-      <h2 class="card-title">注册</h2>
-      <p class="card-subtitle">加入 Code Lab 实验室</p>
-
-      <form class="register-form" @submit.prevent="handleSubmit">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="username">用户名 <span class="required">*</span></label>
-            <input
-              id="username"
-              v-model.trim="form.username"
-              type="text"
-              placeholder="请输入用户名"
-              autocomplete="username"
-            />
-            <span class="field-error" v-if="errors.username">{{ errors.username }}</span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="password">密码 <span class="required">*</span></label>
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              placeholder="请输入密码（至少6位）"
-              autocomplete="new-password"
-            />
-            <span class="field-error" v-if="errors.password">{{ errors.password }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword">确认密码 <span class="required">*</span></label>
-            <input
-              id="confirmPassword"
-              v-model="form.confirmPassword"
-              type="password"
-              placeholder="请再次输入密码"
-              autocomplete="new-password"
-            />
-            <span class="field-error" v-if="errors.confirmPassword">{{ errors.confirmPassword }}</span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="realName">姓名 <span class="required">*</span></label>
-            <input
-              id="realName"
-              v-model.trim="form.realName"
-              type="text"
-              placeholder="请输入真实姓名"
-            />
-            <span class="field-error" v-if="errors.realName">{{ errors.realName }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="phone">手机号 <span class="required">*</span></label>
-            <input
-              id="phone"
-              v-model.trim="form.phone"
-              type="text"
-              placeholder="请输入手机号"
-            />
-            <span class="field-error" v-if="errors.phone">{{ errors.phone }}</span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="grade">年级 <span class="required">*</span></label>
-            <select id="grade" v-model="form.grade">
-              <option value="" disabled>请选择年级</option>
-              <option v-for="g in gradeOptions" :key="g" :value="g">{{ g }}</option>
-            </select>
-            <span class="field-error" v-if="errors.grade">{{ errors.grade }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="major">专业 <span class="required">*</span></label>
-            <input
-              id="major"
-              v-model.trim="form.major"
-              type="text"
-              placeholder="请输入专业名称"
-            />
-            <span class="field-error" v-if="errors.major">{{ errors.major }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="className">班级 <span class="required">*</span></label>
-            <input
-              id="className"
-              v-model.trim="form.className"
-              type="text"
-              placeholder="请输入班级"
-            />
-            <span class="field-error" v-if="errors.className">{{ errors.className }}</span>
-          </div>
-        </div>
-
-        <p class="form-error" v-if="formError">{{ formError }}</p>
-        <p class="form-success" v-if="formSuccess">{{ formSuccess }}</p>
-
-        <button type="submit" class="btn-submit" :disabled="submitting">
-          {{ submitting ? '注册中...' : '注册' }}
-        </button>
-      </form>
-
-      <p class="switch-link">
-        已有账号？
-        <router-link to="/login">立即登录</router-link>
-      </p>
-
-      <p class="back-link">
-        <router-link to="/">&larr; 返回首页</router-link>
-      </p>
+  <AuthShell
+    eyebrow="Create Account"
+    title="注册账号"
+    description="先创建账号，再登录系统提交招新报名信息。"
+  >
+    <div class="auth-card__header">
+      <h2>加入 NYNU Code Lab</h2>
+      <p>请填写真实基础信息，用于报名与审核流程。</p>
     </div>
-  </div>
+
+    <form class="form-panel" @submit.prevent="handleSubmit">
+      <div class="form-field">
+        <label for="username">用户名 <span class="required">*</span></label>
+        <input
+          id="username"
+          v-model.trim="form.username"
+          type="text"
+          placeholder="请输入用户名"
+          autocomplete="username"
+        />
+        <span class="field-error" v-if="errors.username">{{ errors.username }}</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="password">密码 <span class="required">*</span></label>
+          <input
+            id="password"
+            v-model="form.password"
+            type="password"
+            placeholder="至少 6 位"
+            autocomplete="new-password"
+          />
+          <span class="field-error" v-if="errors.password">{{ errors.password }}</span>
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">确认密码 <span class="required">*</span></label>
+          <input
+            id="confirmPassword"
+            v-model="form.confirmPassword"
+            type="password"
+            placeholder="请再次输入密码"
+            autocomplete="new-password"
+          />
+          <span class="field-error" v-if="errors.confirmPassword">{{ errors.confirmPassword }}</span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="realName">姓名 <span class="required">*</span></label>
+          <input id="realName" v-model.trim="form.realName" type="text" placeholder="请输入真实姓名" />
+          <span class="field-error" v-if="errors.realName">{{ errors.realName }}</span>
+        </div>
+
+        <div class="form-field">
+          <label for="phone">手机号 <span class="required">*</span></label>
+          <input id="phone" v-model.trim="form.phone" type="text" placeholder="请输入手机号" />
+          <span class="field-error" v-if="errors.phone">{{ errors.phone }}</span>
+        </div>
+      </div>
+
+      <div class="form-grid three">
+        <div class="form-field">
+          <label for="grade">年级 <span class="required">*</span></label>
+          <select id="grade" v-model="form.grade">
+            <option value="" disabled>请选择年级</option>
+            <option v-for="g in gradeOptions" :key="g" :value="g">{{ g }}</option>
+          </select>
+          <span class="field-error" v-if="errors.grade">{{ errors.grade }}</span>
+        </div>
+
+        <div class="form-field">
+          <label for="major">专业 <span class="required">*</span></label>
+          <input id="major" v-model.trim="form.major" type="text" placeholder="请输入专业名称" />
+          <span class="field-error" v-if="errors.major">{{ errors.major }}</span>
+        </div>
+
+        <div class="form-field">
+          <label for="className">班级 <span class="required">*</span></label>
+          <input id="className" v-model.trim="form.className" type="text" placeholder="请输入班级" />
+          <span class="field-error" v-if="errors.className">{{ errors.className }}</span>
+        </div>
+      </div>
+
+      <p class="form-alert error" v-if="formError">{{ formError }}</p>
+      <p class="form-alert success" v-if="formSuccess">{{ formSuccess }}</p>
+
+      <AppButton
+        :label="submitting ? '注册中...' : '注册账号'"
+        type="submit"
+        size="lg"
+        :disabled="submitting"
+      />
+    </form>
+
+    <div class="auth-card__links">
+      <RouterLink to="/login">已有账号，立即登录</RouterLink>
+      <RouterLink to="/">返回首页</RouterLink>
+    </div>
+  </AuthShell>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AuthShell from '@/components/app/AuthShell.vue'
+import AppButton from '@/components/app/AppButton.vue'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const userStore = useUserStore()
-
 const currentYear = new Date().getFullYear()
-const gradeOptions = Array.from(
-  { length: 4 },
-  (_, i) => `${currentYear - i}级`
-)
+const gradeOptions = Array.from({ length: 4 }, (_, i) => `${currentYear - i}级`)
 
 const form = reactive({
   username: '',
@@ -164,7 +143,6 @@ const submitting = ref(false)
 
 function validate(): boolean {
   let valid = true
-  // Reset all errors
   for (const key of Object.keys(errors) as (keyof typeof errors)[]) {
     errors[key] = ''
   }
@@ -231,24 +209,13 @@ async function handleSubmit() {
 
   submitting.value = true
   try {
-    await userStore.register({
-      username: form.username,
-      password: form.password,
-      confirmPassword: form.confirmPassword,
-      realName: form.realName,
-      phone: form.phone,
-      grade: form.grade,
-      major: form.major,
-      className: form.className
-    })
-
+    await userStore.register({ ...form })
     formSuccess.value = '注册成功！正在跳转到登录页...'
     setTimeout(() => {
       router.push('/login')
-    }, 1500)
+    }, 1200)
   } catch (err: any) {
-    const msg = err?.response?.data?.message || err?.message || '注册失败'
-    formError.value = msg
+    formError.value = err?.response?.data?.message || err?.message || '注册失败'
   } finally {
     submitting.value = false
   }
@@ -256,175 +223,41 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
-.register-page {
-  min-height: 100vh;
+.auth-card__header {
+  margin-bottom: 24px;
+}
+
+.auth-card__header h2 {
+  color: var(--app-text-strong);
+  font-size: 28px;
+}
+
+.auth-card__header p {
+  margin-top: 8px;
+  color: var(--app-muted);
+}
+
+.form-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.auth-card__links {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: linear-gradient(160deg, #0d1b2a 0%, #13263a 50%, #0f1923 100%);
-}
-
-.register-card {
-  width: 100%;
-  max-width: 560px;
-  background-color: #1a2a3a;
-  border-radius: 12px;
-  padding: 40px 36px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.card-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: #ffffff;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.card-subtitle {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--app-muted);
   font-size: 14px;
-  color: #78909c;
-  text-align: center;
-  margin-bottom: 32px;
 }
 
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.auth-card__links a:hover {
+  color: var(--app-cyan);
 }
 
-.form-row {
-  display: flex;
-  gap: 16px;
-}
-
-.form-row > .form-group {
-  flex: 1;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-size: 14px;
-  color: #b0bec5;
-  font-weight: 500;
-}
-
-.required {
-  color: #ef5350;
-}
-
-.form-group input,
-.form-group select {
-  height: 44px;
-  padding: 0 14px;
-  border: 1px solid #37474f;
-  border-radius: 8px;
-  background-color: #0f1923;
-  color: #e0e0e0;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.form-group input::placeholder {
-  color: #546e7a;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #64b5f6;
-}
-
-.form-group select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2378909c' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  cursor: pointer;
-}
-
-.field-error {
-  font-size: 12px;
-  color: #ef5350;
-}
-
-.form-error {
-  font-size: 13px;
-  color: #ef5350;
-  text-align: center;
-  background-color: rgba(239, 83, 80, 0.08);
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.form-success {
-  font-size: 13px;
-  color: #66bb6a;
-  text-align: center;
-  background-color: rgba(102, 187, 106, 0.08);
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.btn-submit {
-  height: 44px;
-  border: none;
-  border-radius: 8px;
-  background-color: #64b5f6;
-  color: #0d1b2a;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 4px;
-}
-
-.btn-submit:hover:not(:disabled) {
-  background-color: #90caf9;
-}
-
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.switch-link {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
-  color: #78909c;
-}
-
-.switch-link a {
-  color: #64b5f6;
-  font-weight: 500;
-}
-
-.back-link {
-  text-align: center;
-  margin-top: 16px;
-  font-size: 13px;
-}
-
-.back-link a {
-  color: #546e7a;
-  transition: color 0.2s;
-}
-
-.back-link a:hover {
-  color: #b0bec5;
-}
-
-@media (max-width: 480px) {
-  .form-row {
-    flex-direction: column;
+@media (max-width: 760px) {
+  .form-grid.three {
+    grid-template-columns: 1fr;
   }
 }
 </style>
