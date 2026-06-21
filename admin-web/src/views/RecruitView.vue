@@ -1,6 +1,12 @@
 <template>
-  <div class="recruit-page">
-    <h2 class="page-title">报名管理</h2>
+  <div class="recruit-page admin-page">
+    <div class="admin-page-header">
+      <div>
+        <span class="admin-page-kicker">Applications</span>
+        <h2 class="admin-page-title">报名管理</h2>
+        <p class="admin-page-copy">查看报名信息、筛选审核状态，并完成管理员审核流程。</p>
+      </div>
+    </div>
 
     <!-- 筛选栏 -->
     <div class="filter-bar">
@@ -209,13 +215,6 @@ onMounted(() => {
   padding: 0;
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: #303133;
-}
-
 .filter-bar {
   margin-bottom: 16px;
 }
@@ -223,13 +222,13 @@ onMounted(() => {
 .review-section {
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--admin-line);
 }
 
 .review-section h4 {
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #303133;
+  color: var(--admin-text-strong);
 }
 </style>

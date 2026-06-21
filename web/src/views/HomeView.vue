@@ -1,397 +1,406 @@
 <template>
-  <div class="home">
-    <!-- 导航栏 -->
-    <header class="navbar">
-      <div class="navbar-inner">
-        <router-link to="/" class="logo">Code Lab</router-link>
-        <nav class="nav-links">
-          <router-link to="/">首页</router-link>
-          <a href="#">技术方向</a>
-          <router-link to="/projects">项目成果</router-link>
-          <router-link to="/articles">学习文章</router-link>
-          <router-link to="/recruit">招新报名</router-link>
-          <template v-if="userStore.isLoggedIn">
-            <router-link to="/user" class="btn-user">个人中心</router-link>
-            <a href="#" class="btn-logout" @click.prevent="handleLogout">退出</a>
-          </template>
-          <template v-else>
-            <router-link to="/login" class="btn-login">登录</router-link>
-            <router-link to="/register" class="btn-register">注册</router-link>
-          </template>
-        </nav>
+  <AppFrame>
+    <PageHero
+      eyebrow="NYNU Code Lab"
+      title="南阳师范学院 Code Lab 实验室"
+      description="专注项目实战、技术分享与工程能力培养，在真实开发中提升软件工程能力。"
+    >
+      <template #actions>
+        <AppButton label="立即报名" to="/recruit" size="lg" />
+        <AppButton label="查看项目" to="/projects" variant="secondary" size="lg" />
+        <AppButton label="阅读文章" to="/articles" variant="ghost" size="lg" />
+      </template>
+
+      <template #visual>
+        <div class="hero-terminal glass-card">
+          <div class="hero-terminal__bar">
+            <span></span>
+            <span></span>
+            <span></span>
+            <strong>code-lab.pipeline</strong>
+          </div>
+          <div class="hero-terminal__body">
+            <p><span>$</span> init student-engineering-workflow</p>
+            <p><span>></span> project_practice: active</p>
+            <p><span>></span> tech_sharing: continuous</p>
+            <p><span>></span> recruitment: open</p>
+          </div>
+          <div class="hero-terminal__orbit"></div>
+        </div>
+      </template>
+    </PageHero>
+
+    <AnimatedSection>
+      <div class="app-container app-grid four">
+        <MetricCard
+          v-for="metric in metrics"
+          :key="metric.label"
+          :value="metric.value"
+          :label="metric.label"
+          :caption="metric.caption"
+        />
       </div>
-    </header>
+    </AnimatedSection>
 
-    <!-- 主体内容 -->
-    <main class="hero">
-      <div class="hero-content">
-        <h1 class="hero-title">南阳师范学院 Code Lab 实验室</h1>
-        <p class="hero-subtitle">
-          探索软件工程前沿，培养卓越技术人才
-        </p>
-        <p class="hero-desc">
-          致力于软件工程理论与实践相结合，为学生提供一流的科研与创新平台。
-        </p>
+    <AnimatedSection>
+      <div class="app-container">
+        <div class="app-section-header">
+          <div>
+            <span class="app-eyebrow">Technical Tracks</span>
+            <h2 class="app-title-lg">围绕真实开发组织学习路径</h2>
+          </div>
+          <p class="app-copy">
+            以 Java 后端、前端开发、微信小程序为核心方向，人工智能与数据库运维作为拓展方向，
+            让同学在真实项目里建立工程化思维。
+          </p>
+        </div>
+        <div class="app-grid three">
+          <DirectionCard
+            v-for="item in directions"
+            :key="item.title"
+            v-bind="item"
+          />
+        </div>
       </div>
-    </main>
+    </AnimatedSection>
 
-    <!-- 精选项目 -->
-    <section class="featured-section">
-      <div class="featured-inner">
-        <div class="section-header">
-          <h2 class="section-title">精选项目</h2>
-          <router-link to="/projects" class="section-more">查看全部 →</router-link>
-        </div>
-
-        <div v-if="!loaded" class="featured-loading">
-          <span>加载中...</span>
-        </div>
-
-        <div v-else-if="projects.length === 0" class="featured-empty">
-          <span>暂无精选项目</span>
-        </div>
-
-        <div v-else class="featured-grid">
-          <div
-            v-for="item in projects"
-            :key="item.id"
-            class="featured-card"
-            @click="goProject(item.id)"
-          >
-            <div class="fc-cover">
-              <span v-if="!item.coverUrl" class="fc-placeholder">📁</span>
-              <img v-else :src="item.coverUrl" :alt="item.title" class="fc-image" />
-            </div>
-            <div class="fc-body">
-              <span v-if="item.projectType" class="fc-type">{{ item.projectType }}</span>
-              <h3 class="fc-title">{{ item.title }}</h3>
-              <p class="fc-summary">{{ item.summary || '暂无简介' }}</p>
-            </div>
+    <AnimatedSection>
+      <div class="app-container">
+        <div class="app-section-header">
+          <div>
+            <span class="app-eyebrow">Featured Projects</span>
+            <h2 class="app-title-lg">项目成果</h2>
+          </div>
+          <div class="section-actions">
+            <p class="app-copy">展示已发布的实验室项目成果，未伪造上线数据或成员数量。</p>
+            <AppButton label="全部项目" to="/projects" variant="secondary" />
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <div class="footer-inner">
-        <p class="footer-copy">&copy; {{ currentYear }} 南阳师范学院 Code Lab 实验室</p>
-        <p class="footer-disclaimer">
-          本网站为南阳师范学院 Code Lab 实验室自建展示站，非学校官方门户网站。
-        </p>
+        <StateView
+          v-if="projectsLoading"
+          title="正在加载项目"
+          message="正在读取已发布的精选项目数据。"
+        />
+        <StateView
+          v-else-if="projectError"
+          title="项目加载失败"
+          :message="projectError"
+        >
+          <template #actions>
+            <AppButton label="重新加载" variant="secondary" @click="fetchHomeData" />
+          </template>
+        </StateView>
+        <StateView
+          v-else-if="featuredProjects.length === 0"
+          title="暂无精选项目"
+          message="当前还没有配置精选项目，项目成果页可在后台发布后展示。"
+        >
+          <template #actions>
+            <AppButton label="查看项目页" to="/projects" variant="secondary" />
+          </template>
+        </StateView>
+        <div v-else class="app-grid three">
+          <ProjectCard
+            v-for="item in featuredProjects"
+            :key="item.id"
+            :title="item.title"
+            :summary="fallbackText(item.summary, '项目成果简介待完善')"
+            :type="item.projectType"
+            :to="`/projects/${item.id}`"
+            :cover-url="item.coverUrl"
+            :tags="parseList(item.techStack).slice(0, 4)"
+            :meta="item.featured ? '精选' : undefined"
+          />
+        </div>
       </div>
-    </footer>
-  </div>
+    </AnimatedSection>
+
+    <AnimatedSection>
+      <div class="app-container">
+        <div class="app-section-header">
+          <div>
+            <span class="app-eyebrow">Learning Notes</span>
+            <h2 class="app-title-lg">学习文章</h2>
+          </div>
+          <div class="section-actions">
+            <p class="app-copy">沉淀项目复盘、技术笔记和工程实践经验。</p>
+            <AppButton label="阅读全部" to="/articles" variant="secondary" />
+          </div>
+        </div>
+
+        <StateView
+          v-if="articlesLoading"
+          title="正在加载文章"
+          message="正在读取已发布的学习文章。"
+        />
+        <StateView
+          v-else-if="articleError"
+          title="文章加载失败"
+          :message="articleError"
+        />
+        <StateView
+          v-else-if="latestArticles.length === 0"
+          title="暂无学习文章"
+          message="文章发布后会在这里展示标题、标签、摘要和阅读入口。"
+        />
+        <div v-else class="app-grid three">
+          <ArticleCard
+            v-for="item in latestArticles"
+            :key="item.id"
+            :title="item.title"
+            :summary="fallbackText(item.summary, '文章摘要待完善')"
+            :category="item.category"
+            :published-at="item.publishedAt || item.createTime"
+            :tags="parseList(item.tags).slice(0, 4)"
+            :to="`/articles/${item.id}`"
+          />
+        </div>
+      </div>
+    </AnimatedSection>
+
+    <AnimatedSection>
+      <div class="app-container">
+        <div class="app-section-header">
+          <div>
+            <span class="app-eyebrow">Team Style</span>
+            <h2 class="app-title-lg">年轻技术团队的协作方式</h2>
+          </div>
+          <p class="app-copy">
+            成员展示模块后续对接真实数据前，正式页面只展示角色能力结构，不编造真实成员姓名或联系方式。
+          </p>
+        </div>
+        <div class="app-grid three">
+          <MemberCard
+            v-for="item in memberRoles"
+            :key="item.title"
+            v-bind="item"
+          />
+        </div>
+      </div>
+    </AnimatedSection>
+
+    <AnimatedSection>
+      <div class="app-container">
+        <RecruitCTA />
+      </div>
+    </AnimatedSection>
+  </AppFrame>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { onMounted, ref } from 'vue'
+import AppFrame from '@/components/app/AppFrame.vue'
+import AppButton from '@/components/app/AppButton.vue'
+import PageHero from '@/components/app/PageHero.vue'
+import AnimatedSection from '@/components/app/AnimatedSection.vue'
+import MetricCard from '@/components/app/MetricCard.vue'
+import DirectionCard from '@/components/app/DirectionCard.vue'
+import ProjectCard from '@/components/app/ProjectCard.vue'
+import ArticleCard from '@/components/app/ArticleCard.vue'
+import MemberCard from '@/components/app/MemberCard.vue'
+import RecruitCTA from '@/components/app/RecruitCTA.vue'
+import StateView from '@/components/app/StateView.vue'
+import { getArticles, type ArticleItem } from '@/api/article'
 import { getFeaturedProjects, type ProjectItem } from '@/api/project'
+import { fallbackText, parseList } from '@/utils/content'
 
-const router = useRouter()
-const userStore = useUserStore()
-const currentYear = computed(() => new Date().getFullYear())
+const metrics = [
+  { value: '3', label: '核心方向', caption: 'Java 后端、前端开发、微信小程序' },
+  { value: '多个', label: '真实项目', caption: '以项目成果和工程训练驱动成长' },
+  { value: '持续', label: '学习分享', caption: '通过文章和复盘沉淀实践经验' },
+  { value: '开放', label: '招新通道', caption: '注册登录后可提交报名并查看审核状态' }
+]
 
-const projects = ref<ProjectItem[]>([])
-const loaded = ref(false)
+const directions = [
+  {
+    index: '01',
+    title: 'Java 后端',
+    badge: '核心方向',
+    description: '围绕 Spring Boot、接口设计、权限认证、数据库建模和部署链路进行项目实战。',
+    tags: ['Java 17', 'Spring Boot', 'MyBatis-Plus', 'JWT']
+  },
+  {
+    index: '02',
+    title: '前端开发',
+    badge: '核心方向',
+    description: '从 Vue 3、TypeScript、组件化、状态管理到可访问的交互体验，面向真实产品构建页面。',
+    tags: ['Vue 3', 'TypeScript', 'Vite', 'Pinia']
+  },
+  {
+    index: '03',
+    title: '微信小程序',
+    badge: '核心方向',
+    description: '面向移动端场景完成界面、接口、登录态和发布链路的完整训练。',
+    tags: ['小程序', '移动端', '接口联调', '发布流程']
+  },
+  {
+    index: '04',
+    title: '人工智能',
+    badge: '拓展方向',
+    description: '以应用实践为目标，探索数据处理、模型调用与智能化功能原型。',
+    tags: ['AI 应用', '数据处理', '原型验证']
+  },
+  {
+    index: '05',
+    title: '数据库与运维',
+    badge: '拓展方向',
+    description: '理解 MySQL、Docker、Nginx、环境变量和上线前验证，补齐工程交付能力。',
+    tags: ['MySQL', 'Docker', 'Nginx', '部署']
+  }
+]
 
-function goProject(id: number) {
-  router.push(`/projects/${id}`)
-}
+const memberRoles = [
+  {
+    initials: 'BE',
+    role: '能力结构',
+    title: '后端与接口协作',
+    summary: '负责服务端设计、权限边界、数据模型和接口稳定性，支撑项目从功能到可部署。',
+    tags: ['API', 'Auth', 'Database']
+  },
+  {
+    initials: 'FE',
+    role: '能力结构',
+    title: '前端与体验实现',
+    summary: '负责页面工程、组件抽象、交互状态和响应式适配，让项目具备完整展示与使用体验。',
+    tags: ['UI', 'State', 'Responsive']
+  },
+  {
+    initials: 'PM',
+    role: '能力结构',
+    title: '项目推进与复盘',
+    summary: '围绕需求拆解、任务推进、代码评审和项目复盘建立团队协作节奏。',
+    tags: ['Planning', 'Review', 'Delivery']
+  }
+]
 
-async function fetchFeatured() {
+const featuredProjects = ref<ProjectItem[]>([])
+const latestArticles = ref<ArticleItem[]>([])
+const projectsLoading = ref(true)
+const articlesLoading = ref(true)
+const projectError = ref('')
+const articleError = ref('')
+
+async function fetchHomeData() {
+  projectsLoading.value = true
+  articlesLoading.value = true
+  projectError.value = ''
+  articleError.value = ''
+
   try {
-    const res = await getFeaturedProjects()
-    projects.value = res.data || []
-  } catch {
-    // silently fail for home page
+    const projectRes = await getFeaturedProjects()
+    featuredProjects.value = (projectRes.data || []).slice(0, 3)
+  } catch (err: any) {
+    projectError.value = err?.response?.data?.message || err?.message || '精选项目加载失败'
   } finally {
-    loaded.value = true
+    projectsLoading.value = false
+  }
+
+  try {
+    const articleRes = await getArticles()
+    latestArticles.value = (articleRes.data || []).slice(0, 3)
+  } catch (err: any) {
+    articleError.value = err?.response?.data?.message || err?.message || '学习文章加载失败'
+  } finally {
+    articlesLoading.value = false
   }
 }
 
-function handleLogout() {
-  userStore.logout()
-  router.push('/')
-}
-
-onMounted(() => {
-  fetchFeatured()
-})
+onMounted(fetchHomeData)
 </script>
 
 <style scoped>
-.home {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+.hero-terminal {
+  position: relative;
+  min-height: 360px;
+  padding: 22px;
 }
 
-/* 导航栏 */
-.navbar {
-  background-color: rgba(20, 30, 44, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: #64b5f6;
-  letter-spacing: 1px;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  font-size: 14px;
-}
-
-.nav-links a {
-  color: #b0bec5;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: #ffffff;
-}
-
-.btn-login,
-.btn-register,
-.btn-user,
-.btn-logout {
-  padding: 6px 18px;
-  border-radius: 6px;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.btn-login {
-  border: 1px solid #64b5f6;
-  color: #64b5f6;
-}
-
-.btn-login:hover {
-  background-color: rgba(100, 181, 246, 0.1);
-}
-
-.btn-register {
-  background-color: #64b5f6;
-  color: #0d1b2a;
-  font-weight: 600;
-}
-
-.btn-register:hover {
-  background-color: #90caf9;
-}
-
-.btn-user {
-  color: #64b5f6;
-}
-
-.btn-logout {
-  color: #ef5350;
-  border: 1px solid #ef5350;
-}
-
-.btn-logout:hover {
-  background-color: rgba(239, 83, 80, 0.1);
-}
-
-/* 主体 */
-.hero {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 60px 24px;
-  background: linear-gradient(
-    160deg,
-    #0d1b2a 0%,
-    #13263a 40%,
-    #0f1923 100%
-  );
-}
-
-.hero-content {
-  max-width: 680px;
-}
-
-.hero-title {
-  font-size: 42px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 20px;
-  letter-spacing: 2px;
-  line-height: 1.3;
-}
-
-.hero-subtitle {
-  font-size: 20px;
-  color: #64b5f6;
-  margin-bottom: 16px;
-  font-weight: 300;
-  letter-spacing: 1px;
-}
-
-.hero-desc {
-  font-size: 16px;
-  color: #78909c;
-  line-height: 1.8;
-}
-
-/* 精选项目 */
-.featured-section {
-  background-color: #0f1923;
-  padding: 64px 24px;
-}
-
-.featured-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 36px;
-}
-
-.section-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
-}
-
-.section-more {
-  font-size: 14px;
-  color: #64b5f6;
-  transition: color 0.2s;
-}
-
-.section-more:hover {
-  color: #90caf9;
-}
-
-.featured-loading,
-.featured-empty {
-  text-align: center;
-  padding: 40px 0;
-  color: #546e7a;
-  font-size: 14px;
-}
-
-.featured-grid {
+.hero-terminal__bar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.featured-card {
-  background-color: #1a2a3a;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.featured-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  border-color: rgba(100, 181, 246, 0.2);
-}
-
-.fc-cover {
-  height: 160px;
-  background: rgba(100, 181, 246, 0.05);
-  display: flex;
+  grid-template-columns: 10px 10px 10px minmax(0, 1fr);
+  gap: 8px;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(153, 217, 255, 0.12);
 }
 
-.fc-placeholder {
-  font-size: 40px;
-  color: rgba(255, 255, 255, 0.1);
+.hero-terminal__bar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--app-danger);
 }
 
-.fc-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.hero-terminal__bar span:nth-child(2) {
+  background: var(--app-amber);
 }
 
-.fc-body {
-  padding: 16px 20px 20px;
+.hero-terminal__bar span:nth-child(3) {
+  background: var(--app-success);
 }
 
-.fc-type {
+.hero-terminal__bar strong {
+  justify-self: end;
+  color: var(--app-muted);
+  font-family: var(--app-font-data);
   font-size: 12px;
-  color: #64b5f6;
-  background: rgba(100, 181, 246, 0.1);
-  padding: 2px 10px;
-  border-radius: 4px;
 }
 
-.fc-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 10px 0 8px;
-  line-height: 1.4;
+.hero-terminal__body {
+  display: grid;
+  gap: 16px;
+  padding-top: 28px;
+  color: var(--app-soft);
+  font-family: var(--app-font-data);
+  font-size: 14px;
 }
 
-.fc-summary {
-  font-size: 13px;
-  color: #78909c;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.hero-terminal__body p {
+  min-width: 0;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-/* 页脚 */
-.footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  background-color: #0a1520;
-  padding: 32px 24px;
-  text-align: center;
+.hero-terminal__body span {
+  margin-right: 12px;
+  color: var(--app-cyan);
 }
 
-.footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
+.hero-terminal__orbit {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  width: 132px;
+  height: 132px;
+  border: 1px solid rgba(83, 231, 255, 0.28);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(83, 231, 255, 0.34), transparent 44%),
+    conic-gradient(from 90deg, transparent, rgba(83, 231, 255, 0.64), transparent);
+  filter: drop-shadow(0 0 32px rgba(83, 231, 255, 0.28));
+  animation: orb-float 7s ease-in-out infinite;
 }
 
-.footer-copy {
-  font-size: 13px;
-  color: #546e7a;
-  margin-bottom: 8px;
+.section-actions {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
 }
 
-.footer-disclaimer {
-  font-size: 12px;
-  color: #455a64;
+@media (max-width: 640px) {
+  .hero-terminal {
+    min-height: 300px;
+  }
+
+  .hero-terminal__body {
+    font-size: 12px;
+  }
+
+  .hero-terminal__orbit {
+    width: 96px;
+    height: 96px;
+  }
 }
 </style>

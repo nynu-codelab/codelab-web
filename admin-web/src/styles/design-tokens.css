@@ -1,0 +1,20 @@
+:root {
+  --admin-bg: #06090f;
+  --admin-bg-2: #0b1220;
+  --admin-surface: rgba(13, 22, 34, 0.82);
+  --admin-surface-strong: rgba(17, 29, 45, 0.94);
+  --admin-line: rgba(153, 217, 255, 0.16);
+  --admin-line-strong: rgba(153, 217, 255, 0.3);
+  --admin-text: #eef7ff;
+  --admin-text-strong: #f8fcff;
+  --admin-muted: #9eb1c4;
+  --admin-cyan: #53e7ff;
+  --admin-teal: #2ff0b6;
+  --admin-blue: #75a7ff;
+  --admin-amber: #ffd36a;
+  --admin-danger: #ff6b8a;
+  --admin-radius-sm: 8px;
+  --admin-radius: 18px;
+  --admin-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  --admin-font-data: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+}

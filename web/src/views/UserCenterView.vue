@@ -1,103 +1,88 @@
 <template>
-  <div class="user-page">
-    <!-- 顶部导航 -->
-    <header class="navbar">
-      <div class="navbar-inner">
-        <router-link to="/" class="logo">软工实验室</router-link>
-        <router-link to="/" class="back-link">&larr; 返回首页</router-link>
-      </div>
-    </header>
+  <AppFrame>
+    <PageHero
+      eyebrow="Profile"
+      title="个人中心"
+      description="管理账号基础信息，查看招新报名记录与审核状态。"
+    >
+      <template #actions>
+        <AppButton label="我的报名" to="/my-application" />
+        <AppButton label="退出登录" variant="danger" @click="handleLogout" />
+      </template>
+    </PageHero>
 
-    <main class="user-main" v-if="userStore.userInfo">
-      <!-- 用户信息头部 -->
-      <section class="profile-header">
-        <div class="avatar">{{ avatarLetter }}</div>
-        <div class="profile-meta">
-          <h2 class="profile-name">{{ userStore.userInfo.realName }}</h2>
-          <p class="profile-username">@{{ userStore.userInfo.username }}</p>
+    <main class="profile-page app-container" v-if="userStore.userInfo">
+      <section class="profile-panel glass-card">
+        <div class="profile-panel__avatar">{{ avatarLetter }}</div>
+        <div class="profile-panel__meta">
+          <span class="app-eyebrow">Account</span>
+          <h2>{{ userStore.userInfo.realName }}</h2>
+          <p>@{{ userStore.userInfo.username }} · {{ userStore.userInfo.role }}</p>
         </div>
       </section>
 
-      <!-- 功能区块 -->
-      <section class="profile-grid">
-        <div class="profile-card">
-          <div class="card-icon" style="background-color: rgba(100, 181, 246, 0.15);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64b5f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </div>
-          <h3>我的资料</h3>
-          <p>查看和编辑个人资料信息</p>
-          <div class="card-detail">
-            <span>年级：{{ userStore.userInfo.grade }}</span>
-            <span>专业：{{ userStore.userInfo.major }}</span>
-            <span>班级：{{ userStore.userInfo.className }}</span>
-            <span>手机：{{ userStore.userInfo.phone }}</span>
-          </div>
-        </div>
+      <section class="app-grid four">
+        <article class="profile-card glass-card">
+          <span>年级</span>
+          <strong>{{ userStore.userInfo.grade || '-' }}</strong>
+        </article>
+        <article class="profile-card glass-card">
+          <span>专业</span>
+          <strong>{{ userStore.userInfo.major || '-' }}</strong>
+        </article>
+        <article class="profile-card glass-card">
+          <span>班级</span>
+          <strong>{{ userStore.userInfo.className || '-' }}</strong>
+        </article>
+        <article class="profile-card glass-card">
+          <span>手机号</span>
+          <strong>{{ userStore.userInfo.phone || '-' }}</strong>
+        </article>
+      </section>
 
-        <router-link to="/my-application" class="profile-card card-link">
-          <div class="card-icon" style="background-color: rgba(129, 199, 132, 0.15);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#81c784" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-            </svg>
-          </div>
+      <section class="app-grid three profile-actions">
+        <RouterLink to="/my-application" class="action-card glass-card is-hoverable">
+          <span class="status-pill">报名流程</span>
           <h3>我的报名</h3>
-          <p>查看招新报名记录和状态</p>
-        </router-link>
-
-        <div class="profile-card">
-          <div class="card-icon" style="background-color: rgba(255, 183, 77, 0.15);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
+          <p>查看招新报名记录、审核备注和当前审核状态。</p>
+        </RouterLink>
+        <RouterLink to="/recruit" class="action-card glass-card is-hoverable">
+          <span class="status-pill">招新入口</span>
+          <h3>提交报名</h3>
+          <p>如果还没有报名记录，可以进入招新页面填写并提交。</p>
+        </RouterLink>
+        <article class="action-card glass-card">
+          <span class="status-pill warning">待实现</span>
           <h3>修改密码</h3>
-          <p>更改账户登录密码</p>
-          <span class="card-placeholder">功能开发中</span>
-        </div>
-
-        <div
-          class="profile-card card-logout"
-          @click="handleLogout"
-        >
-          <div class="card-icon" style="background-color: rgba(239, 83, 80, 0.15);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </div>
-          <h3>退出登录</h3>
-          <p>安全退出当前账户</p>
-        </div>
+          <p>需求文档已规划修改密码接口，当前后端接口尚未实现。</p>
+        </article>
       </section>
     </main>
 
-    <!-- 加载中 -->
-    <main class="user-main loading" v-else>
-      <p>加载中...</p>
+    <main class="profile-page app-container narrow" v-else>
+      <StateView title="正在加载用户信息" message="正在读取当前登录用户信息。" />
     </main>
-  </div>
+  </AppFrame>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import AppFrame from '@/components/app/AppFrame.vue'
+import PageHero from '@/components/app/PageHero.vue'
+import AppButton from '@/components/app/AppButton.vue'
+import StateView from '@/components/app/StateView.vue'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const userStore = useUserStore()
 
 const avatarLetter = computed(() => {
-  const name = userStore.userInfo?.realName || ''
-  return name ? name.charAt(name.length - 1) : '?'
+  const name = userStore.userInfo?.realName || userStore.userInfo?.username || ''
+  return name ? name.charAt(0).toUpperCase() : 'CL'
 })
 
-async function handleLogout() {
+function handleLogout() {
   userStore.logout()
   router.push('/')
 }
@@ -107,175 +92,92 @@ onMounted(async () => {
     try {
       await userStore.fetchMe()
     } catch {
-      // fetchMe failed — likely not logged in, guard will redirect
+      userStore.logout()
+      router.push('/login')
     }
   }
 })
 </script>
 
 <style scoped>
-.user-page {
-  min-height: 100vh;
-  background: linear-gradient(160deg, #0d1b2a 0%, #13263a 50%, #0f1923 100%);
-}
-
-/* 导航栏 */
-.navbar {
-  background-color: rgba(20, 30, 44, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: #64b5f6;
-  letter-spacing: 1px;
-}
-
-.back-link {
-  font-size: 13px;
-  color: #546e7a;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: #b0bec5;
-}
-
-/* 主体 */
-.user-main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 24px 60px;
-}
-
-.user-main.loading {
-  text-align: center;
-  color: #78909c;
-  padding-top: 120px;
-}
-
-/* 用户头部 */
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 40px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #64b5f6, #1976d2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
-.profile-name {
-  font-size: 22px;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 4px;
-}
-
-.profile-username {
-  font-size: 14px;
-  color: #78909c;
-}
-
-/* 卡片网格 */
-.profile-grid {
+.profile-page {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 22px;
+  padding: 0 0 92px;
 }
 
-.profile-card {
-  background-color: #1a2a3a;
-  border-radius: 12px;
-  padding: 28px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  transition: border-color 0.2s, transform 0.2s;
-}
-
-.profile-card:hover {
-  transform: translateY(-2px);
-}
-
-.card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+.profile-panel {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
+  gap: 22px;
+  padding: 28px;
 }
 
-.profile-card h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #e0e0e0;
-  margin-bottom: 6px;
+.profile-panel__avatar {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  border: 1px solid rgba(83, 231, 255, 0.42);
+  border-radius: 24px;
+  color: #041017;
+  background: linear-gradient(135deg, var(--app-cyan), var(--app-teal));
+  box-shadow: 0 0 42px rgba(83, 231, 255, 0.24);
+  font-family: var(--app-font-data);
+  font-size: 28px;
+  font-weight: 860;
 }
 
-.profile-card > p {
+.profile-panel__meta h2 {
+  color: var(--app-text-strong);
+  font-size: clamp(28px, 4vw, 42px);
+}
+
+.profile-panel__meta p {
+  color: var(--app-muted);
+}
+
+.profile-card,
+.action-card {
+  padding: 24px;
+}
+
+.profile-card span {
+  color: var(--app-muted);
   font-size: 13px;
-  color: #78909c;
-  margin-bottom: 12px;
 }
 
-.card-detail {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 13px;
-  color: #b0bec5;
-}
-
-.card-placeholder {
-  font-size: 13px;
-  color: #546e7a;
-}
-
-.card-logout {
-  cursor: pointer;
-}
-
-.card-link {
+.profile-card strong {
   display: block;
+  margin-top: 8px;
+  color: var(--app-text-strong);
+  font-size: 20px;
+  word-break: break-word;
 }
 
-.card-link:hover {
-  border-color: rgba(100, 181, 246, 0.3);
+.profile-actions {
+  margin-top: 8px;
 }
 
-.card-logout:hover {
-  border-color: rgba(239, 83, 80, 0.3);
+.action-card {
+  display: grid;
+  gap: 14px;
+  color: inherit;
 }
 
-@media (max-width: 640px) {
-  .profile-grid {
-    grid-template-columns: 1fr;
+.action-card h3 {
+  color: var(--app-text-strong);
+  font-size: 22px;
+}
+
+.action-card p {
+  color: var(--app-muted);
+  line-height: 1.75;
+}
+
+@media (max-width: 620px) {
+  .profile-panel {
+    display: grid;
   }
 }
 </style>

@@ -1,6 +1,12 @@
 <template>
-  <div class="users-page">
-    <h2 class="page-title">用户管理</h2>
+  <div class="users-page admin-page">
+    <div class="admin-page-header">
+      <div>
+        <span class="admin-page-kicker">Users</span>
+        <h2 class="admin-page-title">用户管理</h2>
+        <p class="admin-page-copy">用户管理接口尚未实现，当前保留占位表格，不接入虚假数据。</p>
+      </div>
+    </div>
 
     <el-card shadow="never">
       <el-table :data="[]" empty-text="暂无用户数据">
@@ -20,18 +26,5 @@
 </template>
 
 <script setup lang="ts">
-// Placeholder — will be implemented when backend APIs are ready
+// Placeholder: backend user management APIs are not implemented yet.
 </script>
-
-<style scoped>
-.users-page {
-  padding: 0;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: #303133;
-}
-</style>

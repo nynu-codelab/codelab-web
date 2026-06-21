@@ -1,0 +1,107 @@
+.section-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.data-bars {
+  display: grid;
+  gap: 7px;
+  width: 116px;
+}
+
+.data-bars i {
+  display: block;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(238, 247, 255, 0.22);
+  transform-origin: right;
+  animation: data-bar 2.8s ease-in-out infinite;
+}
+
+.data-bars i:nth-child(2) {
+  width: 74%;
+  animation-delay: -0.4s;
+}
+
+.data-bars i:nth-child(3) {
+  width: 54%;
+  animation-delay: -0.9s;
+}
+
+@keyframes data-bar {
+  0%,
+  100% {
+    transform: scaleX(0.55);
+    opacity: 0.52;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 58px;
+  }
+}
+
+@keyframes scanline {
+  0%,
+  68% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes orb-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(10%, 7%, 0) scale(1.08);
+  }
+}
+
+@keyframes button-sheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-72%);
+  }
+  32% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(72%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .section-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

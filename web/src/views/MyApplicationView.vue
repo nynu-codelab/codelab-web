@@ -1,108 +1,111 @@
 <template>
-  <div class="my-app-page">
-    <!-- 导航栏 -->
-    <header class="navbar">
-      <div class="navbar-inner">
-        <router-link to="/" class="logo">Code Lab</router-link>
-        <nav class="nav-links">
-          <router-link to="/">首页</router-link>
-          <router-link to="/recruit">招新报名</router-link>
-          <router-link to="/user" class="btn-user">个人中心</router-link>
-          <a href="#" class="btn-logout" @click.prevent="handleLogout">退出</a>
-        </nav>
-      </div>
-    </header>
+  <AppFrame>
+    <PageHero
+      eyebrow="My Application"
+      title="我的报名"
+      description="查看招新报名记录、审核备注与当前状态。待审核状态下可修改报名信息。"
+    >
+      <template #actions>
+        <AppButton label="返回个人中心" to="/profile" variant="secondary" />
+      </template>
+    </PageHero>
 
-    <main class="my-app-main">
-      <!-- 加载中 -->
-      <div class="loading" v-if="loading">
-        <p>加载中...</p>
-      </div>
+    <main class="application-page app-container narrow">
+      <StateView
+        v-if="loading"
+        title="正在加载报名记录"
+        message="正在读取你的报名信息。"
+      />
 
-      <!-- 无报名记录 -->
-      <div class="empty-card" v-else-if="!record && !loading">
-        <h2>暂无报名记录</h2>
-        <p>你还没有提交过招新报名</p>
-        <router-link to="/recruit" class="btn-primary">立即报名</router-link>
-      </div>
+      <StateView
+        v-else-if="!record && !loading"
+        title="暂无报名记录"
+        message="你还没有提交过招新报名，可以进入报名页提交信息。"
+      >
+        <template #actions>
+          <AppButton label="立即报名" to="/recruit" />
+        </template>
+      </StateView>
 
-      <!-- 查看模式 -->
-      <div class="record-card" v-else-if="record && !editing">
-        <div class="record-header">
-          <h2>我的报名</h2>
-          <span class="status-badge" :style="{ backgroundColor: statusColor }">
-            {{ statusText }}
-          </span>
+      <article v-else-if="record && !editing" class="application-card glass-card">
+        <div class="application-card__header">
+          <div>
+            <span class="app-eyebrow">Application Status</span>
+            <h2>{{ record.realName }} 的报名记录</h2>
+          </div>
+          <span class="status-pill" :class="statusClass(record.status)">{{ statusText }}</span>
         </div>
 
-        <!-- 审核备注 -->
-        <div class="review-remark" v-if="record.reviewRemark">
-          <h4>审核备注</h4>
+        <div class="review-note" v-if="record.reviewRemark">
+          <strong>审核备注</strong>
           <p>{{ record.reviewRemark }}</p>
         </div>
 
-        <div class="record-sections">
-          <div class="info-section">
+        <div class="info-groups">
+          <section>
             <h3>基本信息</h3>
-            <div class="info-grid">
-              <div class="info-item"><label>姓名</label><span>{{ record.realName }}</span></div>
-              <div class="info-item"><label>年级</label><span>{{ record.grade }}</span></div>
-              <div class="info-item"><label>专业</label><span>{{ record.major }}</span></div>
-              <div class="info-item"><label>班级</label><span>{{ record.className }}</span></div>
-            </div>
-          </div>
-          <div class="info-section">
+            <dl>
+              <div><dt>姓名</dt><dd>{{ record.realName }}</dd></div>
+              <div><dt>年级</dt><dd>{{ record.grade }}</dd></div>
+              <div><dt>专业</dt><dd>{{ record.major }}</dd></div>
+              <div><dt>班级</dt><dd>{{ record.className }}</dd></div>
+            </dl>
+          </section>
+          <section>
             <h3>联系方式</h3>
-            <div class="info-grid">
-              <div class="info-item"><label>手机号</label><span>{{ record.phone }}</span></div>
-              <div class="info-item"><label>QQ号</label><span>{{ record.qq }}</span></div>
-            </div>
-          </div>
-          <div class="info-section">
+            <dl>
+              <div><dt>手机号</dt><dd>{{ record.phone }}</dd></div>
+              <div><dt>QQ号</dt><dd>{{ record.qq }}</dd></div>
+            </dl>
+          </section>
+          <section>
             <h3>技术背景</h3>
-            <div class="info-grid">
-              <div class="info-item"><label>意向方向</label><span>{{ record.direction }}</span></div>
-              <div class="info-item"><label>编程基础</label><span>{{ record.hasProgrammingBasis ? '有' : '无' }}</span></div>
-              <div class="info-item full-width" v-if="record.skills"><label>已掌握技术</label><span>{{ record.skills }}</span></div>
-            </div>
-          </div>
-          <div class="info-section">
+            <dl>
+              <div><dt>意向方向</dt><dd>{{ record.direction }}</dd></div>
+              <div><dt>编程基础</dt><dd>{{ record.hasProgrammingBasis ? '有' : '无' }}</dd></div>
+              <div v-if="record.skills" class="wide"><dt>已掌握技术</dt><dd>{{ record.skills }}</dd></div>
+            </dl>
+          </section>
+          <section>
             <h3>个人陈述</h3>
-            <div class="info-grid">
-              <div class="info-item full-width" v-if="record.introduction"><label>个人介绍</label><span>{{ record.introduction }}</span></div>
-              <div class="info-item full-width" v-if="record.reason"><label>加入原因</label><span>{{ record.reason }}</span></div>
-              <div class="info-item"><label>每周可投入时间</label><span>{{ record.weeklyAvailableTime || '-' }}</span></div>
-              <div class="info-item"><label>项目/作品链接</label><span>{{ record.portfolioUrl || '-' }}</span></div>
-            </div>
-          </div>
+            <dl>
+              <div v-if="record.introduction" class="wide"><dt>个人介绍</dt><dd>{{ record.introduction }}</dd></div>
+              <div v-if="record.reason" class="wide"><dt>加入原因</dt><dd>{{ record.reason }}</dd></div>
+              <div><dt>每周可投入时间</dt><dd>{{ record.weeklyAvailableTime || '-' }}</dd></div>
+              <div><dt>项目/作品链接</dt><dd>{{ record.portfolioUrl || '-' }}</dd></div>
+            </dl>
+          </section>
         </div>
 
-        <div class="record-footer">
-          <p class="record-time">提交时间：{{ record.createTime }}</p>
-          <button
+        <div class="application-card__footer">
+          <p>提交时间：{{ formatDate(record.createTime) }}</p>
+          <AppButton
             v-if="record.status === 'PENDING'"
-            class="btn-edit"
+            label="修改报名信息"
+            variant="secondary"
             @click="startEdit"
-          >修改报名信息</button>
+          />
         </div>
-      </div>
+      </article>
 
-      <!-- 编辑模式 -->
-      <form class="record-card" v-else @submit.prevent="handleUpdate">
-        <div class="record-header">
-          <h2>修改报名</h2>
-          <span class="status-badge" :style="{ backgroundColor: '#ffb74d' }">待审核</span>
+      <form v-else class="application-card glass-card" @submit.prevent="handleUpdate">
+        <div class="application-card__header">
+          <div>
+            <span class="app-eyebrow">Edit Application</span>
+            <h2>修改报名信息</h2>
+          </div>
+          <span class="status-pill warning">待审核</span>
         </div>
 
-        <fieldset class="form-section">
+        <fieldset class="edit-section">
           <legend>基本信息</legend>
-          <div class="form-row">
-            <div class="form-group">
+          <div class="form-grid">
+            <div class="form-field">
               <label>姓名 <span class="required">*</span></label>
               <input v-model.trim="editForm.realName" type="text" />
               <span class="field-error" v-if="err.realName">{{ err.realName }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-field">
               <label>年级 <span class="required">*</span></label>
               <select v-model="editForm.grade">
                 <option value="" disabled>请选择年级</option>
@@ -110,14 +113,12 @@
               </select>
               <span class="field-error" v-if="err.grade">{{ err.grade }}</span>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
+            <div class="form-field">
               <label>专业 <span class="required">*</span></label>
               <input v-model.trim="editForm.major" type="text" />
               <span class="field-error" v-if="err.major">{{ err.major }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-field">
               <label>班级 <span class="required">*</span></label>
               <input v-model.trim="editForm.className" type="text" />
               <span class="field-error" v-if="err.className">{{ err.className }}</span>
@@ -125,15 +126,15 @@
           </div>
         </fieldset>
 
-        <fieldset class="form-section">
+        <fieldset class="edit-section">
           <legend>联系方式</legend>
-          <div class="form-row">
-            <div class="form-group">
+          <div class="form-grid">
+            <div class="form-field">
               <label>手机号 <span class="required">*</span></label>
               <input v-model.trim="editForm.phone" type="text" />
               <span class="field-error" v-if="err.phone">{{ err.phone }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-field">
               <label>QQ号 <span class="required">*</span></label>
               <input v-model.trim="editForm.qq" type="text" />
               <span class="field-error" v-if="err.qq">{{ err.qq }}</span>
@@ -141,98 +142,86 @@
           </div>
         </fieldset>
 
-        <fieldset class="form-section">
+        <fieldset class="edit-section">
           <legend>技术背景</legend>
-          <div class="form-group">
+          <div class="form-field">
             <label>意向技术方向 <span class="required">*</span></label>
             <select v-model="editForm.direction">
               <option value="" disabled>请选择意向方向</option>
-              <option value="前端开发">前端开发</option>
-              <option value="后端开发">后端开发</option>
-              <option value="移动开发">移动开发</option>
-              <option value="人工智能">人工智能</option>
-              <option value="数据分析">数据分析</option>
-              <option value="UI设计">UI设计</option>
-              <option value="网络安全">网络安全</option>
-              <option value="游戏开发">游戏开发</option>
-              <option value="运维/DevOps">运维/DevOps</option>
-              <option value="其它">其它</option>
+              <option v-for="item in directionOptions" :key="item" :value="item">{{ item }}</option>
             </select>
             <span class="field-error" v-if="err.direction">{{ err.direction }}</span>
           </div>
-          <div class="form-group">
+          <div class="form-field">
             <label>是否有编程基础</label>
             <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" v-model.number="editForm.hasProgrammingBasis" :value="1" />
-                <span>有</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" v-model.number="editForm.hasProgrammingBasis" :value="0" />
-                <span>无</span>
-              </label>
+              <label><input type="radio" v-model.number="editForm.hasProgrammingBasis" :value="1" /><span>有基础</span></label>
+              <label><input type="radio" v-model.number="editForm.hasProgrammingBasis" :value="0" /><span>暂时没有</span></label>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-field">
             <label>已掌握技术</label>
             <textarea v-model="editForm.skills" rows="2"></textarea>
           </div>
         </fieldset>
 
-        <fieldset class="form-section">
+        <fieldset class="edit-section">
           <legend>个人陈述</legend>
-          <div class="form-group">
+          <div class="form-field">
             <label>个人介绍</label>
             <textarea v-model="editForm.introduction" rows="3"></textarea>
           </div>
-          <div class="form-group">
+          <div class="form-field">
             <label>加入实验室的原因</label>
             <textarea v-model="editForm.reason" rows="3"></textarea>
           </div>
-          <div class="form-row">
-            <div class="form-group">
+          <div class="form-grid">
+            <div class="form-field">
               <label>每周可投入时间</label>
               <input v-model.trim="editForm.weeklyAvailableTime" type="text" />
             </div>
-            <div class="form-group">
+            <div class="form-field">
               <label>项目/作品链接</label>
               <input v-model.trim="editForm.portfolioUrl" type="text" />
             </div>
           </div>
         </fieldset>
 
-        <p class="form-error" v-if="formError">{{ formError }}</p>
+        <p class="form-alert error" v-if="formError">{{ formError }}</p>
 
         <div class="edit-actions">
-          <button type="submit" class="btn-save" :disabled="submitting">
-            {{ submitting ? '保存中...' : '保存修改' }}
-          </button>
-          <button type="button" class="btn-cancel" @click="cancelEdit">取消</button>
+          <AppButton
+            :label="submitting ? '保存中...' : '保存修改'"
+            type="submit"
+            :disabled="submitting"
+          />
+          <AppButton label="取消" variant="secondary" @click="cancelEdit" />
         </div>
       </form>
     </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        <p class="footer-copy">&copy; {{ currentYear }} 南阳师范学院 Code Lab 实验室</p>
-        <p class="footer-disclaimer">本网站为南阳师范学院 Code Lab 实验室自建展示站，非学校官方门户网站。</p>
-      </div>
-    </footer>
-  </div>
+  </AppFrame>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { getMyApply, updateMyApply, STATUS_MAP, STATUS_COLORS } from '@/api/application'
+import { computed, onMounted, reactive, ref } from 'vue'
+import AppFrame from '@/components/app/AppFrame.vue'
+import PageHero from '@/components/app/PageHero.vue'
+import AppButton from '@/components/app/AppButton.vue'
+import StateView from '@/components/app/StateView.vue'
+import { getMyApply, updateMyApply, STATUS_MAP } from '@/api/application'
 import type { ApplyRecord } from '@/api/application'
+import { formatDate } from '@/utils/content'
 
-const router = useRouter()
-const userStore = useUserStore()
-const currentYear = computed(() => new Date().getFullYear())
-const currentYearNum = new Date().getFullYear()
-const gradeOptions = Array.from({ length: 4 }, (_, i) => `${currentYearNum - i}级`)
+const currentYear = new Date().getFullYear()
+const gradeOptions = Array.from({ length: 4 }, (_, i) => `${currentYear - i}级`)
+const directionOptions = [
+  'Java 后端',
+  '前端开发',
+  '微信小程序',
+  '人工智能（拓展方向）',
+  '数据库与运维（拓展方向）',
+  '其它'
+]
 
 const record = ref<ApplyRecord | null>(null)
 const loading = ref(true)
@@ -248,7 +237,7 @@ const editForm = reactive({
   phone: '',
   qq: '',
   direction: '',
-  hasProgrammingBasis: 0 as number,
+  hasProgrammingBasis: 0,
   skills: '',
   introduction: '',
   reason: '',
@@ -263,10 +252,11 @@ const statusText = computed(() => {
   return STATUS_MAP[record.value.status] || record.value.status
 })
 
-const statusColor = computed(() => {
-  if (!record.value) return '#78909c'
-  return STATUS_COLORS[record.value.status] || '#78909c'
-})
+function statusClass(status: string) {
+  if (status === 'PASSED' || status === 'PRELIMINARY_PASSED') return 'success'
+  if (status === 'REJECTED') return 'danger'
+  return 'warning'
+}
 
 function startEdit() {
   if (!record.value) return
@@ -286,7 +276,8 @@ function startEdit() {
   editing.value = true
 }
 
-function cancelEdit() {
+function cancelEdit(event?: MouseEvent) {
+  event?.preventDefault()
   editing.value = false
   formError.value = ''
   for (const key of Object.keys(err)) delete err[key]
@@ -302,7 +293,7 @@ function validate(): boolean {
   if (!editForm.className) { err.className = '请输入班级'; valid = false }
   if (!editForm.phone) { err.phone = '请输入手机号'; valid = false }
   else if (!/^1[3-9]\d{9}$/.test(editForm.phone)) { err.phone = '手机号格式不正确'; valid = false }
-  if (!editForm.qq) { err.qq = '请输入QQ号'; valid = false }
+  if (!editForm.qq) { err.qq = '请输入 QQ 号'; valid = false }
   if (!editForm.direction) { err.direction = '请选择意向技术方向'; valid = false }
 
   return valid
@@ -315,28 +306,20 @@ async function handleUpdate() {
   submitting.value = true
   try {
     await updateMyApply({ ...editForm })
-    // 刷新数据
-    const updated = await getMyApply()
-    record.value = updated
+    record.value = await getMyApply()
     editing.value = false
   } catch (errObj: any) {
-    const msg = errObj?.response?.data?.message || errObj?.message || '修改失败'
-    formError.value = msg
+    formError.value = errObj?.response?.data?.message || errObj?.message || '修改失败'
   } finally {
     submitting.value = false
   }
-}
-
-function handleLogout() {
-  userStore.logout()
-  router.push('/')
 }
 
 onMounted(async () => {
   try {
     record.value = await getMyApply()
   } catch {
-    // 暂无报名记录
+    record.value = null
   } finally {
     loading.value = false
   }
@@ -344,109 +327,136 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.my-app-page {
-  min-height: 100vh;
+.application-page {
+  padding: 0 0 92px;
+}
+
+.application-card {
+  display: grid;
+  gap: 24px;
+  padding: clamp(24px, 5vw, 44px);
+}
+
+.application-card__header {
   display: flex;
-  flex-direction: column;
-  background: linear-gradient(160deg, #0d1b2a 0%, #13263a 50%, #0f1923 100%);
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-/* 导航栏 */
-.navbar { background-color: rgba(20, 30, 44, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.06); position: sticky; top: 0; z-index: 100; }
-.navbar-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-.logo { font-size: 20px; font-weight: 700; color: #64b5f6; letter-spacing: 1px; }
-.nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; }
-.nav-links a { color: #b0bec5; transition: color 0.2s; }
-.nav-links a:hover { color: #ffffff; }
-.btn-user { color: #64b5f6; }
-.btn-logout { color: #ef5350; border: 1px solid #ef5350; padding: 6px 18px; border-radius: 6px; font-size: 13px; }
-.btn-logout:hover { background-color: rgba(239, 83, 80, 0.1); }
-
-/* 主体 */
-.my-app-main { flex: 1; max-width: 800px; width: 100%; margin: 0 auto; padding: 40px 24px 60px; }
-
-.loading { text-align: center; color: #78909c; padding-top: 120px; }
-
-/* 空状态 */
-.empty-card {
-  text-align: center; padding: 60px 40px;
-  background-color: #1a2a3a; border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-}
-.empty-card h2 { font-size: 22px; color: #e0e0e0; margin-bottom: 12px; }
-.empty-card p { color: #78909c; margin-bottom: 24px; }
-.btn-primary {
-  padding: 10px 28px; border-radius: 8px; font-size: 15px; font-weight: 600;
-  background-color: #64b5f6; color: #0d1b2a;
+.application-card__header h2 {
+  color: var(--app-text-strong);
+  font-size: 30px;
 }
 
-/* 记录卡片 */
-.record-card {
-  background-color: #1a2a3a; border-radius: 12px; padding: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+.review-note {
+  padding: 18px;
+  border: 1px solid rgba(255, 211, 106, 0.24);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-soft);
+  background: rgba(255, 211, 106, 0.08);
 }
-.record-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.record-header h2 { font-size: 24px; font-weight: 700; color: #ffffff; }
-.status-badge { padding: 4px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #ffffff; }
 
-.review-remark { background-color: rgba(255, 183, 77, 0.08); border: 1px solid rgba(255, 183, 77, 0.2); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
-.review-remark h4 { font-size: 13px; color: #ffb74d; margin-bottom: 6px; }
-.review-remark p { font-size: 13px; color: #b0bec5; line-height: 1.6; }
-
-.info-section { margin-bottom: 24px; }
-.info-section h3 { font-size: 15px; font-weight: 600; color: #64b5f6; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
-.info-item.full-width { grid-column: 1 / -1; }
-.info-item label { display: block; font-size: 12px; color: #546e7a; margin-bottom: 2px; }
-.info-item span { font-size: 14px; color: #e0e0e0; }
-
-.record-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 8px; flex-wrap: wrap; gap: 12px; }
-.record-time { font-size: 12px; color: #546e7a; }
-.btn-edit {
-  padding: 8px 20px; border-radius: 6px; border: 1px solid #64b5f6; color: #64b5f6;
-  background: transparent; cursor: pointer; font-size: 13px; transition: all 0.2s;
+.review-note strong {
+  color: var(--app-amber);
 }
-.btn-edit:hover { background-color: rgba(100, 181, 246, 0.1); }
 
-/* 编辑表单 */
-.form-section { border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
-.form-section legend { font-size: 16px; font-weight: 600; color: #64b5f6; padding: 0 12px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-.form-group { margin-bottom: 20px; }
-.form-section .form-group:last-child { margin-bottom: 0; }
-.form-group label { display: block; font-size: 14px; color: #b0bec5; margin-bottom: 6px; }
-.required { color: #ef5350; }
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 10px 14px; border-radius: 6px;
-  background-color: #0f1923; border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e0e0e0; font-size: 14px;
+.review-note p {
+  margin-top: 8px;
+  color: var(--app-soft);
 }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  outline: none; border-color: #64b5f6;
-}
-.form-group textarea { resize: vertical; }
-.radio-group { display: flex; gap: 24px; }
-.radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; color: #e0e0e0; }
-.field-error { display: block; font-size: 12px; color: #ef5350; margin-top: 4px; }
-.form-error { padding: 10px 14px; background-color: rgba(239, 83, 80, 0.1); border: 1px solid rgba(239, 83, 80, 0.3); border-radius: 6px; color: #ef5350; font-size: 13px; margin-bottom: 20px; }
 
-.edit-actions { display: flex; gap: 16px; }
-.btn-save {
-  padding: 10px 28px; border-radius: 8px; border: none;
-  background-color: #64b5f6; color: #0d1b2a; font-size: 15px; font-weight: 600; cursor: pointer;
+.info-groups {
+  display: grid;
+  gap: 16px;
 }
-.btn-save:hover { background-color: #90caf9; }
-.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-cancel {
-  padding: 10px 28px; border-radius: 8px; border: 1px solid #546e7a;
-  background: transparent; color: #b0bec5; font-size: 15px; cursor: pointer;
-}
-.btn-cancel:hover { border-color: #90caf9; color: #e0e0e0; }
 
-/* 页脚 */
-.footer { border-top: 1px solid rgba(255, 255, 255, 0.06); background-color: #0a1520; padding: 32px 24px; text-align: center; }
-.footer-inner { max-width: 1200px; margin: 0 auto; }
-.footer-copy { font-size: 13px; color: #546e7a; margin-bottom: 8px; }
-.footer-disclaimer { font-size: 12px; color: #455a64; }
+.info-groups section,
+.edit-section {
+  padding: 20px;
+  border: 1px solid rgba(153, 217, 255, 0.14);
+  border-radius: var(--app-radius);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.info-groups h3,
+.edit-section legend {
+  color: var(--app-cyan);
+  font-size: 16px;
+}
+
+.edit-section legend {
+  padding: 0 10px;
+  font-weight: 720;
+}
+
+.info-groups dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.info-groups div {
+  min-width: 0;
+}
+
+.info-groups .wide {
+  grid-column: 1 / -1;
+}
+
+.info-groups dt {
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+.info-groups dd {
+  margin-top: 4px;
+  color: var(--app-text-strong);
+  word-break: break-word;
+}
+
+.application-card__footer,
+.edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--app-muted);
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.radio-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(153, 217, 255, 0.16);
+  border-radius: 999px;
+  color: var(--app-soft);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.radio-group input {
+  accent-color: var(--app-cyan);
+}
+
+@media (max-width: 640px) {
+  .application-card__header,
+  .application-card__footer,
+  .edit-actions {
+    display: grid;
+  }
+
+  .info-groups dl {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

@@ -9,7 +9,7 @@
 | 中文名称 | 南阳师范学院 Code Lab 实验室 |
 | Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
-| 当前工作分支 | prototype/high-impact-frontend-preview |
+| 当前工作分支 | refactor/apply-high-impact-frontend |
 
 ## 项目定位
 
@@ -353,18 +353,18 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `prototype/high-impact-frontend-preview` |
-| 阶段 | 高端动态视觉预览：前台视觉方向验证（当前） |
+| 分支 | `refactor/apply-high-impact-frontend` |
+| 阶段 | 高冲击视觉正式推广：前台 web + 后台 admin-web 已完成视觉重构（当前） |
 | 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403 |
-| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情/项目列表/项目详情页面已实现，Markdown 渲染已实现，首页精选项目已实现；新增高端动态视觉预览页 `/design-preview`；本地开发端口 5173 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理/项目管理页面已实现；本地开发端口 5174 |
+| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用高冲击视觉系统；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
 | 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
-| 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅；`/design-preview` Nginx 访问 200 ✅ |
+| 构建状态 | backend `mvn clean package -DskipTests` ✅ / web `npm install && npm run build` ✅ / admin-web `npm install && npm run build` ✅ / docker compose config + up -d --build + ps ✅ |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
-| 页面访问 | `/`、登录注册、招新、我的报名、文章、项目、后台路由经 Nginx history fallback 均返回 200；`/design-preview` 返回 200；成员/方向/联系/上传相关路由仅返回 SPA 壳，功能未实现 |
+| 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 经 Nginx 均返回 200 |
 | 稳定 tag | stable-mvp-production-ready-20260622 |
 
 ## 容器化开发规范
@@ -409,6 +409,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 高冲击视觉正式推广 | 新建/切换 `refactor/apply-high-impact-frontend`；用户已确认喜欢 `/design-preview` 后，将 Product Design 视觉方向“工程指挥舱 + 学生技术团队展台”推广到正式前台与后台；使用 frontend-design 规则落地正式页面；未使用 Figma（无 Figma 链接）；前台新增正式 `components/app/*` 组件体系（`AppFrame`、`AppHeader`、`AppFooter`、`AppAnimatedBackground`、`AppButton`、`PageHero`、`AnimatedSection`、`MetricCard`、`DirectionCard`、`ProjectCard`、`ArticleCard`、`MemberCard`、`RecruitCTA`、`StateView`、`AuthShell`）；新增 `/about`、`/directions`、`/members`、`/contact`、`/profile`、404；保留 `/design-preview`；后台新增 `design-tokens.css`、`admin.css`，重做 `AdminLayout`、登录、数据概览、用户占位，补齐成员/方向/站点/上传占位路由；无新增依赖；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm install && npm run build` ✅ / `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config 脱敏重定向 + up -d --build + ps ✅ / 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ |
 | 2026-06-22 | 高端动态视觉预览版 | 新建 `prototype/high-impact-frontend-preview`；使用 Product Design brief 回放确定“工程指挥舱 + 学生技术团队展台”方向；使用 frontend-design 规则落地前台 `/design-preview` 独立预览页；新增 `PreviewHeader`、`PreviewAnimatedBackground`、`PreviewHero`、`PreviewMetricCard`、`PreviewDirectionCard`、`PreviewProjectCard`、`PreviewArticleCard`、`PreviewRecruitCTA`、`PreviewFooter`、`GlowButton`、`AnimatedSection` 组件；新增 `design-tokens.css` 与 `preview.css`；无新增依赖；未使用 Figma；未修改后端接口字段、接口路径、业务逻辑或数据库；`web npm install && npm run build` ✅ / `backend mvn clean package -DskipTests` ✅ / `admin-web npm install && npm run build` ✅ / Docker Compose config 输出脱敏重定向 + up -d --build + ps ✅ / `curl -I http://localhost/design-preview` 200 ✅ / `curl http://localhost/api/health` UP ✅ |
 | 2026-06-22 | 第六阶段上线前全量验收 + 安全加固 | 新建 `release/mvp-production-readiness`；补齐 `docs/requirements.md` 并修复需求文档重复命名；权限异常从通用 500 改为统一业务码 401/403；`lab_apply_record` 新增 `active_user_id` 生成列与 `uk_apply_active_user` 唯一约束并新增 `03-add-apply-active-user-unique-key.sql`；同步 `backend/sql/init.sql` 与 `deploy/mysql/init/01-init.sql`；`deploy/.env.example` 敏感变量改为空并补充 `SERVER_PORT`；新增根目录 `.env.example`；本地 Vite 端口统一为 web 5173 / admin-web 5174；修正验证脚本权限断言；README/deploy 文档补齐准生产环境变量、迁移、Markdown、安全和未实现模块说明；Docker Compose、页面访问、三闭环脚本、权限、SQL、Markdown、Nginx 验收通过 |
 | 2026-06-22 | 第四阶段项目成果展示 | 新增 lab_project 表；后端新增 project 模块（Project entity/mapper/service + ProjectController + AdminProjectController）；前台新增项目列表(/projects)和项目详情(/projects/:id)页面并使用 markdown-it 渲染（html:false 防XSS）；首页新增精选项目区域(GET /api/projects/featured)；后台新增项目管理页面（列表/创建/编辑/发布/下架/删除）；SaTokenConfig 排除 /api/projects/** 公开访问；更新 init.sql；新增 02-add-project-table.sql 迁移脚本；新增 scripts/verify-project-flow.sh |
@@ -423,8 +424,9 @@ docker compose ps                  # 确认所有服务运行
 
 ## 当前已知问题
 
-- `/design-preview` 是视觉方向预览页，使用静态预览数据，不接真实接口；确认方向后仍需正式迁移首页和各业务页面
-- 预览页未引入外部动效库，复杂滚动编排和跨页面动效需在正式重构阶段再评估
+- `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
+- 前台 `/members` 当前只展示能力结构，不编造真实成员姓名；真实成员数据与成员接口尚未实现
+- 前台 `/contact` 当前不展示真实联系方式；需等待站点配置接口接入后维护真实联系方式、二维码等
 - 后台 `npm install` 后 audit 仍报告既有 1 个 moderate、1 个 high 漏洞；本次未引入后台依赖，未做强制升级
 - 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥
 - 前台/后台用户管理页面仍为占位页面（UsersView.vue），未对接真实 API
@@ -444,28 +446,24 @@ docker compose ps                  # 确认所有服务运行
 - 项目成员/负责人使用文本字段，未与系统用户表关联
 - 项目浏览量直接在详情接口中递增，无防刷机制
 - 前台项目列表未做分页
-- 前台 `/contact`、`/members`、`/directions`、`/about` 尚无真实 Vue 路由页面；Nginx 刷新返回 200 仅代表 SPA fallback 正常
-- 后台成员、方向、站点配置、上传页面和对应后端接口未实现
+- 后台成员、方向、站点配置、上传页面已补占位路由，但对应后端接口未实现
 - 文件上传模块未实现，当前没有上传目录、上传权限控制或上传静态资源映射
 
 ## 下一步建议
 
-1. 先人工打开 `/design-preview` 确认视觉方向、动效强度和首页信息架构
-2. 如果确认喜欢该方向，先把正式首页迁移到同一设计系统，再推广到文章、项目、招新和个人中心页面
-3. 将 `design-tokens.css`、按钮、卡片、导航、页脚沉淀为前台正式公共组件
-4. 后台管理端继续使用 Element Plus，但可同步品牌色、信息密度、布局节奏和空状态风格
-5. 将 `release/mvp-production-readiness` 部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
-6. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
-7. 实现技术方向 CRUD + 前台展示
-8. 实现核心成员 CRUD + 前台展示
-9. 完善修改密码和退出登录功能
-10. 前台个人中心引入更多真实数据
-11. 后台用户管理页面实现真实数据对接
-12. 完善报名状态流转（增加更多中间状态约束和校验）
-13. 引入 Redis 业务依赖（如 Session 共享、缓存）
-14. 文章列表加分页、分类筛选优化
-15. 项目列表加分页优化
-16. 实现文件上传功能（文章封面、项目封面、成员头像等）
+1. 人工打开正式前台和后台核心页面，确认高冲击视觉推广后的整体观感、动效强度和信息密度
+2. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
+3. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
+4. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
+5. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
+6. 后台用户管理页面实现真实数据对接
+7. 完善修改密码和退出登录接口
+8. 文章列表加分页、分类筛选优化
+9. 项目列表加分页优化
+10. 完善报名状态流转（增加更多中间状态约束和校验）
+11. 引入 Redis 业务依赖（如 Session 共享、缓存）
+12. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
+13. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
 
 ## 验收命令
 

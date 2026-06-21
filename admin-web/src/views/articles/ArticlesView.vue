@@ -1,7 +1,11 @@
 <template>
-  <div class="articles-page">
+  <div class="articles-page admin-page">
     <div class="page-header">
-      <h2 class="page-title">文章管理</h2>
+      <div>
+        <span class="admin-page-kicker">Articles</span>
+        <h2 class="page-title">文章管理</h2>
+        <p class="admin-page-copy">维护学习文章草稿、发布、下架和删除流程。</p>
+      </div>
       <el-button type="primary" @click="showCreate">新建文章</el-button>
     </div>
 
@@ -297,9 +301,9 @@ onMounted(() => {
 }
 
 .page-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #303133;
+  font-size: 26px;
+  font-weight: 780;
+  color: var(--admin-text-strong);
   margin: 0;
 }
 

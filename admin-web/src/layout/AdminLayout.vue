@@ -1,18 +1,18 @@
 <template>
   <el-container class="layout-container">
-    <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
-      <div class="aside-logo" @click="toggleCollapse">
-        <span v-show="!isCollapse" class="logo-text">Code Lab</span>
-        <span class="logo-icon">⚙</span>
-      </div>
+    <el-aside :width="isCollapse ? '78px' : '246px'" class="layout-aside">
+      <button class="aside-logo" type="button" @click="toggleCollapse">
+        <span class="logo-mark">CL</span>
+        <span v-show="!isCollapse" class="logo-text">
+          <strong>NYNU Code Lab</strong>
+          <small>Admin Console</small>
+        </span>
+      </button>
 
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
         :collapse-transition="false"
-        background-color="#304156"
-        text-color="#bfcbd9"
-        active-text-color="#409eff"
         router
       >
         <el-menu-item index="/dashboard">
@@ -35,22 +35,42 @@
           <el-icon><FolderOpened /></el-icon>
           <template #title>项目管理</template>
         </el-menu-item>
+        <el-menu-item index="/members">
+          <el-icon><Collection /></el-icon>
+          <template #title>成员管理</template>
+        </el-menu-item>
+        <el-menu-item index="/directions">
+          <el-icon><Connection /></el-icon>
+          <template #title>方向管理</template>
+        </el-menu-item>
+        <el-menu-item index="/site">
+          <el-icon><Setting /></el-icon>
+          <template #title>站点配置</template>
+        </el-menu-item>
+        <el-menu-item index="/upload">
+          <el-icon><Upload /></el-icon>
+          <template #title>文件上传</template>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
-    <el-container>
+    <el-container class="layout-content">
       <el-header class="layout-header">
         <div class="header-left">
           <el-icon class="collapse-btn" @click="toggleCollapse">
             <Fold v-if="!isCollapse" />
             <Expand v-else />
           </el-icon>
+          <div>
+            <span class="header-kicker">Management Workspace</span>
+            <strong>{{ route.meta.title || "后台管理" }}</strong>
+          </div>
         </div>
         <div class="header-right">
           <el-dropdown trigger="click">
             <span class="user-info">
-              <el-avatar :size="32" icon="UserFilled" />
-              <span class="username">{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '管理员' }}</span>
+              <el-avatar :size="34" :icon="UserFilled" />
+              <span class="username">{{ userStore.userInfo?.nickname || userStore.userInfo?.username || "管理员" }}</span>
               <el-icon><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
@@ -73,18 +93,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
+  ArrowDown,
+  Collection,
+  Connection,
   DataAnalysis,
-  User,
   Document,
-  Reading,
+  Expand,
   FolderOpened,
   Fold,
-  Expand,
-  ArrowDown,
+  Reading,
+  Setting,
   SwitchButton,
+  Upload,
+  User,
+  UserFilled,
 } from "@element-plus/icons-vue";
 import { useUserStore } from "@/stores/user";
 
@@ -93,7 +118,6 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const isCollapse = ref(false);
-
 const activeMenu = computed(() => route.path);
 
 function toggleCollapse() {
@@ -109,82 +133,193 @@ function handleLogout() {
 <style scoped>
 .layout-container {
   height: 100vh;
+  color: var(--admin-text);
+  background:
+    radial-gradient(circle at 16% 8%, rgba(83, 231, 255, 0.16), transparent 30rem),
+    radial-gradient(circle at 88% 12%, rgba(169, 139, 255, 0.13), transparent 30rem),
+    linear-gradient(135deg, var(--admin-bg), var(--admin-bg-2) 54%, #05070c);
 }
 
 .layout-aside {
-  background-color: #304156;
+  position: relative;
   overflow: hidden;
-  transition: width 0.3s;
+  border-right: 1px solid var(--admin-line);
+  background: rgba(6, 11, 20, 0.82);
+  box-shadow: 18px 0 60px rgba(0, 0, 0, 0.24);
+  transition: width 0.3s ease;
+}
+
+.layout-aside::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(83, 231, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 231, 255, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(180deg, #000, transparent 88%);
 }
 
 .aside-logo {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 60px;
-  padding: 0 12px;
-  color: #fff;
+  gap: 12px;
+  width: 100%;
+  min-height: 74px;
+  padding: 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--admin-line);
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, 0.035);
   cursor: pointer;
-  user-select: none;
+  text-align: left;
 }
 
-.logo-text {
-  font-size: 16px;
-  font-weight: 600;
-  white-space: nowrap;
+.logo-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(83, 231, 255, 0.45);
+  border-radius: 14px;
+  color: #041017;
+  background: linear-gradient(135deg, var(--admin-cyan), var(--admin-teal));
+  font-family: var(--admin-font-data);
+  font-weight: 860;
+  box-shadow: 0 0 32px rgba(83, 231, 255, 0.22);
 }
 
-.logo-icon {
-  font-size: 22px;
-  margin-left: 4px;
+.logo-text strong,
+.logo-text small {
+  display: block;
+}
+
+.logo-text strong {
+  color: var(--admin-text-strong);
+  font-size: 15px;
+}
+
+.logo-text small {
+  margin-top: 2px;
+  color: var(--admin-muted);
+  font-family: var(--admin-font-data);
+  font-size: 11px;
+}
+
+.layout-aside :deep(.el-menu) {
+  position: relative;
+  z-index: 1;
+  border-right: 0;
+  background: transparent;
+}
+
+.layout-aside :deep(.el-menu-item) {
+  height: 48px;
+  margin: 6px 12px;
+  border-radius: 14px;
+  color: #c4d2e1;
+}
+
+.layout-aside :deep(.el-menu-item:hover),
+.layout-aside :deep(.el-menu-item.is-active) {
+  color: var(--admin-cyan);
+  background: rgba(83, 231, 255, 0.1);
+}
+
+.layout-content {
+  min-width: 0;
 }
 
 .layout-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
-  border-bottom: 1px solid #e4e7ed;
-  padding: 0 20px;
-  height: 60px;
+  min-height: 74px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--admin-line);
+  background: rgba(6, 9, 15, 0.7);
+  backdrop-filter: blur(18px);
 }
 
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
 
 .collapse-btn {
-  font-size: 20px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(153, 217, 255, 0.18);
+  border-radius: 999px;
+  color: var(--admin-text);
   cursor: pointer;
-  color: #606266;
-  transition: color 0.2s;
+  transition: color 0.2s, border-color 0.2s;
 }
 
 .collapse-btn:hover {
-  color: #409eff;
+  color: var(--admin-cyan);
+  border-color: rgba(83, 231, 255, 0.5);
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
+.header-kicker {
+  display: block;
+  color: var(--admin-cyan);
+  font-family: var(--admin-font-data);
+  font-size: 11px;
+}
+
+.header-left strong {
+  display: block;
+  color: var(--admin-text-strong);
+  font-size: 18px;
 }
 
 .user-info {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 42px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid rgba(153, 217, 255, 0.16);
+  border-radius: 999px;
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, 0.055);
   cursor: pointer;
-  color: #303133;
 }
 
 .username {
+  max-width: 160px;
+  overflow: hidden;
   font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .layout-main {
-  background-color: #f5f7fa;
-  padding: 20px;
+  min-width: 0;
+  padding: 24px;
   overflow-y: auto;
+}
+
+@media (max-width: 760px) {
+  .layout-aside {
+    display: none;
+  }
+
+  .layout-header {
+    padding: 0 14px;
+  }
+
+  .layout-main {
+    padding: 16px;
+  }
 }
 </style>
