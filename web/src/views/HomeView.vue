@@ -8,7 +8,7 @@
           <router-link to="/">首页</router-link>
           <a href="#">技术方向</a>
           <a href="#">项目成果</a>
-          <a href="#">学习文章</a>
+          <router-link to="/articles">学习文章</router-link>
           <router-link to="/recruit">招新报名</router-link>
           <template v-if="userStore.isLoggedIn">
             <router-link to="/user" class="btn-user">个人中心</router-link>

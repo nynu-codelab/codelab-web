@@ -35,6 +35,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/views/RecruitView.vue"),
         meta: { title: "报名管理", requiresAuth: true },
       },
+      {
+        path: "articles",
+        name: "Articles",
+        component: () => import("@/views/articles/ArticlesView.vue"),
+        meta: { title: "文章管理", requiresAuth: true },
+      },
     ],
   },
 ];
