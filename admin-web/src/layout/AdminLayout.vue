@@ -31,6 +31,10 @@
           <el-icon><Reading /></el-icon>
           <template #title>文章管理</template>
         </el-menu-item>
+        <el-menu-item index="/projects">
+          <el-icon><FolderOpened /></el-icon>
+          <template #title>项目管理</template>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -76,6 +80,7 @@ import {
   User,
   Document,
   Reading,
+  FolderOpened,
   Fold,
   Expand,
   ArrowDown,

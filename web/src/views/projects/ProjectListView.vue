@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="project-list-page">
     <!-- 导航栏 -->
     <header class="navbar">
       <div class="navbar-inner">
@@ -7,7 +7,7 @@
         <nav class="nav-links">
           <router-link to="/">首页</router-link>
           <a href="#">技术方向</a>
-          <router-link to="/projects">项目成果</router-link>
+          <router-link to="/projects" class="active">项目成果</router-link>
           <router-link to="/articles">学习文章</router-link>
           <router-link to="/recruit">招新报名</router-link>
           <template v-if="userStore.isLoggedIn">
@@ -22,55 +22,64 @@
       </div>
     </header>
 
-    <!-- 主体内容 -->
-    <main class="hero">
-      <div class="hero-content">
-        <h1 class="hero-title">南阳师范学院 Code Lab 实验室</h1>
-        <p class="hero-subtitle">
-          探索软件工程前沿，培养卓越技术人才
-        </p>
-        <p class="hero-desc">
-          致力于软件工程理论与实践相结合，为学生提供一流的科研与创新平台。
-        </p>
-      </div>
-    </main>
-
-    <!-- 精选项目 -->
-    <section class="featured-section">
-      <div class="featured-inner">
-        <div class="section-header">
-          <h2 class="section-title">精选项目</h2>
-          <router-link to="/projects" class="section-more">查看全部 →</router-link>
+    <!-- 主体 -->
+    <main class="main-content">
+      <div class="content-inner">
+        <div class="page-header">
+          <h1 class="page-title">项目成果</h1>
+          <p class="page-desc">实验室历年项目与成果展示</p>
         </div>
 
-        <div v-if="!loaded" class="featured-loading">
-          <span>加载中...</span>
+        <!-- 加载中 -->
+        <div v-if="loading" class="state-box">
+          <p class="state-text">加载中...</p>
         </div>
 
-        <div v-else-if="projects.length === 0" class="featured-empty">
-          <span>暂无精选项目</span>
+        <!-- 加载失败 -->
+        <div v-else-if="error" class="state-box">
+          <p class="state-text error">{{ error }}</p>
+          <button class="btn-retry" @click="fetchProjects">重新加载</button>
         </div>
 
-        <div v-else class="featured-grid">
+        <!-- 空列表 -->
+        <div v-else-if="projects.length === 0" class="state-box">
+          <p class="state-text">暂无项目成果</p>
+        </div>
+
+        <!-- 项目列表 -->
+        <div v-else class="project-grid">
           <div
             v-for="item in projects"
             :key="item.id"
-            class="featured-card"
-            @click="goProject(item.id)"
+            class="project-card"
+            @click="goDetail(item.id)"
           >
-            <div class="fc-cover">
-              <span v-if="!item.coverUrl" class="fc-placeholder">📁</span>
-              <img v-else :src="item.coverUrl" :alt="item.title" class="fc-image" />
+            <div class="card-cover">
+              <span v-if="!item.coverUrl" class="cover-placeholder">📁</span>
+              <img
+                v-else
+                :src="item.coverUrl"
+                :alt="item.title"
+                class="cover-image"
+                @error="(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden') }"
+              />
+              <span class="cover-placeholder hidden">📁</span>
             </div>
-            <div class="fc-body">
-              <span v-if="item.projectType" class="fc-type">{{ item.projectType }}</span>
-              <h3 class="fc-title">{{ item.title }}</h3>
-              <p class="fc-summary">{{ item.summary || '暂无简介' }}</p>
+            <div class="card-body">
+              <div class="card-type" v-if="item.projectType">
+                <span class="type-tag">{{ item.projectType }}</span>
+              </div>
+              <h2 class="card-title">{{ item.title }}</h2>
+              <p class="card-summary">{{ item.summary || '暂无简介' }}</p>
+              <div class="card-meta">
+                <span v-if="item.techStack" class="card-tech">{{ item.techStack }}</span>
+                <span v-if="item.leaderName" class="card-leader">{{ item.leaderName }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </main>
 
     <!-- 页脚 -->
     <footer class="footer">
@@ -88,27 +97,30 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { getFeaturedProjects, type ProjectItem } from '@/api/project'
+import { getProjects, type ProjectItem } from '@/api/project'
 
 const router = useRouter()
 const userStore = useUserStore()
 const currentYear = computed(() => new Date().getFullYear())
 
 const projects = ref<ProjectItem[]>([])
-const loaded = ref(false)
+const loading = ref(true)
+const error = ref('')
 
-function goProject(id: number) {
+function goDetail(id: number) {
   router.push(`/projects/${id}`)
 }
 
-async function fetchFeatured() {
+async function fetchProjects() {
+  loading.value = true
+  error.value = ''
   try {
-    const res = await getFeaturedProjects()
+    const res = await getProjects()
     projects.value = res.data || []
-  } catch {
-    // silently fail for home page
+  } catch (err: any) {
+    error.value = err?.response?.data?.message || err?.message || '加载失败，请稍后重试'
   } finally {
-    loaded.value = true
+    loading.value = false
   }
 }
 
@@ -118,12 +130,12 @@ function handleLogout() {
 }
 
 onMounted(() => {
-  fetchFeatured()
+  fetchProjects()
 })
 </script>
 
 <style scoped>
-.home {
+.project-list-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -168,8 +180,13 @@ onMounted(() => {
   transition: color 0.2s;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a.active {
   color: #ffffff;
+}
+
+.nav-links a.active {
+  font-weight: 600;
 }
 
 .btn-login,
@@ -215,98 +232,74 @@ onMounted(() => {
 }
 
 /* 主体 */
-.hero {
+.main-content {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  background: linear-gradient(160deg, #0d1b2a 0%, #13263a 40%, #0f1923 100%);
   padding: 60px 24px;
-  background: linear-gradient(
-    160deg,
-    #0d1b2a 0%,
-    #13263a 40%,
-    #0f1923 100%
-  );
 }
 
-.hero-content {
-  max-width: 680px;
-}
-
-.hero-title {
-  font-size: 42px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 20px;
-  letter-spacing: 2px;
-  line-height: 1.3;
-}
-
-.hero-subtitle {
-  font-size: 20px;
-  color: #64b5f6;
-  margin-bottom: 16px;
-  font-weight: 300;
-  letter-spacing: 1px;
-}
-
-.hero-desc {
-  font-size: 16px;
-  color: #78909c;
-  line-height: 1.8;
-}
-
-/* 精选项目 */
-.featured-section {
-  background-color: #0f1923;
-  padding: 64px 24px;
-}
-
-.featured-inner {
+.content-inner {
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 36px;
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
 }
 
-.section-title {
-  font-size: 28px;
+.page-title {
+  font-size: 36px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0;
+  margin-bottom: 12px;
 }
 
-.section-more {
-  font-size: 14px;
-  color: #64b5f6;
-  transition: color 0.2s;
+.page-desc {
+  font-size: 16px;
+  color: #78909c;
 }
 
-.section-more:hover {
-  color: #90caf9;
-}
-
-.featured-loading,
-.featured-empty {
+/* 状态 */
+.state-box {
   text-align: center;
-  padding: 40px 0;
-  color: #546e7a;
-  font-size: 14px;
+  padding: 80px 24px;
 }
 
-.featured-grid {
+.state-text {
+  color: #78909c;
+  font-size: 16px;
+}
+
+.state-text.error {
+  color: #ef5350;
+  margin-bottom: 16px;
+}
+
+.btn-retry {
+  display: inline-block;
+  padding: 8px 24px;
+  border: 1px solid #64b5f6;
+  border-radius: 6px;
+  background: transparent;
+  color: #64b5f6;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-retry:hover {
+  background-color: rgba(100, 181, 246, 0.1);
+}
+
+/* 项目网格 */
+.project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
 
-.featured-card {
+.project-card {
   background-color: #1a2a3a;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.04);
@@ -315,14 +308,14 @@ onMounted(() => {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.featured-card:hover {
+.project-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
   border-color: rgba(100, 181, 246, 0.2);
 }
 
-.fc-cover {
-  height: 160px;
+.card-cover {
+  height: 180px;
   background: rgba(100, 181, 246, 0.05);
   display: flex;
   align-items: center;
@@ -330,22 +323,30 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.fc-placeholder {
-  font-size: 40px;
+.cover-placeholder {
+  font-size: 48px;
   color: rgba(255, 255, 255, 0.1);
 }
 
-.fc-image {
+.cover-placeholder.hidden {
+  display: none;
+}
+
+.cover-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.fc-body {
-  padding: 16px 20px 20px;
+.card-body {
+  padding: 20px 24px 24px;
 }
 
-.fc-type {
+.card-type {
+  margin-bottom: 10px;
+}
+
+.type-tag {
   font-size: 12px;
   color: #64b5f6;
   background: rgba(100, 181, 246, 0.1);
@@ -353,22 +354,40 @@ onMounted(() => {
   border-radius: 4px;
 }
 
-.fc-title {
-  font-size: 18px;
+.card-title {
+  font-size: 20px;
   font-weight: 600;
   color: #ffffff;
-  margin: 10px 0 8px;
+  margin-bottom: 10px;
   line-height: 1.4;
 }
 
-.fc-summary {
-  font-size: 13px;
+.card-summary {
+  font-size: 14px;
   color: #78909c;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-bottom: 14px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #546e7a;
+  flex-wrap: wrap;
+}
+
+.card-tech {
+  color: #64b5f6;
+}
+
+.card-leader {
+  color: #78909c;
 }
 
 /* 页脚 */

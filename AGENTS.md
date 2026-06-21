@@ -353,18 +353,18 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `feat/article-markdown-sharing` |
-| 阶段 | 招新报名闭环 MVP + 文章管理/Markdown学习分享（当前） |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程） |
-| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情页面已实现，Markdown 渲染已实现 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理页面已实现 |
-| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` 表 DDL 已编写，init.sql 已更新 |
+| 分支 | `feat/project-showcase` |
+| 阶段 | 第四阶段：项目成果展示闭环（当前） |
+| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程） |
+| 前台 web | Vue 3 项目已初始化，首页/登录/注册/个人中心/招新报名/我的报名/文章列表/文章详情/项目列表/项目详情页面已实现，Markdown 渲染已实现，首页精选项目已实现 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/布局/数据概览/用户管理/报名管理/文章管理/项目管理页面已实现 |
+| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
 | 构建状态 | backend ✅ web ✅ admin-web ✅ docker compose ✅ |
-| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ |
-| 稳定 tag | mvp-recruitment-workflow-20260622 |
+| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环待运行 |
+| 稳定 tag | stable-after-article-regression-20260622 |
 
 ## 容器化开发规范
 
@@ -408,6 +408,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 第四阶段项目成果展示 | 新增 lab_project 表；后端新增 project 模块（Project entity/mapper/service + ProjectController + AdminProjectController）；前台新增项目列表(/projects)和项目详情(/projects/:id)页面并使用 markdown-it 渲染（html:false 防XSS）；首页新增精选项目区域(GET /api/projects/featured)；后台新增项目管理页面（列表/创建/编辑/发布/下架/删除）；SaTokenConfig 排除 /api/projects/** 公开访问；更新 init.sql；新增 02-add-project-table.sql 迁移脚本；新增 scripts/verify-project-flow.sh |
 | 2026-06-22 | 工程级重命名 | 旧工程标识 `nynu-se-lab` → 新工程标识 `nynu-code-lab`；正式展示名：南阳师范学院 Code Lab 实验室 / NYNU Code Lab；数据库名 `nynu_se_lab` → `nynu_code_lab`；Java 包名 `cn.edu.nynu.selab` → `cn.edu.nynu.codelab`；Maven artifactId `selab-backend` → `nynu-code-lab-backend`；前端 package name 同步更新；Docker container/network/image name 同步更新；根目录从 `nynu-se-lab` 重命名为 `nynu-code-lab`；Docker service key 保留不变（mysql/redis/backend/nginx）；Git remote 已更新为 `git@gitee.com:zeng-bohan-66/nynu-code-lab.git`；README/AGENTS/docs 全部同步更新；三模块构建验证通过 |
 | 2026-06-22 | 容器化验收 + 提交固定 | 全链路验收通过：docker compose config ✅ / 4容器正常启动 ✅ / backend 1.749s 启动 ✅ / /api/health 200 ✅ / web 200 ✅ / admin-web 200 ✅ / localhost残留检查通过 ✅ / .gitignore 敏感文件排除 ✅ / MyBatisPlusSpringFix 兼容性修复确认有效 / Spring Boot 3.3.7 + MyBatis-Plus 3.5.16 / 提交 chore: add dockerized development environment |
 | 2026-06-22 | 容器化改造 | 拆分 application.yml 为 local/docker profile；新增 GET /api/health 健康检查；创建 backend/web/admin-web/deploy/nginx 四个 Dockerfile；创建 deploy/docker-compose.yml（MySQL + Redis + Backend + Nginx）；创建 Nginx 统一托管配置；创建 .env.example；更新 .gitignore；更新 README.md / AGENTS.md / deploy/README.md；修复 admin-web 路由 base 支持 /admin/ 路径 |
@@ -433,21 +434,25 @@ docker compose ps                  # 确认所有服务运行
 - 文章分类使用自由文本字段，未做分类管理功能
 - 文章浏览量直接在详情接口中递增，无防刷机制
 - 前台文章列表未做分页，文章数量较多时性能可能不足
+- 项目封面仅支持 URL 字段，不支持文件上传
+- 项目成员/负责人使用文本字段，未与系统用户表关联
+- 项目浏览量直接在详情接口中递增，无防刷机制
+- 前台项目列表未做分页
 
 ## 下一步建议
 
-1. 合并当前分支 feat/article-markdown-sharing 到 main（经过代码审查后）
+1. 合并当前分支 feat/project-showcase 到 main（经过代码审查后）
 2. 实现技术方向 CRUD + 前台展示
 3. 实现核心成员 CRUD + 前台展示
-4. 实现项目成果 CRUD + 前台展示
-5. 完善修改密码和退出登录功能
-6. 前台个人中心引入更多真实数据
-7. 后台用户管理页面实现真实数据对接
-8. 完善报名状态流转（增加更多中间状态约束和校验）
-9. 生产环境 Nginx 配置 HTTPS 和证书管理
-10. 引入 Redis 业务依赖（如 Session 共享、缓存）
-11. 为 `lab_apply_record` 表添加用户唯一约束索引
-12. 文章列表加分页、分类筛选优化
+4. 完善修改密码和退出登录功能
+5. 前台个人中心引入更多真实数据
+6. 后台用户管理页面实现真实数据对接
+7. 完善报名状态流转（增加更多中间状态约束和校验）
+8. 生产环境 Nginx 配置 HTTPS 和证书管理
+9. 引入 Redis 业务依赖（如 Session 共享、缓存）
+10. 为 `lab_apply_record` 表添加用户唯一约束索引
+11. 文章列表加分页、分类筛选优化
+12. 项目列表加分页优化
 13. 实现文件上传功能（文章封面、项目封面、成员头像等）
 
 ## 验收命令
