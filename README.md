@@ -385,12 +385,79 @@ docker compose logs
 - 分类：自由文本字段，例如「学习笔记」「技术分享」「项目复盘」
 - 标签：JSON 数组字符串格式，例如 `["Java","Spring Boot"]`
 
+### 项目成果展示
+
+**项目状态：** 草稿（DRAFT）→ 已发布（PUBLISHED）→ 已下架（OFFLINE）
+
+**完整流程：**
+
+1. 管理员登录后台 http://localhost/admin/login
+2. 进入项目管理 http://localhost/admin/projects
+3. 新建项目：填写项目名称、简介、类型、技术栈、负责人、Markdown 详细介绍，保存草稿
+4. 草稿项目不会在前台展示
+5. 点击"发布"将项目状态改为已发布
+6. 前台 http://localhost/projects 可看到已发布项目列表
+7. 点击项目进入详情页 http://localhost/projects/{id}，Markdown 正确渲染
+8. 设置为"首页精选"的项目出现在首页精选项目区域
+9. 管理员可随时"下架"项目（前台不可见）
+10. 管理员可"删除"项目（软删除，前台不可见）
+
+**项目详情 Markdown 渲染安全策略：**
+
+- 使用 `markdown-it` 进行 Markdown → HTML 转换，与文章模块完全一致
+- 配置 `html: false`，关闭原始 HTML 标签解析，防止 XSS 攻击
+- 项目详情中嵌入的 HTML 标签会被转义显示，不会执行
+- 项目封面仅支持 URL 字段，不支持图片上传
+- 第一版支持基础 Markdown 语法：标题、列表、代码块、链接、表格、引用等
+
+**项目字段说明：**
+- 项目名称、项目简介、项目详细介绍（Markdown）
+- 项目类型（Web/AI/IoT/课程设计/竞赛作品等）
+- 技术栈、负责人姓名、参与成员（文本）
+- 封面 URL（仅 URL，不做上传）
+- 代码仓库链接、演示地址、文档地址
+- 首页精选标记、排序值
+
+**前台访问路径：**
+| 入口 | 地址 |
+|------|------|
+| 项目列表 | http://localhost/projects |
+| 项目详情 | http://localhost/projects/{id} |
+
+**后台访问路径：**
+| 入口 | 地址 |
+|------|------|
+| 后台项目管理 | http://localhost/admin/projects |
+
+**核心接口说明：**
+
+前台公开接口：
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| GET | `/api/projects` | 已发布项目列表 | 无 |
+| GET | `/api/projects/featured` | 精选项目列表（首页） | 无 |
+| GET | `/api/projects/{id}` | 已发布项目详情 | 无 |
+
+后台管理接口（需 ADMIN 权限）：
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| GET | `/api/admin/projects` | 项目列表（?status=&featured=） | ADMIN |
+| GET | `/api/admin/projects/{id}` | 项目详情 | ADMIN |
+| POST | `/api/admin/projects` | 创建项目 | ADMIN |
+| PUT | `/api/admin/projects/{id}` | 编辑项目 | ADMIN |
+| PUT | `/api/admin/projects/{id}/publish` | 发布项目 | ADMIN |
+| PUT | `/api/admin/projects/{id}/offline` | 下架项目 | ADMIN |
+| DELETE | `/api/admin/projects/{id}` | 删除项目（软删除） | ADMIN |
+
 ### 数据库初始化说明
 
 Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`，创建以下表：
 - `sys_user` — 系统用户表（含默认管理员 admin/admin123）
 - `lab_apply_record` — 招新报名记录表
 - `lab_article` — 文章表
+- `lab_project` — 项目成果表
 
 如果数据库已初始化过（数据卷已存在），新表不会自动创建。请根据需要执行：
 
@@ -411,6 +478,8 @@ docker compose exec mysql mysql -u root -p < backend/sql/init.sql
 ```bash
 # 仅创建 lab_article 表
 docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/01-add-article-table.sql
+# 仅创建 lab_project 表
+docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/02-add-project-table.sql
 # 输入 MYSQL_ROOT_PASSWORD
 ```
 
@@ -438,6 +507,14 @@ bash scripts/verify-article-flow.sh
 ```
 
 脚本会依次验证：管理员创建草稿 → 编辑 → 草稿前台不可见 → 发布 → 前台列表可见 → 详情Markdown渲染 → 下架 → 前台不可见 → 删除 → 普通用户权限隔离。
+
+### 项目成果验证脚本
+
+```bash
+bash scripts/verify-project-flow.sh
+```
+
+脚本会依次验证：管理员创建草稿 → 编辑 → 草稿前台不可见 → 发布 → 前台列表/详情可见 → 精选可见 → Markdown 内容返回 → 下架 → 前台不可见 → 删除 → 普通用户权限隔离 → 游客访问验证。
 
 ### 手工验证步骤
 
