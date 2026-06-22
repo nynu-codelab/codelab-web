@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { login as loginApi, getMe } from "@/api/auth";
+import { login as loginApi, getMe, logout as logoutApi } from "@/api/auth";
 
 export interface UserInfo {
   id: number;
@@ -27,10 +27,16 @@ export const useUserStore = defineStore("user", () => {
     userInfo.value = res.data;
   }
 
-  function logout() {
-    token.value = "";
-    userInfo.value = null;
-    localStorage.removeItem("token");
+  async function logout() {
+    try {
+      await logoutApi();
+    } catch {
+      // 即使后端调用失败，前端也清理本地状态
+    } finally {
+      token.value = "";
+      userInfo.value = null;
+      localStorage.removeItem("token");
+    }
   }
 
   return {

@@ -1,6 +1,11 @@
 <template>
   <el-container class="layout-container">
     <div class="layout-signal" aria-hidden="true"></div>
+    <div class="layout-status-rail" aria-hidden="true">
+      <span>AUTH</span>
+      <span>CMS</span>
+      <span>RECRUIT</span>
+    </div>
     <el-aside :width="isCollapse ? '78px' : '246px'" class="layout-aside">
       <button class="aside-logo" type="button" @click="toggleCollapse">
         <span class="logo-mark">
@@ -70,6 +75,11 @@
           </div>
         </div>
         <div class="header-right">
+          <div class="header-command" aria-label="后台运行状态">
+            <span class="header-command__dot"></span>
+            <code>admin.guard --role ADMIN</code>
+            <small>LIVE</small>
+          </div>
           <el-dropdown trigger="click">
             <span class="user-info">
               <el-avatar :size="34" :icon="UserFilled" />
@@ -78,6 +88,10 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
+                <el-dropdown-item @click="showChangePwdDialog = true">
+                  <el-icon><Lock /></el-icon>
+                  修改密码
+                </el-dropdown-item>
                 <el-dropdown-item @click="handleLogout">
                   <el-icon><SwitchButton /></el-icon>
                   退出登录
@@ -93,11 +107,58 @@
       </el-main>
     </el-container>
   </el-container>
+
+  <!-- 修改密码弹层 -->
+  <el-dialog v-model="showChangePwdDialog" title="修改密码" width="420px" :close-on-click-modal="false">
+    <el-form
+      ref="pwdFormRef"
+      :model="pwdForm"
+      :rules="pwdRules"
+      label-width="0"
+      @submit.prevent="handleChangePassword"
+    >
+      <el-form-item prop="oldPassword">
+        <el-input
+          v-model="pwdForm.oldPassword"
+          type="password"
+          placeholder="旧密码"
+          show-password
+          size="large"
+        />
+      </el-form-item>
+      <el-form-item prop="newPassword">
+        <el-input
+          v-model="pwdForm.newPassword"
+          type="password"
+          placeholder="新密码（至少 6 位）"
+          show-password
+          size="large"
+        />
+      </el-form-item>
+      <el-form-item prop="confirmPassword">
+        <el-input
+          v-model="pwdForm.confirmPassword"
+          type="password"
+          placeholder="确认新密码"
+          show-password
+          size="large"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="showChangePwdDialog = false">取消</el-button>
+      <el-button type="primary" :loading="pwdLoading" @click="handleChangePassword">
+        确认修改
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import type { FormInstance, FormRules } from "element-plus";
 import {
   ArrowDown,
   Collection,
@@ -107,6 +168,7 @@ import {
   Expand,
   FolderOpened,
   Fold,
+  Lock,
   Reading,
   Setting,
   SwitchButton,
@@ -115,6 +177,7 @@ import {
   UserFilled,
 } from "@element-plus/icons-vue";
 import { useUserStore } from "@/stores/user";
+import { changePassword } from "@/api/auth";
 import brandMark from "@/assets/brand/nynu-code-lab-mark.svg";
 
 const route = useRoute();
@@ -131,6 +194,65 @@ function toggleCollapse() {
 function handleLogout() {
   userStore.logout();
   router.push({ name: "Login" });
+}
+
+// --------------- 修改密码 ---------------
+const showChangePwdDialog = ref(false);
+const pwdLoading = ref(false);
+const pwdFormRef = ref<FormInstance>();
+
+const pwdForm = reactive({
+  oldPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+
+const validateConfirm = (_rule: any, value: string, callback: any) => {
+  if (value !== pwdForm.newPassword) {
+    callback(new Error("两次输入的新密码不一致"));
+  } else {
+    callback();
+  }
+};
+
+const pwdRules: FormRules = {
+  oldPassword: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
+  newPassword: [
+    { required: true, message: "请输入新密码", trigger: "blur" },
+    { min: 6, message: "新密码长度不能少于 6 位", trigger: "blur" },
+  ],
+  confirmPassword: [
+    { required: true, message: "请确认新密码", trigger: "blur" },
+    { validator: validateConfirm, trigger: "blur" },
+  ],
+};
+
+async function handleChangePassword() {
+  if (!pwdFormRef.value) return;
+  const valid = await pwdFormRef.value.validate().catch(() => false);
+  if (!valid) return;
+
+  pwdLoading.value = true;
+  try {
+    await changePassword({
+      oldPassword: pwdForm.oldPassword,
+      newPassword: pwdForm.newPassword,
+      confirmPassword: pwdForm.confirmPassword,
+    });
+    ElMessage.success("密码修改成功，请重新登录");
+    showChangePwdDialog.value = false;
+    pwdForm.oldPassword = "";
+    pwdForm.newPassword = "";
+    pwdForm.confirmPassword = "";
+    // 密码修改成功后需重新登录
+    userStore.logout();
+    router.push({ name: "Login" });
+  } catch (e: any) {
+    const msg = e?.response?.data?.message || e?.message || "修改失败";
+    ElMessage.error(msg);
+  } finally {
+    pwdLoading.value = false;
+  }
 }
 </script>
 
@@ -155,6 +277,29 @@ function handleLogout() {
     linear-gradient(90deg, rgba(83, 231, 255, 0.035) 1px, transparent 1px);
   background-size: auto, 76px 76px, 76px 76px;
   mask-image: radial-gradient(circle at 62% 18%, black, transparent 72%);
+}
+
+.layout-status-rail {
+  position: fixed;
+  z-index: 2;
+  right: 18px;
+  top: 96px;
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.layout-status-rail span {
+  writing-mode: vertical-rl;
+  padding: 9px 6px;
+  border: 1px solid rgba(153, 217, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(199, 215, 232, 0.58);
+  background: rgba(4, 10, 18, 0.58);
+  box-shadow: 0 0 24px rgba(83, 231, 255, 0.05);
+  font-family: var(--admin-font-data);
+  font-size: 10px;
+  letter-spacing: 0;
 }
 
 .layout-aside {
@@ -326,6 +471,50 @@ function handleLogout() {
   font-size: 18px;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-command {
+  display: inline-grid;
+  grid-template-columns: 8px minmax(0, auto) auto;
+  gap: 9px;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(153, 217, 255, 0.15);
+  border-radius: 999px;
+  color: var(--admin-muted);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 20px rgba(83, 231, 255, 0.035);
+}
+
+.header-command__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--admin-teal);
+  box-shadow: 0 0 16px rgba(47, 240, 182, 0.62);
+}
+
+.header-command code {
+  max-width: 240px;
+  overflow: hidden;
+  color: rgba(216, 247, 255, 0.88);
+  font-family: var(--admin-font-data);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-command small {
+  color: var(--admin-teal);
+  font-family: var(--admin-font-data);
+  font-size: 10px;
+}
+
 .user-info {
   display: inline-flex;
   align-items: center;
@@ -355,6 +544,11 @@ function handleLogout() {
 
 @media (max-width: 760px) {
   .layout-aside {
+    display: none;
+  }
+
+  .layout-status-rail,
+  .header-command {
     display: none;
   }
 

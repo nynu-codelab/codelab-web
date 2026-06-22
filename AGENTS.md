@@ -355,14 +355,14 @@ AI 在每次开发任务完成后必须：
 |---|---|
 | 分支 | `refine/pc-immersive-frontend` |
 | 阶段 | PC 沉浸式视觉增强：在“工程指挥舱 + 年轻学生技术团队展台”方向上继续增强 PC 端动态背景、终端控制台、代码流、节点网络和后台驾驶舱 |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403 |
-| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；已新增 `docs/前端视觉组件规范.md` 约束后续组件使用；Logo 已确认并接入前台页眉、页脚和 favicon，原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；数据概览新增 ECharts 模块状态图与控制台信号面板；后台登录和侧栏品牌位已接入确认版 Logo 与 favicon；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
-| 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束 |
+| 后端 | Spring Boot 项目已初始化，认证闭环已实现（注册/登录/登出/修改密码/限流），招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403；Token 黑名单机制已实现（JWT 模式下登出 token 立即失效） |
+| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；本轮已安装并调用 `taste-skill` / `redesign-skill`，新增 `LabSignalField` 前景信号场，强化 Hero 终端状态条、逐行启动、光标、卡片 cursor spotlight、项目工程 HUD、文章知识库轨道和方向节点路线；已新增 `docs/前端视觉组件规范.md` 约束后续组件使用；Logo 已确认并接入前台页眉、页脚和 favicon，原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；数据概览新增 ECharts 模块状态图、控制台信号面板和工程运行矩阵；后台壳层新增命令状态条与右侧模块状态轨；后台登录和侧栏品牌位已接入确认版 Logo 与 favicon；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
+| 数据库 | 10 张表 DDL 已编写（`sys_user` / `lab_apply_record` / `lab_article` / `lab_project` / `lab_member` / `lab_direction` / `lab_site_config` / `lab_upload_file` / `lab_article_category` / `lab_article_tag`），统一在 `deploy/mysql/init/01-init.sql`；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束；`lab_direction` 已初始化 5 个技术方向种子数据；`lab_article_category` 已初始化 4 个分类；`lab_article_tag` 已初始化 6 个标签；`lab_site_config` 已初始化 10 项站点配置（联系方式类留空，不含虚假数据）；`lab_member` 无虚假成员数据 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
-| 构建状态 | backend `mvn clean package -DskipTests` ✅ / web `npm install && npm run build` ✅ / admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk 有 Vite 体积提醒）/ docker compose config + up -d --build + ps ✅ |
+| 构建状态 | backend `mvn clean package -DskipTests` ✅（既有全量回归记录）/ web `npm install && npm run build` ✅ / web `npm run type-check` ✅ / admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk 有 Vite 体积提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ docker compose config + up -d --build + ps ✅（既有全量回归记录） |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
 | 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 经 Nginx 均返回 200 |
 | 稳定 tag | stable-mvp-production-ready-20260622 |
@@ -409,6 +409,9 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | taste-skills 高审美前端优化 | 按用户要求安装并配置 `taste-skill`、`redesign-skill`、`brandkit` 到 `~/.claude/skills`，并通过 `~/.codex/scripts/sync-claude-skills-to-codex` 同步为 Codex symlink；调用 taste-skill 设计读法，保留当前“工程指挥舱 + 年轻学生技术团队展台”方向，不重做风格；前台新增 `LabSignalField`，增强 `TerminalHero` 的 PC 信号场、终端状态条、逐行启动和光标效果，增强 `CommandConsole` 活跃命令、全局玻璃卡片 cursor spotlight、按钮 active/focus、项目卡片工程 HUD、文章卡片知识库轨道、方向卡片节点路线和首页 Lab OS 芯片；后台增强 `AdminLayout` 顶部命令状态、右侧模块状态轨、Element Plus 卡片/按钮交互，并在 `DashboardView` 新增工程运行矩阵；未新增 npm 依赖，未修改后端接口字段、接口路径、数据库字段或业务逻辑；`web npm install && npm run build` ✅ / `web npm run type-check` ✅ / `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high，Dashboard chunk > 500 kB 提醒）；前后台均无 `npm run lint` 脚本，本轮未执行 lint |
+| 2026-06-22 | 阶段 2：认证安全补齐 | 新增 `POST /api/auth/logout`（Token 黑名单机制，登出后 token 失效）、`POST /api/auth/change-password`（BCrypt 校验 + 密码强度 + 成功后强制重新登录）、登录限流（按 IP+username 组合，5 次失败锁 10 分钟）；新增 `TokenBlacklistService`/`InMemoryTokenBlacklistService`、`LoginAttemptService`/`InMemoryLoginAttemptService`、`TokenBlacklistInterceptor`、`ChangePasswordDTO`；`SaTokenConfig` 注册黑名单拦截器（order 1，先于 SaInterceptor）；`GlobalExceptionHandler` 新增 `RuntimeException` 处理（400 友好提示）；`CodelabApplication` 添加 `@EnableScheduling`（黑名单定期清理）；前台 web：`AppHeader`/`UserCenterView` 退出登录接真实 logout 接口，`UserCenterView` 新增修改密码弹层（modal）；后台 admin-web：`AdminLayout` 退出登录接真实 logout 接口，新增修改密码下拉入口 + ElDialog 表单；前后端三模块构建全部通过；未改数据库表结构、未引入新依赖 |
+| 2026-06-22 | 阶段 1：数据库表结构补齐 | 新增 6 张表（`lab_member` / `lab_direction` / `lab_site_config` / `lab_upload_file` / `lab_article_category` / `lab_article_tag`）到 `deploy/mysql/init/01-init.sql`；现有 4 张表结构未修改；初始化 5 个技术方向、4 个文章分类、6 个技术标签、10 项站点配置（联系方式类留空，无虚假数据）；lab_member 无 INSERT；MySQL 8 容器语法验证通过（10 张表全部创建成功）；未修改任何 Java/Vue 代码 |
 | 2026-06-22 | 确认版 Logo 保存与站内接入 | 使用 Product Design 重新按当前官网 token 校准 Logo 方向，用户确认“终端提示符 + C 形框 + 光标竖线 + 琥珀状态点”版本；保存原始 PNG 到 `docs/assets/logo/nynu-code-lab-selected-logo.png`；新增前台 `web/src/assets/brand/nynu-code-lab-mark.svg` 与 `web/public/favicon.svg`；新增后台 `admin-web/src/assets/brand/nynu-code-lab-mark.svg` 与 `admin-web/public/favicon.svg`；前台 `AppHeader`、`AppFooter` 接入确认版 Logo，后台 `AdminLayout`、`LoginView` 接入确认版 Logo；增加轻量状态点呼吸和 hover 能量扫光效果，并遵守 `prefers-reduced-motion`；同步更新 README.md、docs/requirements.md、docs/Logo方案候选.md、docs/前端视觉组件规范.md；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm run build` ✅ / `admin-web npm run build` ✅（既有 Dashboard chunk > 500 kB 提醒）/ `git diff --check` ✅ |
 | 2026-06-22 | 视觉组件规范沉淀 + Logo 简洁候选 | 基于用户确认的 PC 沉浸式视觉方向，新增 `docs/前端视觉组件规范.md`，沉淀 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`DataCounter`、内容卡片和后台 Admin Console 的使用场景、动效边界、PC 优先策略、内容真实性约束和后续扩展检查清单；新增 `docs/Logo方案候选.md`，将 Logo 方向收敛为更简洁的 A「CL 终端提示符」、B「代码括号符号」、C「CL 方形小标」三类候选；本轮仅生成候选预览图并记录本地生成目录，不复制进仓库、不替换正式站点资产；同步更新 README.md 与 docs/requirements.md；未修改前端业务代码、后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；文档变更执行 `git diff --check` ✅ |
 | 2026-06-22 | PC 沉浸式前端视觉增强 | 新建/切换 `refine/pc-immersive-frontend`；基于 `refactor/apply-high-impact-frontend` 继续保留 Product Design 方向“工程指挥舱 + 年轻学生技术团队展台”，不推翻现有高冲击视觉；使用 Product Design brief 回放与 frontend-design 规则；未使用 Figma（无 Figma 链接）；前台新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`DataCounter`；首页升级为 PC 大屏沉浸式 Hero + Lab OS + 终端控制台 + 构建流水线；/about、/directions、/members、/projects、/projects/:id、/articles、/articles/:id、/recruit、/login、/register、/profile、/my-application、/contact、/design-preview 接入终端、命令、节点、代码流或控制台视觉；项目卡片新增扫描线与 BUILD PASS 视觉，文章卡片新增知识库代码纹理，方向卡片新增节点环绕光效；后台数据概览新增 ECharts 模块接入状态图、控制台信号面板，AdminLayout 和空状态增强动态光栅；新增依赖：前台 `gsap`（Hero 入场动画）、`countup.js`（指标计数）、`@lucide/vue`（工程图标），后台 `echarts`（模块状态可视化）；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm run build` ✅ / `admin-web npm run build` ✅（Dashboard chunk > 500 kB 提醒）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config + up -d --build + ps ✅（先重启 Colima 恢复 Docker daemon）/ 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ / Markdown 安全检查确认文章与项目详情均为 `html:false` ✅ |
@@ -429,48 +432,48 @@ docker compose ps                  # 确认所有服务运行
 
 - `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
 - 本轮 PC 沉浸式增强优先 PC 端视觉表现，移动端只做不严重崩溃与简化动效，不做精细适配
+- 当前工作区存在认证安全补齐、数据库表结构补齐、文档删除等非本轮前端审美改造产生的未提交改动；后续提交前需要按任务来源拆分核对
 - 自研 Canvas 粒子网络、代码雨和能量流仅在 PC 端启用；低端 PC 或浏览器开启减少动画时会降级
 - 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
 - 前台 `/members` 当前只展示能力结构，不编造真实成员姓名；真实成员数据与成员接口尚未实现
 - 前台 `/contact` 当前不展示真实联系方式；需等待站点配置接口接入后维护真实联系方式、二维码等
 - 后台 `npm install` 后 audit 仍报告既有 1 个 moderate、1 个 high 漏洞；本次未引入后台依赖，未做强制升级
 - 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥
+- Token 黑名单和登录限流为内存实现，服务重启后丢失，多实例不共享；生产建议替换为 Redis
 - 前台/后台用户管理页面仍为占位页面（UsersView.vue），未对接真实 API
-- 缺少修改密码接口（需求文档中已规划 `POST /api/auth/change-password`）
-- 缺少退出登录接口（需求文档中已规划 `POST /api/auth/logout`）
 - Redis 服务已在 Docker Compose 中预留，但后端 pom.xml 未引入 Redis 依赖，当前业务未使用
 - Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书
 - 前端容器构建跳过 `vue-tsc` 类型检查以加速构建，CI 中应单独运行类型检查
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
 - 报名表 `lab_apply_record` 已通过 `uk_apply_active_user` 约束非撤回报名唯一；历史库执行迁移前如果已有重复非撤回记录，需要先人工清理
-- 文章标签使用 JSON 字符串存储，未做独立标签表或标签管理功能
+- 文章标签使用 JSON 字符串存储，`lab_article_tag` 表已建但尚未与文章表关联或提供独立管理接口
 - 文章封面仅支持 URL 字段，不支持文件上传；Markdown 图片同样依赖外部 URL
-- 文章分类使用自由文本字段，未做分类管理功能
+- 文章分类使用自由文本字段，`lab_article_category` 表已建但尚未与文章表关联或提供独立管理接口
 - 文章浏览量直接在详情接口中递增，无防刷机制
 - 前台文章列表未做分页，文章数量较多时性能可能不足
 - 项目封面仅支持 URL 字段，不支持文件上传
 - 项目成员/负责人使用文本字段，未与系统用户表关联
 - 项目浏览量直接在详情接口中递增，无防刷机制
 - 前台项目列表未做分页
-- 后台成员、方向、站点配置、上传页面已补占位路由，但对应后端接口未实现
+- 后台成员、方向、站点配置、上传页面已补占位路由，对应数据库表已建立但后端接口尚未实现
 - 文件上传模块未实现，当前没有上传目录、上传权限控制或上传静态资源映射
 
 ## 下一步建议
 
-1. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认粒子、代码雨、能量流、终端和控制台动效强度
-2. 基于确认版 Logo 继续补充深浅色横向 wordmark、社交分享图和更完整的品牌使用规范
-3. 评估后台 ECharts 体积提醒，必要时改为动态拆包或轻量 CSS 图表
-4. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
-5. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
-6. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
-7. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
-8. 后台用户管理页面实现真实数据对接
-9. 完善修改密码和退出登录接口
-10. 文章列表加分页、分类筛选优化
-11. 项目列表加分页优化
-12. 完善报名状态流转（增加更多中间状态约束和校验）
-13. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
-14. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
+1. **阶段 3：后台用户管理** — 实现用户 CRUD API + admin-web UsersView 替换占位页
+3. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认粒子、代码雨、能量流、终端、taste-skills 细节增强和控制台动效强度
+4. 基于确认版 Logo 继续补充深浅色横向 wordmark、社交分享图和更完整的品牌使用规范
+5. 评估后台 ECharts 体积提醒，必要时改为动态拆包或轻量 CSS 图表
+6. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
+7. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
+8. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
+9. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
+10. 后台用户管理页面实现真实数据对接
+11. 文章列表加分页、分类筛选优化
+12. 项目列表加分页优化
+13. 完善报名状态流转（增加更多中间状态约束和校验）
+14. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
+15. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
 
 ## 验收命令
 
