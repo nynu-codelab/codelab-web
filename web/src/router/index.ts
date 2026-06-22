@@ -96,8 +96,20 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const userStore = useUserStore()
+
+  // 已登录但尚未拉取用户信息 → 先验证 token 有效性
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await userStore.fetchMe()
+    } catch {
+      // token 无效或过期 → 清理状态并跳转登录
+      userStore.logout()
+      next({ name: 'login', query: { redirect: to.fullPath } })
+      return
+    }
+  }
 
   if (to.meta.requiresAuth && !userStore.token) {
     next({ name: 'login', query: { redirect: to.fullPath } })

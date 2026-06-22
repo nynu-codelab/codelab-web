@@ -86,16 +86,57 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const userStore = useUserStore();
 
+  // 已登录但尚未拉取用户信息 → 先获取用户信息
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await userStore.fetchMe();
+    } catch {
+      // fetchMe 失败（如 token 已过期）→ 清理状态并跳转登录
+      await userStore.logout();
+      next({ name: "Login", query: { redirect: to.fullPath } });
+      return;
+    }
+  }
+
+  // 已登录且已有用户信息 → 周期性重验证 token 是否仍然有效
+  if (userStore.token && userStore.userInfo && userStore.needsReverify()) {
+    try {
+      await userStore.fetchMe();
+    } catch {
+      await userStore.logout();
+      next({ name: "Login", query: { redirect: to.fullPath } });
+      return;
+    }
+  }
+
+  // 需要认证但未登录 → 跳转登录
   if (to.meta.requiresAuth !== false && !userStore.token) {
     next({ name: "Login", query: { redirect: to.fullPath } });
-  } else if (to.name === "Login" && userStore.token) {
-    next({ path: "/dashboard" });
-  } else {
-    next();
+    return;
   }
+
+  // 已登录但非管理员 → 禁止访问（防御越权）
+  if (
+    to.meta.requiresAuth !== false &&
+    userStore.userInfo &&
+    userStore.userInfo.role !== "ADMIN"
+  ) {
+    // 登出并提示
+    await userStore.logout();
+    next({ name: "Login", query: { redirect: to.fullPath } });
+    return;
+  }
+
+  // 已登录访问登录页 → 重定向到首页
+  if (to.name === "Login" && userStore.token) {
+    next({ path: "/dashboard" });
+    return;
+  }
+
+  next();
 });
 
 export default router;

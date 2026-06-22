@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [vue()],
   resolve: {
     alias: {
@@ -17,5 +17,9 @@ export default defineConfig({
         changeOrigin: true
       }
     }
-  }
-})
+  },
+  esbuild: {
+    // 生产构建时移除 console.* 和 debugger，防止 API 错误详情泄露到浏览器控制台
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+  },
+}))

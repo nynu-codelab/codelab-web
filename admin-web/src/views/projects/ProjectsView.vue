@@ -204,6 +204,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import CoverUpload from '@/components/CoverUpload.vue'
 import {
   getProjects,
+  getProject,
   createProject,
   updateProject,
   publishProject,
@@ -300,8 +301,8 @@ function showCreate() {
 
 async function showEdit(row: ProjectItem) {
   try {
-    const res = await getProjects({ page: 1, pageSize: 100 })
-    const project = (res.data.records || []).find((p: ProjectItem) => p.id === row.id)
+    const res = await getProject(row.id)
+    const project = res.data
     if (project) {
       form.title = project.title
       form.summary = project.summary || ''

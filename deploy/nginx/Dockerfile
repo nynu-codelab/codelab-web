@@ -25,8 +25,9 @@ RUN npx vite build
 # --- Stage 3: Nginx 统一托管 ---
 FROM nginx:alpine
 
-# 复制 Nginx 配置
-COPY deploy/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# 复制 Nginx 配置模板；官方 nginx entrypoint 会用环境变量渲染到 conf.d。
+ENV NGINX_SERVER_NAME=localhost
+COPY deploy/nginx/nginx.conf /etc/nginx/templates/default.conf.template
 
 # 复制前台静态资源 → /
 COPY --from=web-builder /app/dist /usr/share/nginx/html

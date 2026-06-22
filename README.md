@@ -121,7 +121,7 @@ bash scripts/verify-project-flow.sh       # 项目成果闭环 21 项
 ## 当前状态
 
 - **分支**：`refine/pc-immersive-frontend`
-- **阶段**：阶段 5.6 完成，待进入 Stage 6 实际生产部署
+- **阶段**：阶段 5.7 上线前 P0/P1 收口完成，待进入 Stage 6 实际生产部署
 - **构建**：backend ✅ / web ✅ / admin-web ✅ / Docker Compose ✅
 - **验证**：招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅
 

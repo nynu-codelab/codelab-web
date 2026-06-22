@@ -5,8 +5,3 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
-
-declare module 'markdown-it' {
-  const MarkdownIt: any
-  export default MarkdownIt
-}

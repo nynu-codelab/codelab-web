@@ -33,21 +33,23 @@ export interface ReviewParams {
 export const STATUS_MAP: Record<string, string> = {
   PENDING: '待处理',
   VIEWED: '已查看',
+  CONTACTED: '已联系',
   PRELIMINARY_PASSED: '通过初筛',
   INTERVIEWING: '面试中',
   PASSED: '已通过',
   REJECTED: '已拒绝',
-  CONTACTED: '已联系'
+  WITHDRAWN: '已撤回'
 }
 
 export const STATUS_TAG_TYPE: Record<string, 'warning' | 'primary' | '' | 'success' | 'danger' | 'info'> = {
   PENDING: 'warning',
   VIEWED: 'info',
+  CONTACTED: 'info',
   PRELIMINARY_PASSED: 'primary',
   INTERVIEWING: '',
   PASSED: 'success',
   REJECTED: 'danger',
-  CONTACTED: 'info'
+  WITHDRAWN: 'info'
 }
 
 export interface PageResult<T> {

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class LabDirectionServiceImpl implements LabDirectionService {
 
     private final LabDirectionMapper labDirectionMapper;
@@ -28,7 +30,11 @@ public class LabDirectionServiceImpl implements LabDirectionService {
         LambdaQueryWrapper<LabDirection> wrapper = new LambdaQueryWrapper<LabDirection>()
                 .eq(LabDirection::getStatus, LabDirection.STATUS_ENABLED)
                 .orderByAsc(LabDirection::getSortOrder);
-        return labDirectionMapper.selectList(wrapper);
+        // 防御性限制：方向数量通常 <20，设置合理上限防止意外全量返回
+        return labDirectionMapper.selectPage(
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<LabDirection>(1, 200, false),
+                wrapper
+        ).getRecords();
     }
 
     @Override

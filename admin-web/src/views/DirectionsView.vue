@@ -136,6 +136,7 @@ import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import {
   getDirections,
+  getDirection,
   createDirection,
   updateDirection,
   enableDirection,
@@ -202,8 +203,8 @@ function showCreate() {
 
 async function showEdit(row: DirectionItem) {
   try {
-    const res = await getDirections()
-    const direction = (res.data || []).find(d => d.id === row.id)
+    const res = await getDirection(row.id)
+    const direction = res.data
     if (direction) {
       form.name = direction.name
       form.code = direction.code

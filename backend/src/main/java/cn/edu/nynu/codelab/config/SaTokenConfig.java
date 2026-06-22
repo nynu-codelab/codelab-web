@@ -36,6 +36,10 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 1. Token 黑名单拦截器 — 在 Sa-Token 之前执行，拦截已登出的 token
+        //
+        // ⚠️ 安全注意事项：
+        // 排除路径使用通配符（如 /api/articles/**）意味着该路径下所有子路径均为公开访问。
+        // 新增 Controller 时需确认是否应加入排除列表，避免意外暴露需认证的接口。
         registry.addInterceptor(tokenBlacklistInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
@@ -47,7 +51,6 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/projects/**",
                         "/api/members/**",
                         "/api/directions/**",
-                        "/api/portal/**",
                         "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",
@@ -66,7 +69,6 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/projects/**",
                         "/api/members/**",
                         "/api/directions/**",
-                        "/api/portal/**",
                         "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",
@@ -85,7 +87,6 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/projects/**",
                         "/api/members/**",
                         "/api/directions/**",
-                        "/api/portal/**",
                         "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",

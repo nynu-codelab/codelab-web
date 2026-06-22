@@ -1,82 +1,94 @@
-/* Motion CSS for NYNU Code Lab Logo Animation */
+/* ═══════════════════════════════════════════════════════════
+   NYNU Code Lab — Logo Motion CSS
+   Pixel2Motion v2 • Canonical animation source for logo_motion.html
+   ═══════════════════════════════════════════════════════════ */
 
+/* ── Web Font ──────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+/* ── Personality Tokens ──────────────────────────────────
+   Brand Words: swift, precise, confident
+   Usage: splash/intro reveal (1500ms), landing on static final state
+   ────────────────────────────────────────────────────────── */
 :root {
-  /* Personality Tokens - Energetic/Tech */
   --p2m-duration: 1500ms;
-  --p2m-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
-  --p2m-ease-settle: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --p2m-ease-natural: cubic-bezier(0.4, 0, 0.2, 1);
-  --p2m-squash: 0.10;
+  --p2m-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);       /* explosive out */
+  --p2m-ease-settle: cubic-bezier(0.34, 1.56, 0.64, 1);   /* overshoot settle */
+  --p2m-ease-natural: cubic-bezier(0.4, 0, 0.2, 1);       /* standard */
   --p2m-overshoot: 1.06;
+  --p2m-squash: 0.10;
 }
 
-/* Reduced motion - show final state immediately */
-@media (prefers-reduced-motion: reduce) {
-  .draw-on { stroke-dashoffset: 0 !important; animation: none !important; }
-  #mark-chevron, #mark-underscore, #dot, #wordmark-nynu, #wordmark-code {
-    opacity: 1 !important; transform: none !important; animation: none !important;
-  }
-  .cursor-blink { animation: none !important; opacity: 1 !important; }
-}
+/* ── Keyframes ───────────────────────────────────────────
+   IMPORTANT: Timing functions inside @keyframes must be LITERAL.
+   CSS var() references are silently dropped in Chromium,
+   degrading the segment to linear. Keep token names in comments.
+   ────────────────────────────────────────────────────────── */
 
-/* Main animation keyframes */
-
-/* Frame draw-on stroke reveal */
+/* Frame — draw-on stroke reveal (left-to-right along the path) */
 @keyframes p2m-frame-draw {
-  0% { stroke-dashoffset: 1; }
+  0%   { stroke-dashoffset: 1; }
   100% { stroke-dashoffset: 0; }
 }
 
-/* Chevron scale-pop */
+/* Chevron — scale-pop with overshoot (token: --p2m-overshoot = 1.06) */
 @keyframes p2m-chevron-arrive {
-  0% { opacity: 0; transform: scale(0.3); }
-  60% { opacity: 1; transform: scale(var(--p2m-overshoot)); }
-  80% { transform: scale(0.97); }
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { opacity: 1; transform: scale(1.06); }    /* overshoot peak */
+  80%  { transform: scale(0.97); }                /* counter-settle */
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Underscore cursor blink */
+/* Underscore — cursor blink-in */
 @keyframes p2m-underscore-blink {
-  0% { opacity: 0; }
-  15% { opacity: 1; }
-  30% { opacity: 0; }
-  45% { opacity: 1; }
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  30%  { opacity: 0; }
+  45%  { opacity: 1; }
   100% { opacity: 1; }
 }
 
-/* Dot bounce */
+/* Dot — bounce with overshoot settle */
 @keyframes p2m-dot-arrive {
-  0% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1.2); }
-  70% { transform: scale(0.95); }
-  85% { transform: scale(1.05); }
+  0%   { opacity: 0; transform: scale(0); }
+  50%  { opacity: 1; transform: scale(1.2); }
+  70%  { transform: scale(0.95); }
+  85%  { transform: scale(1.05); }
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Wordmark slide up */
+/* Wordmark — slide up + fade, slight overshoot */
 @keyframes p2m-word-arrive {
-  0% { opacity: 0; transform: translateY(30px); }
-  60% { opacity: 1; transform: translateY(-5px); }
-  80% { transform: translateY(2px); }
+  0%   { opacity: 0; transform: translateY(30px); }
+  60%  { opacity: 1; transform: translateY(-5px); }
+  80%  { transform: translateY(2px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Cursor blink loop */
+/* Cursor — infinite terminal blink (applied after reveal completes) */
 @keyframes p2m-cursor-pulse {
-  0%, 50% { opacity: 1; }
+  0%, 50%  { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
 
-/* Apply animations */
+/* ── Animation Assignments ───────────────────────────────
+   Stagger: Frame → +120ms Chevron → +200ms Underscore
+            → +350ms Dot → +450ms NYNU → +600ms Code Lab
+   All use animation-fill-mode: forwards for deterministic ?t= seeking.
+   ────────────────────────────────────────────────────────── */
+
+/* Logo group — establish stacking context for transforms */
 #logo-main {
   transform-box: fill-box;
   transform-origin: center;
 }
 
+/* Frame: draw-on stroke reveal, starts at 300ms (anticipation hold) */
 #mark-frame {
-  animation: p2m-frame-draw 700ms var(--p2m-ease-natural) 300ms forwards;
+  animation: p2m-frame-draw 700ms cubic-bezier(0.4, 0, 0.2, 1) 300ms forwards;
 }
 
+/* Chevron: scale-pop, starts at 420ms */
 #mark-chevron {
   opacity: 0;
   transform-box: fill-box;
@@ -84,39 +96,78 @@
   animation: p2m-chevron-arrive 400ms cubic-bezier(0.16, 1, 0.3, 1) 420ms forwards;
 }
 
+/* Underscore: cursor blink-in, starts at 500ms */
 #mark-underscore {
   opacity: 0;
   animation: p2m-underscore-blink 300ms cubic-bezier(0.4, 0, 0.2, 1) 500ms forwards;
 }
 
-#dot {
+/* Dot: bounce-in, starts at 650ms */
+.dot {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
   animation: p2m-dot-arrive 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 650ms forwards;
 }
 
+/* Wordmark "NYNU": slide-up, starts at 750ms */
 #wordmark-nynu {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: p2m-word-arrive 500ms var(--p2m-ease-enter) 750ms forwards;
+  animation: p2m-word-arrive 500ms cubic-bezier(0.16, 1, 0.3, 1) 750ms forwards;
 }
 
+/* Wordmark "Code Lab": slide-up, starts at 900ms (staggered +150ms) */
 #wordmark-code {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: p2m-word-arrive 500ms var(--p2m-ease-enter) 900ms forwards;
+  animation: p2m-word-arrive 500ms cubic-bezier(0.16, 1, 0.3, 1) 900ms forwards;
 }
 
-/* Hover states */
+/* ── Post-Reveal: cursor blink loop ───────────────────── */
+#mark-underscore.final-blink {
+  /* Delay is 0ms — the JS setTimeout already compensates for playbackRate.
+     When this class is added, the reveal has just finished. Start blinking now. */
+  animation: p2m-cursor-pulse 1000ms step-end 0ms infinite;
+}
+
+/* ── Hover States ──────────────────────────────────────── */
 #logo-main:hover #mark-frame {
   filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
   transition: filter 200ms ease-out;
 }
 
-#logo-main:hover #dot {
+#logo-main:hover .dot {
   filter: drop-shadow(0 0 6px rgba(255, 215, 64, 0.6));
   transition: filter 200ms ease-out;
+}
+
+/* ── Reduced Motion ──────────────────────────────────────
+   Show the final static logo immediately. No animation.
+   The HTML template also handles this at the page level;
+   this rule covers standalone SVG use.
+   ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .draw-on,
+  #mark-frame {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  #mark-chevron,
+  #mark-underscore,
+  .dot,
+  #wordmark-nynu,
+  #wordmark-code {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #mark-underscore.final-blink {
+    animation: none !important;
+    opacity: 1 !important;
+  }
 }

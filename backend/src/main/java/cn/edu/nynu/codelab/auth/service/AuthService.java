@@ -16,8 +16,11 @@ public interface AuthService {
 
     /**
      * 注册
+     *
+     * @param dto 注册请求
+     * @param ip  客户端 IP（用于注册限流）
      */
-    User register(RegisterDTO dto);
+    User register(RegisterDTO dto, String ip);
 
     /**
      * 登录，返回 token 和用户信息

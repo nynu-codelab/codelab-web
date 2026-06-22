@@ -51,16 +51,15 @@ public class TokenBlacklistInterceptor implements HandlerInterceptor {
 
     /**
      * 从 Authorization 请求头中提取 Bearer token。
+     * <p>
+     * 仅支持 Authorization 头传递 Token，不兼容 URL 查询参数 {@code ?token=xxx}——
+     * URL 中的 Token 会泄露到服务器日志、浏览器历史、Referer 头和第三方分析工具中。
+     * </p>
      */
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
-        }
-        // 也尝试从请求参数中获取（兼容某些场景）
-        String token = request.getParameter("token");
-        if (token != null && !token.isEmpty()) {
-            return token;
         }
         return null;
     }

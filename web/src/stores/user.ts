@@ -3,6 +3,18 @@ import { ref, computed } from 'vue'
 import { login as loginApi, register as registerApi, getMe, logout as logoutApi } from '@/api/auth'
 import type { UserInfo, LoginParams, RegisterParams } from '@/api/auth'
 
+/**
+ * 用户状态管理。
+ *
+ * ## 安全注意事项
+ *
+ * Token 当前存储在 localStorage 中，同源任意脚本可读取——若发生 XSS 或供应链攻击，
+ * Token 可能被窃取。缓解措施：
+ * 1. Nginx 配置 CSP 头限制脚本来源（见 deploy/nginx/nginx.conf）
+ * 2. 全站启用 HTTPS（见 deploy/nginx/nginx.conf）
+ * 3. TODO: 迁移到 httpOnly Secure SameSite Cookie 方案（需前后端联合改造：
+ *    后端 set-cookie httpOnly，前端移除手动 Token 管理，需同步添加 CSRF 保护）
+ */
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(localStorage.getItem('token') || '')
   const userInfo = ref<UserInfo | null>(
@@ -30,8 +42,10 @@ export const useUserStore = defineStore('user', () => {
 
   async function login(data: LoginParams) {
     const res = await loginApi(data)
-    setToken(res.token)
-    setUserInfo(res.user)
+    // 后端统一返回 Result<T> 包裹：{ code, message, data: { token, user } }
+    // Axios 响应拦截器返回 response.data（即完整 Result 对象），需从 .data 中解包
+    setToken(res.data.token)
+    setUserInfo(res.data.user)
     return res
   }
 
@@ -40,9 +54,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function fetchMe() {
-    const user = await getMe()
-    setUserInfo(user)
-    return user
+    const res = await getMe()
+    // 后端统一返回 Result<T> 包裹，需从 .data 中解包 UserInfo
+    setUserInfo(res.data)
+    return res.data
   }
 
   async function logout() {

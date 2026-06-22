@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class LabMemberServiceImpl implements LabMemberService {
 
     private final LabMemberMapper labMemberMapper;
@@ -28,7 +30,11 @@ public class LabMemberServiceImpl implements LabMemberService {
         LambdaQueryWrapper<LabMember> wrapper = new LambdaQueryWrapper<LabMember>()
                 .eq(LabMember::getStatus, LabMember.STATUS_ENABLED)
                 .orderByDesc(LabMember::getSortOrder);
-        return labMemberMapper.selectList(wrapper);
+        // 防御性限制：成员数量通常 <50，设置合理上限防止意外全量返回
+        return labMemberMapper.selectPage(
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<LabMember>(1, 200, false),
+                wrapper
+        ).getRecords();
     }
 
     @Override

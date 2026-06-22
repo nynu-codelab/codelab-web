@@ -118,7 +118,7 @@
   </el-container>
 
   <!-- 修改密码弹层 -->
-  <el-dialog v-model="showChangePwdDialog" title="修改密码" width="420px" :close-on-click-modal="false">
+  <el-dialog v-model="showChangePwdDialog" title="修改密码" width="420px" :close-on-click-modal="false" @closed="onPwdDialogClosed">
     <el-form
       ref="pwdFormRef"
       :model="pwdForm"
@@ -229,15 +229,28 @@ function updateSystemTime() {
 onMounted(() => {
   updateSystemTime();
   clockTimer = window.setInterval(updateSystemTime, 1000);
+  // 页面不可见时 setInterval 会被浏览器节流，但通过 visibilitychange 可主动暂停以节省资源
+  document.addEventListener('visibilitychange', onVisibilityChange);
 });
 
 onBeforeUnmount(() => {
   window.clearInterval(clockTimer);
+  document.removeEventListener('visibilitychange', onVisibilityChange);
 });
 
 function handleLogout() {
   userStore.logout();
   router.push({ name: "Login" });
+}
+
+// 页面可见性变化时暂停/恢复时钟
+function onVisibilityChange() {
+  if (document.hidden) {
+    window.clearInterval(clockTimer);
+  } else {
+    updateSystemTime();
+    clockTimer = window.setInterval(updateSystemTime, 1000);
+  }
 }
 
 // --------------- 修改密码 ---------------
@@ -285,9 +298,7 @@ async function handleChangePassword() {
     });
     ElMessage.success("密码修改成功，请重新登录");
     showChangePwdDialog.value = false;
-    pwdForm.oldPassword = "";
-    pwdForm.newPassword = "";
-    pwdForm.confirmPassword = "";
+    clearPwdForm();
     // 密码修改成功后需重新登录
     userStore.logout();
     router.push({ name: "Login" });
@@ -297,6 +308,17 @@ async function handleChangePassword() {
   } finally {
     pwdLoading.value = false;
   }
+}
+
+function onPwdDialogClosed() {
+  clearPwdForm();
+  pwdFormRef.value?.resetFields();
+}
+
+function clearPwdForm() {
+  pwdForm.oldPassword = "";
+  pwdForm.newPassword = "";
+  pwdForm.confirmPassword = "";
 }
 </script>
 

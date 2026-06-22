@@ -134,7 +134,7 @@ function parseTags(skills: string): string[] {
 onMounted(async () => {
   try {
     const res = await getMembers()
-    if (res.code === 0 && Array.isArray(res.data)) {
+    if (res.code === 200 && Array.isArray(res.data)) {
       members.value = res.data.sort((a, b) => a.sortOrder - b.sortOrder)
     }
   } catch (e: any) {

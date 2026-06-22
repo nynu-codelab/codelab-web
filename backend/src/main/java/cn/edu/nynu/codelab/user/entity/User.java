@@ -1,6 +1,7 @@
 package cn.edu.nynu.codelab.user.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class User {
 
     private String username;
 
+    /** 密码哈希——仅允许反序列化（接收请求），禁止序列化（返回响应），防止密码哈希泄露 */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private String realName;

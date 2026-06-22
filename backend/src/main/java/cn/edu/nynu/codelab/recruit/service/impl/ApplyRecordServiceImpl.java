@@ -1,10 +1,12 @@
 package cn.edu.nynu.codelab.recruit.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.nynu.codelab.common.PageQuery;
 import cn.edu.nynu.codelab.recruit.dto.ApplyRequest;
 import cn.edu.nynu.codelab.recruit.dto.ReviewRequest;
 import cn.edu.nynu.codelab.recruit.entity.ApplyRecord;
 import cn.edu.nynu.codelab.common.PageResult;
+import cn.edu.nynu.codelab.common.exception.BusinessException;
 import cn.edu.nynu.codelab.recruit.mapper.ApplyRecordMapper;
 import cn.edu.nynu.codelab.recruit.service.ApplyRecordService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -12,16 +14,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class ApplyRecordServiceImpl implements ApplyRecordService {
 
     private static final Set<String> VALID_STATUSES = new HashSet<>(Arrays.asList(
@@ -58,7 +59,7 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
                         .in(ApplyRecord::getStatus, ACTIVE_STATUSES)
         );
         if (existingCount > 0) {
-            throw new RuntimeException("您已有正在处理中的报名记录，无法重复提交");
+            throw new BusinessException("您已有正在处理中的报名记录，无法重复提交");
         }
 
         ApplyRecord record = buildRecord(req, userId);
@@ -79,7 +80,7 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
                         .last("LIMIT 1")
         );
         if (record == null) {
-            throw new RuntimeException("暂无报名记录");
+            throw new BusinessException("暂无报名记录");
         }
         return record;
     }
@@ -95,7 +96,7 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
                         .last("LIMIT 1")
         );
         if (record == null) {
-            throw new RuntimeException("暂无待审核的报名记录可修改");
+            throw new BusinessException("暂无待审核的报名记录可修改");
         }
 
         // 更新报名字段
@@ -124,7 +125,7 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
                 .orderByDesc(ApplyRecord::getCreateTime);
         if (status != null && !status.isBlank()) {
             if (!VALID_STATUSES.contains(status)) {
-                throw new RuntimeException("无效的审核状态: " + status);
+                throw new BusinessException("无效的审核状态: " + status);
             }
             wrapper.eq(ApplyRecord::getStatus, status);
         }
@@ -133,12 +134,14 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
 
     @Override
     public PageResult<ApplyRecord> adminListPaged(int page, int pageSize, String status, String direction, String keyword) {
+        page = PageQuery.normalizePage(page);
+        pageSize = PageQuery.normalizePageSize(pageSize);
         Page<ApplyRecord> mpPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<ApplyRecord> wrapper = new LambdaQueryWrapper<ApplyRecord>()
                 .orderByDesc(ApplyRecord::getCreateTime);
         if (status != null && !status.isBlank()) {
             if (!VALID_STATUSES.contains(status)) {
-                throw new RuntimeException("无效的审核状态: " + status);
+                throw new BusinessException("无效的审核状态: " + status);
             }
             wrapper.eq(ApplyRecord::getStatus, status);
         }
@@ -156,7 +159,7 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
     public ApplyRecord getApplicationDetail(Long id) {
         ApplyRecord record = applyRecordMapper.selectById(id);
         if (record == null) {
-            throw new RuntimeException("报名记录不存在");
+            throw new BusinessException("报名记录不存在");
         }
         return record;
     }
@@ -166,13 +169,13 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
         Long reviewerId = StpUtil.getLoginIdAsLong();
 
         if (!VALID_STATUSES.contains(req.getStatus())) {
-            throw new RuntimeException("无效的审核状态: " + req.getStatus()
+            throw new BusinessException("无效的审核状态: " + req.getStatus()
                     + "，有效值为: " + String.join(", ", VALID_STATUSES));
         }
 
         ApplyRecord record = applyRecordMapper.selectById(id);
         if (record == null) {
-            throw new RuntimeException("报名记录不存在");
+            throw new BusinessException("报名记录不存在");
         }
 
         record.setStatus(req.getStatus());

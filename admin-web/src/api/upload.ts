@@ -17,9 +17,8 @@ export function uploadFile(file: File, usageType: string = 'other'): Promise<{ c
   const formData = new FormData()
   formData.append('file', file)
   formData.append('usageType', usageType)
-  return request.post('/admin/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  // 不手动设置 Content-Type，让浏览器自动生成带 boundary 的 multipart/form-data 头
+  return request.post('/admin/upload', formData)
 }
 
 export function getUploadedFiles(): Promise<{ code: number; data: UploadFileItem[]; message?: string }> {

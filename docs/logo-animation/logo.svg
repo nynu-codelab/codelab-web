@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1693 929" width="1693" height="929">
   <defs>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
       /* Base styles */
       .mark-frame { fill: none; stroke: #00E5FF; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
       .mark-chevron { fill: #00E5FF; }

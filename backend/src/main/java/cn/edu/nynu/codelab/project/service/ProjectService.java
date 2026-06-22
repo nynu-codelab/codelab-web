@@ -69,6 +69,11 @@ public interface ProjectService {
     Project offline(Long id);
 
     /**
+     * 后台：将已下架项目退回草稿状态（解决 OFFLINE 后无返回 DRAFT 路径的死胡同问题）
+     */
+    Project returnToDraft(Long id);
+
+    /**
      * 后台：删除项目成果（软删除）
      */
     void delete(Long id);
