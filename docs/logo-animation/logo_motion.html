@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYNU Code Lab - Logo Motion</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #0A1628;
+      color: #E0E0E0;
+      font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    
+    h1 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #607D8B;
+      margin-bottom: 40px;
+    }
+    
+    /* Main animation stage */
+    #logo-stage {
+      background: linear-gradient(180deg, #0D1F3C 0%, #0A1628 100%);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 16px;
+      padding: 60px;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    
+    #logo-root {
+      width: 70%;
+      max-width: 600px;
+    }
+    
+    #logo-root svg {
+      width: 100%;
+      height: auto;
+    }
+    
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    button {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #00E5FF;
+      padding: 10px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: rgba(0, 229, 255, 0.2);
+      border-color: #00E5FF;
+    }
+    
+    button.active {
+      background: #00E5FF;
+      color: #0A1628;
+    }
+    
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .speed-control label {
+      font-size: 12px;
+      color: #607D8B;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    input[type="range"] {
+      width: 120px;
+      accent-color: #00E5FF;
+    }
+    
+    /* Atomic motions */
+    .atomic-section {
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 40px;
+    }
+    
+    .atomic-section h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #607D8B;
+      margin-bottom: 20px;
+    }
+    
+    .atomic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .atomic-card {
+      background: rgba(13, 31, 60, 0.8);
+      border: 1px solid rgba(0, 229, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .atomic-card h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #00E5FF;
+      margin-bottom: 16px;
+    }
+    
+    .atomic-card svg {
+      width: 120px;
+      height: 80px;
+    }
+    
+    .atomic-card .hint {
+      font-size: 11px;
+      color: #607D8B;
+      margin-top: 12px;
+    }
+    
+    /* Principles strip */
+    .principles {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+    
+    .principle {
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #607D8B;
+      transition: all 0.3s;
+    }
+    
+    .principle.active {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00E5FF;
+      border-color: #00E5FF;
+    }
+    
+    /* Footer */
+    .footer {
+      font-size: 11px;
+      color: #455A64;
+      text-align: center;
+      margin-top: auto;
+      padding-top: 40px;
+    }
+    
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .draw-on { stroke-dashoffset: 0 !important; animation: none !important; }
+      #mark-chevron, #mark-underscore, .dot, #wordmark-nynu, #wordmark-code {
+        opacity: 1 !important; transform: none !important; animation: none !important;
+      }
+    }
+
+    /* Hidden for static mode */
+    .qa-hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <h1>Logo Motion Preview</h1>
+  
+  <!-- Main animation stage -->
+  <div id="logo-stage">
+    <div id="logo-root">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1693 929">
+        <defs>
+          <style>
+            .mark-frame { fill: none; stroke: #00E5FF; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
+            .mark-chevron { fill: #00E5FF; }
+            .mark-underscore { fill: #00E5FF; }
+            .dot { fill: #FFD740; }
+            .wordmark-nynu { fill: #00E5FF; font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -2px; }
+            .wordmark-code { fill: #FFFFFF; font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -2px; }
+            
+            /* Animation classes */
+            .draw-on {
+              stroke-dasharray: 1;
+              stroke-dashoffset: 1;
+            }
+            
+            /* Animation keyframes */
+            @keyframes p2m-frame-draw {
+              0% { stroke-dashoffset: 1; }
+              100% { stroke-dashoffset: 0; }
+            }
+            
+            @keyframes p2m-chevron-arrive {
+              0% { opacity: 0; transform: scale(0.3); }
+              60% { opacity: 1; transform: scale(1.06); }
+              80% { transform: scale(0.97); }
+              100% { opacity: 1; transform: scale(1); }
+            }
+            
+            @keyframes p2m-underscore-blink {
+              0% { opacity: 0; }
+              15% { opacity: 1; }
+              30% { opacity: 0; }
+              45% { opacity: 1; }
+              100% { opacity: 1; }
+            }
+            
+            @keyframes p2m-dot-arrive {
+              0% { opacity: 0; transform: scale(0); }
+              50% { opacity: 1; transform: scale(1.2); }
+              70% { transform: scale(0.95); }
+              85% { transform: scale(1.05); }
+              100% { opacity: 1; transform: scale(1); }
+            }
+            
+            @keyframes p2m-word-arrive {
+              0% { opacity: 0; transform: translateY(30px); }
+              60% { opacity: 1; transform: translateY(-5px); }
+              80% { transform: translateY(2px); }
+              100% { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes p2m-cursor-pulse {
+              0%, 50% { opacity: 1; }
+              51%, 100% { opacity: 0; }
+            }
+            
+            /* Apply animations */
+            #logo-main {
+              transform-box: fill-box;
+              transform-origin: center;
+            }
+            
+            #mark-frame {
+              animation: p2m-frame-draw 700ms cubic-bezier(0.4, 0, 0.2, 1) 300ms forwards;
+            }
+            
+            #mark-chevron {
+              opacity: 0;
+              transform-box: fill-box;
+              transform-origin: center;
+              animation: p2m-chevron-arrive 400ms cubic-bezier(0.16, 1, 0.3, 1) 420ms forwards;
+            }
+            
+            #mark-underscore {
+              opacity: 0;
+              animation: p2m-underscore-blink 300ms cubic-bezier(0.4, 0, 0.2, 1) 500ms forwards;
+            }
+            
+            .dot {
+              opacity: 0;
+              transform-box: fill-box;
+              transform-origin: center;
+              animation: p2m-dot-arrive 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 650ms forwards;
+            }
+            
+            #wordmark-nynu {
+              opacity: 0;
+              transform-box: fill-box;
+              transform-origin: center bottom;
+              animation: p2m-word-arrive 500ms cubic-bezier(0.16, 1, 0.3, 1) 750ms forwards;
+            }
+            
+            #wordmark-code {
+              opacity: 0;
+              transform-box: fill-box;
+              transform-origin: center bottom;
+              animation: p2m-word-arrive 500ms cubic-bezier(0.16, 1, 0.3, 1) 900ms forwards;
+            }
+            
+            /* Cursor blink after reveal */
+            #mark-underscore.final-blink {
+              animation: p2m-cursor-pulse 1000ms step-end 1500ms infinite;
+            }
+            
+            /* Reduced motion */
+            @media (prefers-reduced-motion: reduce) {
+              .draw-on { stroke-dashoffset: 0 !important; animation: none !important; }
+              #mark-chevron, #mark-underscore, .dot, #wordmark-nynu, #wordmark-code {
+                opacity: 1 !important; transform: none !important; animation: none !important;
+              }
+            }
+          </style>
+        </defs>
+        
+        <!-- Background -->
+        <rect width="1693" height="929" fill="#0A1628"/>
+        
+        <!-- Main Logo Group -->
+        <g id="logo-main">
+          <!-- Terminal Mark -->
+          <g id="mark">
+            <!-- Frame -->
+            <path id="mark-frame" class="mark-frame draw-on" pathLength="1"
+                  d="M 170 320 
+                     Q 140 320 140 350 
+                     L 140 550 
+                     Q 140 580 170 580 
+                     L 420 580 
+                     Q 450 580 450 550 
+                     L 450 350 
+                     Q 450 320 420 320 
+                     Z"/>
+            
+            <!-- Chevron -->
+            <path id="mark-chevron" class="mark-chevron" d="M 210 400 L 270 450 L 210 500"/>
+            
+            <!-- Underscore -->
+            <rect id="mark-underscore" class="mark-underscore" x="290" y="490" width="80" height="14" rx="2"/>
+            
+            <!-- Dot -->
+            <circle id="dot" class="dot" cx="430" cy="560" r="18"/>
+          </g>
+          
+          <!-- Wordmark -->
+          <g id="wordmark">
+            <text id="wordmark-nynu" class="wordmark-nynu" x="530" y="500">NYNU</text>
+            <text id="wordmark-code" class="wordmark-code" x="980" y="500">Code Lab</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+  
+  <!-- Controls -->
+  <div class="controls" id="controls">
+    <button id="replay-btn">Replay</button>
+    <button id="slow-btn">Slow Motion</button>
+    <div class="speed-control">
+      <label>Speed</label>
+      <input type="range" id="speed-slider" min="0.25" max="2" step="0.25" value="1">
+      <span id="speed-value">1x</span>
+    </div>
+  </div>
+  
+  <!-- Atomic Motions -->
+  <div class="atomic-section">
+    <h2>Atomic Motions</h2>
+    <div class="atomic-grid">
+      <!-- Hover effect -->
+      <div class="atomic-card" id="atom-hover">
+        <h3>Hover Lift</h3>
+        <svg viewBox="0 0 200 80" style="cursor: pointer;">
+          <rect width="200" height="80" fill="#0D1F3C"/>
+          <g transform="translate(40, 15) scale(0.15)">
+            <path class="mark-frame" d="M 170 320 Q 140 320 140 350 L 140 550 Q 140 580 170 580 L 420 580 Q 450 580 450 550 L 450 350 Q 450 320 420 320 Z" style="stroke-dasharray: none; stroke-dashoffset: 0;"/>
+            <path class="mark-chevron" d="M 210 400 L 270 450 L 210 500"/>
+            <rect class="mark-underscore" x="290" y="490" width="80" height="14" rx="2" style="opacity: 1;"/>
+            <circle class="dot" cx="430" cy="560" r="18" style="opacity: 1;"/>
+            <text class="wordmark-nynu" x="530" y="500">NYNU</text>
+            <text class="wordmark-code" x="980" y="500">Code Lab</text>
+          </g>
+          <style>
+            #atom-hover:hover svg g {
+              transform: translate(40, 10) scale(0.15);
+              transition: transform 0.2s ease-out;
+            }
+            #atom-hover:hover .mark-frame {
+              filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+            }
+          </style>
+        </svg>
+        <p class="hint">Hover over the logo</p>
+      </div>
+      
+      <!-- Pulse effect -->
+      <div class="atomic-card" id="atom-pulse">
+        <h3>Dot Pulse</h3>
+        <svg viewBox="0 0 200 80">
+          <rect width="200" height="80" fill="#0D1F3C"/>
+          <g transform="translate(40, 15) scale(0.15)">
+            <path class="mark-frame" d="M 170 320 Q 140 320 140 350 L 140 550 Q 140 580 170 580 L 420 580 Q 450 580 450 550 L 450 350 Q 450 320 420 320 Z" style="stroke-dasharray: none; stroke-dashoffset: 0;"/>
+            <path class="mark-chevron" d="M 210 400 L 270 450 L 210 500"/>
+            <rect class="mark-underscore" x="290" y="490" width="80" height="14" rx="2" style="opacity: 1;"/>
+            <circle class="dot" cx="430" cy="560" r="18" style="opacity: 1; animation: dot-pulse 2000ms ease-in-out infinite;">
+              <animate attributeName="r" values="18;22;18" dur="2000ms" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="1;0.7;1" dur="2000ms" repeatCount="indefinite"/>
+            </circle>
+            <text class="wordmark-nynu" x="530" y="500">NYNU</text>
+            <text class="wordmark-code" x="980" y="500">Code Lab</text>
+          </g>
+        </svg>
+        <p class="hint">Continuous accent pulse</p>
+      </div>
+      
+      <!-- Cursor blink -->
+      <div class="atomic-card" id="atom-cursor">
+        <h3>Cursor Blink</h3>
+        <svg viewBox="0 0 200 80">
+          <rect width="200" height="80" fill="#0D1F3C"/>
+          <g transform="translate(40, 15) scale(0.15)">
+            <path class="mark-frame" d="M 170 320 Q 140 320 140 350 L 140 550 Q 140 580 170 580 L 420 580 Q 450 580 450 550 L 450 350 Q 450 320 420 320 Z" style="stroke-dasharray: none; stroke-dashoffset: 0;"/>
+            <path class="mark-chevron" d="M 210 400 L 270 450 L 210 500"/>
+            <rect class="mark-underscore" x="290" y="490" width="80" height="14" rx="2" style="opacity: 1; animation: cursor-blink 1000ms step-end infinite;">
+              <animate attributeName="opacity" values="1;0;1" dur="1000ms" repeatCount="indefinite"/>
+            </rect>
+            <circle class="dot" cx="430" cy="560" r="18" style="opacity: 1;"/>
+            <text class="wordmark-nynu" x="530" y="500">NYNU</text>
+            <text class="wordmark-code" x="980" y="500">Code Lab</text>
+          </g>
+        </svg>
+        <p class="hint">Terminal cursor effect</p>
+      </div>
+      
+      <!-- Draw-on -->
+      <div class="atomic-card" id="atom-draw">
+        <h3>Frame Draw-On</h3>
+        <svg viewBox="0 0 200 80">
+          <rect width="200" height="80" fill="#0D1F3C"/>
+          <g transform="translate(40, 15) scale(0.15)">
+            <path class="mark-frame" d="M 170 320 Q 140 320 140 350 L 140 550 Q 140 580 170 580 L 420 580 Q 450 580 450 550 L 450 350 Q 450 320 420 320 Z" 
+                  style="stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-test 2s ease-in-out infinite;">
+              <animate attributeName="stroke-dashoffset" values="1;0;1" dur="2s" repeatCount="indefinite"/>
+            </path>
+            <path class="mark-chevron" d="M 210 400 L 270 450 L 210 500" style="opacity: 0.5;"/>
+            <rect class="mark-underscore" x="290" y="490" width="80" height="14" rx="2" style="opacity: 0.3;"/>
+            <circle class="dot" cx="430" cy="560" r="18" style="opacity: 0.3;"/>
+            <text class="wordmark-nynu" x="530" y="500" style="opacity: 0.3;">NYNU</text>
+            <text class="wordmark-code" x="980" y="500" style="opacity: 0.3;">Code Lab</text>
+          </g>
+        </svg>
+        <p class="hint">Stroke reveal animation</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Principles Strip -->
+  <div class="principles" id="principles">
+    <span class="principle" data-principle="staging">Staging</span>
+    <span class="principle" data-principle="timing">Timing</span>
+    <span class="principle" data-principle="slow-in-out">Slow In/Out</span>
+    <span class="principle" data-principle="follow-through">Follow Through</span>
+    <span class="principle" data-principle="appeal">Appeal</span>
+    <span class="principle" data-principle="exaggeration">Exaggeration</span>
+  </div>
+  
+  <!-- Footer -->
+  <div class="footer">
+    NYNU Code Lab - Logo Animation Preview<br>
+    Pixel2Motion v2 • Disney's 12 Principles
+  </div>
+
+  <script>
+    // State
+    let playbackSpeed = 1;
+    let isSlowMotion = false;
+    let animationTimeout = null;
+    
+    // DOM refs
+    const logoMain = document.getElementById('logo-main');
+    const replayBtn = document.getElementById('replay-btn');
+    const slowBtn = document.getElementById('slow-btn');
+    const speedSlider = document.getElementById('speed-slider');
+    const speedValue = document.getElementById('speed-value');
+    const principles = document.querySelectorAll('.principle');
+    
+    // Timeline phases for principle highlighting
+    const phases = [
+      { start: 0, end: 300, active: ['staging'] },
+      { start: 300, end: 700, active: ['timing', 'slow-in-out'] },
+      { start: 700, end: 1200, active: ['follow-through', 'appeal'] },
+      { start: 1200, end: 1500, active: ['exaggeration', 'appeal'] }
+    ];
+    
+    // Replay function
+    function replay() {
+      // Reset all animations
+      const elements = ['#mark-frame', '#mark-chevron', '#mark-underscore', '.dot', '#wordmark-nynu', '#wordmark-code'];
+      elements.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.style.animation = 'none';
+          el.offsetHeight; // Trigger reflow
+          el.style.animation = '';
+        }
+      });
+      
+      // Start principle tracking
+      trackPrinciples();
+      
+      // Add final cursor blink after main animation
+      clearTimeout(animationTimeout);
+      animationTimeout = setTimeout(() => {
+        const underscore = document.getElementById('mark-underscore');
+        if (underscore) {
+          underscore.classList.add('final-blink');
+        }
+      }, 1500 / playbackSpeed);
+    }
+    
+    // Track and highlight active principles
+    function trackPrinciples() {
+      const startTime = Date.now();
+      
+      function update() {
+        const elapsed = (Date.now() - startTime) * playbackSpeed;
+        
+        principles.forEach(p => p.classList.remove('active'));
+        
+        phases.forEach(phase => {
+          if (elapsed >= phase.start && elapsed < phase.end) {
+            phase.active.forEach(name => {
+              const el = document.querySelector(`[data-principle="${name}"]`);
+              if (el) el.classList.add('active');
+            });
+          }
+        });
+        
+        if (elapsed < 1500) {
+          requestAnimationFrame(update);
+        }
+      }
+      
+      update();
+    }
+    
+    // Speed control
+    function updateSpeed(speed) {
+      playbackSpeed = speed;
+      document.documentElement.style.setProperty('--playback-speed', speed);
+      
+      // Update all animation durations
+      const svgAnimations = document.querySelectorAll('#logo-root svg *');
+      svgAnimations.forEach(el => {
+        const computedStyle = window.getComputedStyle(el);
+        if (computedStyle.animationDuration !== '0s') {
+          // Note: dynamically changing SVG animation speed requires re-triggering
+        }
+      });
+      
+      speedValue.textContent = speed + 'x';
+    }
+    
+    // Event listeners
+    replayBtn.addEventListener('click', replay);
+    
+    slowBtn.addEventListener('click', () => {
+      isSlowMotion = !isSlowMotion;
+      slowBtn.classList.toggle('active', isSlowMotion);
+      updateSpeed(isSlowMotion ? 0.25 : parseFloat(speedSlider.value));
+    });
+    
+    speedSlider.addEventListener('input', (e) => {
+      const speed = parseFloat(e.target.value);
+      updateSpeed(speed);
+      if (isSlowMotion && speed !== 0.25) {
+        isSlowMotion = false;
+        slowBtn.classList.remove('active');
+      }
+    });
+    
+    // QA hooks
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('static') === '1') {
+      // Show static final state
+      document.getElementById('controls').classList.add('qa-hidden');
+      document.querySelectorAll('.atomic-section, .principles').forEach(el => el.classList.add('qa-hidden'));
+      
+      // Force final state
+      const elements = ['#mark-frame', '#mark-chevron', '#mark-underscore', '.dot', '#wordmark-nynu', '#wordmark-code'];
+      elements.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.style.animation = 'none';
+          if (sel === '#mark-frame') {
+            el.style.strokeDashoffset = '0';
+          } else {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          }
+        }
+      });
+    }
+    
+    if (urlParams.has('t')) {
+      const t = parseInt(urlParams.get('t'));
+      document.getElementById('controls').classList.add('qa-hidden');
+      
+      // Seek to time t
+      const elements = ['#mark-frame', '#mark-chevron', '#mark-underscore', '.dot', '#wordmark-nynu', '#wordmark-code'];
+      elements.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          el.style.animationPlayState = 'paused';
+          el.style.animationDelay = `-${t}ms`;
+        }
+      });
+    }
+    
+    // Initial principle highlight
+    trackPrinciples();
+    
+    // Signal ready
+    window.__p2mReady = true;
+  </script>
+</body>
+</html>

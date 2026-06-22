@@ -118,7 +118,7 @@ nynu-code-lab/
 │           ├── members/     # 成员管理（第二阶段）
 │           ├── directions/  # 技术方向管理（第二阶段）
 │           └── site/        # 站点配置（第二阶段）
-├── docs/                    # 需求文档、接口文档、数据库设计
+├── docs/                    # 项目说明、部署说明、接口说明、变更记录
 ├── deploy/                  # Nginx、Docker、部署脚本
 ├── AGENTS.md                # 本文件
 ├── README.md
@@ -265,7 +265,7 @@ Result.error(code, msg)
 - 报名状态：待审核(PENDING) → 已查看(VIEWED) → 已联系(CONTACTED) → 初筛通过(PRELIMINARY_PASSED) → 面试中(INTERVIEWING) → 已通过(PASSED) / 未通过(REJECTED)。用户可撤回(PENDING/VIEWED 状态) → 已撤回(WITHDRAWN)
 - 管理员可修改状态并填写审核备注
 - 第一版不做短信/邮件/QQ 通知
-- 报名表字段见 `docs/requirements.md` 第 6 节
+- 报名表字段见 `docs/项目说明.md` 第 7 节
 
 ## 文章 Markdown 规则
 
@@ -283,7 +283,7 @@ Result.error(code, msg)
 
 **后台页面**：管理员登录、数据概览、用户管理、报名管理、文章管理、项目管理、成员管理、技术方向管理、站点配置、文件上传
 
-**后端接口**：见 `docs/requirements.md` 第 10 节接口模块规划
+**后端接口**：见 `docs/接口说明.md`
 
 ## 第一版暂不实现的功能
 
@@ -333,7 +333,7 @@ Result.error(code, msg)
 
 AI 在每次开发任务开始前必须执行以下检查：
 
-1. **阅读关键文档**：`README.md`、`AGENTS.md`、`docs/requirements.md`
+1. **阅读关键文档**：`README.md`、`AGENTS.md`、`docs/项目说明.md`
 2. **检查 Git 状态**：
 
 ```bash
@@ -356,7 +356,7 @@ AI 在每次开发任务完成后必须：
 | 项 | 状态 |
 |---|---|
 | 分支 | `refine/pc-immersive-frontend` |
-| 阶段 | 阶段 5.6：远端同步与部署预演准备 |
+| 阶段 | 阶段 5.6：文档收口与部署预演准备完成，待进入 Stage 6 实际生产部署 |
 | 后端 | Spring Boot 项目已初始化，全部管理模块已实现：认证闭环（注册/登录/登出/修改密码/限流）、招新报名管理（8 种状态流转 + 招新开关）、文章管理（草稿/发布/下架/删除 + 分页 + 关键词搜索）、项目成果管理（草稿/发布/下架/删除 + 分页 + 精选筛选）、站点配置管理（key-value CRUD）、核心成员管理（完整 CRUD + 状态筛选）、技术方向管理（完整 CRUD + 启用/禁用）、文件上传（7 层纵深防御：Magic Bytes + 路径穿越防护 + UUID 重命名 + 日期子目录 + 10MB 限制）、数据统计（9 项指标）、用户管理（分页列表/搜索/禁用/角色修改/密码重置）；权限异常统一返回业务码 401/403；Token 黑名单已支持 Redis（SHA-256 摘要，多实例共享，`@ConditionalOnProperty` 条件切换）；登录限流已支持 Redis（跨实例共享计数，5 次锁定 10 分钟）；所有公开列表接口均已支持分页（PageResult） |
 | 前台 web | Vue 3 项目已初始化，全部 13 个页面完成：首页/介绍/方向（API 驱动）/成员（API 驱动）/项目列表与详情（分页）/文章列表与详情（分页）/招新报名（含招新开关检测）/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们（API 驱动，真实联系方式）/404；PC 沉浸式视觉增强包括自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图、命令控制台和 Three.js WebGL 空间层；60fps 性能优化已完成（DPR 上限、质量分级、delta time、rAF resize 合并、visibilitychange 暂停、reduced-motion 降级）；Logo 已确认并接入前台页眉、页脚和 favicon；Markdown 渲染使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
 | 后台 admin-web | Vue 3 + Element Plus 已初始化，全部 11 个页面均接入真实数据：数据概览（9 项真实统计 + ECharts 模块状态图）、用户管理（分页/搜索/禁用/角色/重置密码）、报名管理（分页/关键词搜索/8 种状态流转）、文章管理（分页/关键词搜索/CRUD/发布下架）、项目管理（分页/状态筛选/CRUD/发布下架/精选）、成员管理（完整 CRUD + 状态筛选）、方向管理（完整 CRUD + 启用禁用）、站点配置（分组展示 + 按 key 修改）、文件上传（拖拽上传 + 列表 + 删除）；后台壳层含顶部遥测、系统时间、命令状态条与右侧模块状态轨；已接入确认版 Logo 与 favicon；本地开发端口 5174 |
@@ -364,6 +364,7 @@ AI 在每次开发任务完成后必须：
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置（阶段 5 去除了 Redis 的 profiles 限制，Redis 始终启动且后端依赖其健康检查） |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认，内存认证服务）/ `docker`（容器部署，Redis 认证服务）双 profile 支持 |
+| 文档 | 已收口为 7 个核心文档：`README.md` / `AGENTS.md` / `.env.example` / `docs/项目说明.md` / `docs/部署运行说明.md` / `docs/接口说明.md` / `docs/变更记录.md`；保留 `docs/前端视觉组件规范.md` 和 `docs/logo-animation/motion_spec.md` 作为参考 |
 | 构建状态 | backend `mvn clean package -DskipTests` ✅（48MB jar）/ web `npm run build` ✅（`LabSpatialScene` WebGL chunk > 500 kB 提醒）/ admin-web `npm run build` ✅（ECharts Dashboard chunk > 500 kB 提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ `git diff --check` ✅ / `rg "console.log\|debugger" web/src admin-web/src` 无命中 |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ / 站点配置/成员/方向/上传/数据统计/用户管理模块 API 全部可用 ✅ |
 | 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload`、`/admin/users` 经 Nginx 均返回 200 |
@@ -411,7 +412,10 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|---|
-| 2026-06-22 | 阶段 5.6：远端同步与部署预演准备 | 本轮不进入 Stage 6、不开发新功能、不做视觉增强、不实际部署生产、不创建 tag、不 push。产出 4 份部署预演文档：(1) `docs/stage5.6-deployment-dry-run-plan.md` — 服务器目录结构 `/opt/codelab/`（app/data/backup/logs/ssl/）、Docker Compose 生产预演命令、Nginx/HTTPS/域名接入完整方案含 Let's Encrypt certbot 自动续期和完整生产 Nginx 配置模板、服务健康+API+页面验证命令序列；(2) `docs/生产部署环境变量模板.md` — 完整生产 `.env` 模板含 `CHANGE_ME_*` 占位符、7 类变量详细说明、一键密码生成命令、不提交 Git 文件清单、docker-compose.yml 硬编码值说明；(3) `docs/备份与回滚方案.md` — MySQL mysqldump 备份/恢复含脚本模板和 crontab、上传文件 tar 备份/恢复含脚本模板、Redis 数据说明（Token 黑名单+登录限流，非核心业务主数据不单独备份）、首次部署回滚 6 步流程+验证+应急预案；(4) 更新 `docs/上线前验收清单.md` — 原"生产环境"8 项扩展为 7 个子章节（环境变量与密码/服务器目录结构/Docker Compose/Nginx HTTPS 域名/安全加固/备份与恢复/回滚准备/日志监控/最终确认）共 40+ 验收项；(5) 更新 `AGENTS.md`（本记录）。未修改核心业务代码、未新增脚本文件（提供命令模板）、未提交 `.env`/密钥/密码/证书、保留 `docs/logo-animation/` 未跟踪。构建验证：`git diff --check` ✅ / `console.log\|debugger` 扫描无命中 / 敏感信息扫描无命中。修改 4 个新增文件 + 2 个更新文件。|
+| 2026-06-22 | 文档体系收口 | 将项目文档从 20 个精简为 7 个核心文档。新建 `docs/项目说明.md`（从需求文档提炼）、`docs/部署运行说明.md`（合并 7 个部署相关文档）、`docs/接口说明.md`（从 README 和需求文档提炼）、`docs/变更记录.md`（合并阶段报告和任务历史）。精简 `README.md` 从 654 行到 ~130 行。更新 `AGENTS.md` 文档引用。同步根目录 `.env.example`。删除 12 个冗余/过期文档：`提示词.md`、`deploy/README.md`、`docs/上线差距分析.md`、`docs/阶段4站点完善说明.md`、`docs/阶段5生产可用性补强说明.md`、`docs/stage5.5-verification-report.md`、`docs/stage5.6-deployment-dry-run-plan.md`、`docs/生产部署环境变量模板.md`、`docs/生产环境配置说明.md`、`docs/文件上传与静态资源配置.md`、`docs/备份与回滚方案.md`、`docs/上线前验收清单.md`。保留 `docs/前端视觉组件规范.md` 和 `docs/logo-animation/motion_spec.md` 作为参考。未修改业务代码、前端页面、后端逻辑、数据库脚本和 deploy 配置文件。 |
+| 2026-06-22 | 阶段 5.6：远端同步与部署预演准备 | 本轮不进入 Stage 6、不开发新功能、不做视觉增强、不实际部署生产、不创建 tag、不 push。产出部署预演材料（服务器目录结构、Docker Compose 生产预演命令、Nginx/HTTPS/域名接入方案含 certbot、完整环境变量模板、备份回滚方案、上线前验收清单 40+ 项）。未修改核心业务代码、未提交 `.env`/密钥/密码/证书。 |
+| 2026-06-22 | 阶段 5：生产可用性补强 | 四项补强：上传安全 7 层纵深防御、文章/项目封面上传接入（CoverUpload 组件）、Token 黑名单和登录限流 Redis 化（SHA-256 摘要、条件切换）。构建全通过。 |
+| 2026-06-22 | 阶段 4：站点完善 / 上线级闭环补齐 | 一次性补全全部缺失的后端管理 API（新增 5 个模块 34 个 Java 文件 28 个端点）+ 前台 4 个静态页面改为 API 驱动 + 后台 5 个占位页面替换为完整 CRUD + 全部列表接口接入分页。构建未执行。 |
 | 2026-06-22 | 阶段 5：生产可用性补强 | 四项补强：(1) 上传安全 7 层纵深防御（Magic Bytes 校验 + 路径穿越防护 + 扩展名白名单 + `yyyy/MM/dd` 日期子目录 + 物理文件删除）；(2) 后台用户管理页面确认已完整接入后端（无需新增代码）；(3) 文章/项目封面上传接入（新增 `CoverUpload.vue` 组件，`el-upload` + `v-model` 双向绑定 + 预览 + loading，接入 `ArticlesView` 和 `ProjectsView`）；(4) Token 黑名单和登录限流 Redis 化（新增 `RedisTokenBlacklistService` + `RedisLoginAttemptService` + `RedisConfig`，SHA-256 摘要 key，`@ConditionalOnProperty` 条件切换，Docker profile 默认启用 Redis，local profile 默认内存实现；排除 `RedisAutoConfiguration` 手动管理连接；Docker Compose Redis 去除 profiles 限制 + 后端健康检查依赖）。(5) 文档更新：新增 `docs/阶段5生产可用性补强说明.md`，更新 `docs/生产环境配置说明.md`（Redis 配置章节）、`docs/上线前验收清单.md`（封面/Redis 验证项）、`docs/文件上传与静态资源配置.md`（7 层防御说明）。构建验证：backend `mvn clean package -DskipTests` ✅（48MB jar）/ web `npm run build` ✅ / admin-web `npm run build` ✅ / `git diff --check` ✅ / 安全扫描 `console.log\|debugger` 无命中。修改 14 个文件（4 新增 + 10 修改）。未修改 PC 端前端视觉风格、未进入阶段 6、未推送、未打 tag。 |
 | 2026-06-22 | 阶段 4：站点完善 / 上线级闭环补齐 | 一次性补全全部缺失的后端管理 API 和前端真实数据对接。后端新增 5 个模块（site 7 文件 / member 7 文件 / direction 7 文件 / upload 5 文件 / dashboard 2 文件）+ 用户管理补齐（6 文件），合计新增 34 个 Java 文件，新增 28 个 API 端点（含公开接口 6 个、管理接口 22 个）。已有 5 个列表接口全部接入分页（新增通用 `PageResult<T>` 实体）。新增 `app.upload` 配置段。前台 4 个静态/占位页面（方向、成员、联系我们、首页标语）改为 API 驱动，文章/项目列表新增分页组件，招新页新增招新开关检测。后台 5 个占位页面（成员/方向/站点配置/上传/用户管理）替换为完整 CRUD，Dashboard 统计卡片接入 9 项真实指标，招新状态流转新增 VIEWED/CONTACTED 中间状态（共 8 种），文章/项目/报名管理页新增分页和搜索。数据库 `lab_site_config` 种子数据新增 `recruitOpen` 招新开关，`lab_apply_record.status` COMMENT 更新为 8 种状态。SaTokenConfig 排除路径新增 `/api/members/**`、`/api/directions/**`、`/api/site-config/**`。新增 docs/阶段4站点完善说明.md、docs/生产环境配置说明.md、docs/上线前验收清单.md、docs/文件上传与静态资源配置.md。更新 AGENTS.md 当前项目状态、已知问题、下一步建议。构建状态未执行（待验收阶段执行）。
 | 2026-06-22 | 部署 / Docker / SQL 清理 | 修复 AGENTS.md 第 513 行失效增量迁移命令引用；`deploy/mysql/init/01-init.sql` 改为唯一权威版本（DROP+CREATE 幂等初始化，含 10 张表完整结构、active_user_id 生成列与唯一约束），新增 6 张表（lab_member / lab_direction / lab_site_config / lab_upload_file / lab_article_category / lab_article_tag）及初始数据（5 方向/10 站点配置/4 分类/6 标签，无虚假成员、联系方式留空）；删除 4 个历史 SQL 文件（backend/sql/init.sql + 3 个 migration），全部已吸收进部署脚本；Docker Compose 增加 backend/nginx healthcheck、uploads 数据卷、nginx 路由重排与 /uploads/ 预留；backend Dockerfile 安装 curl 供 healthcheck 使用；新增 5 个 .dockerignore 文件；新增 scripts/setup-docker.sh 一键初始化脚本；`docker compose config` ✅ / `git diff --check` ✅ / 敏感信息扫描 ✅ / deploy/.env 未被提交 ✅ |
@@ -443,9 +447,9 @@ docker compose ps                  # 确认所有服务运行
 - 自研 Canvas 粒子网络、代码雨、能量流和 Three.js WebGL 实验室空间层仅在 PC 端启用；低端 PC、窄屏或浏览器开启减少动画时会降级，离屏或页面隐藏时会暂停高频循环
 - 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
 - 后台 `npm install` 后 audit 仍报告既有 1 个 moderate、1 个 high 漏洞；本次未引入后台依赖，未做强制升级
-- 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥（参考 `docs/生产部署环境变量模板.md`）
-- Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书（已提供完整配置模板和 certbot 自动续期方案，参考 `docs/stage5.6-deployment-dry-run-plan.md` 第四节）
-- 备份脚本当前仅提供模板（参考 `docs/备份与回滚方案.md`），上线前需将脚本模板落盘到 `scripts/` 并配置 crontab
+- 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥（参考 `docs/部署运行说明.md` 第 5 节和第 11 节）
+- Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书（已提供完整配置模板和 certbot 自动续期方案，参考 `docs/部署运行说明.md` 第 11.4 节）
+- 备份脚本当前仅提供模板（参考 `docs/部署运行说明.md` 第 9 节），上线前需将脚本模板落盘到 `scripts/` 并配置 crontab
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
 - 报名表 `lab_apply_record` 已通过 `uk_apply_active_user` 约束非撤回报名唯一；历史库执行迁移前如果已有重复非撤回记录，需要先人工清理
 - 文章标签使用 JSON 字符串存储，`lab_article_category` 和 `lab_article_tag` 表已建但尚未与文章表关联或提供独立管理接口
@@ -455,7 +459,7 @@ docker compose ps                  # 确认所有服务运行
 
 ## 下一步建议
 
-1. **生产环境部署** — 当前部署预演材料已备齐（`docs/stage5.6-deployment-dry-run-plan.md`、`docs/生产部署环境变量模板.md`、`docs/备份与回滚方案.md`、`docs/上线前验收清单.md`），可进入 Stage 6 实际部署：填写生产 `deploy/.env`、配置 HTTPS 证书、设置正式域名、配置防火墙、配置 crontab 定时备份
+1. **生产环境部署** — 当前部署预演材料已备齐（`docs/部署运行说明.md` 第 11 节），可进入 Stage 6 实际部署：填写生产 `deploy/.env`、配置 HTTPS 证书、设置正式域名、配置防火墙、配置 crontab 定时备份
 2. **文章分类/标签独立管理** — 将 `lab_article_category` 和 `lab_article_tag` 表与文章表关联，提供独立管理接口，替换当前自由文本字段
 3. **ECharts 体积优化** — Dashboard chunk 拆包或换轻量图表库，减小后台构建体积
 4. **移动端适配验证** — 系统性地在移动设备上测试核心页面（首页、方向、成员、项目、文章、招新）
