@@ -1,8 +1,9 @@
 body {
+  font-family: var(--admin-font-display);
   color: var(--admin-text);
   background:
     radial-gradient(circle at 14% 10%, rgba(83, 231, 255, 0.16), transparent 28rem),
-    radial-gradient(circle at 86% 8%, rgba(169, 139, 255, 0.13), transparent 30rem),
+    radial-gradient(circle at 86% 8%, rgba(117, 167, 255, 0.12), transparent 30rem),
     linear-gradient(135deg, var(--admin-bg), var(--admin-bg-2) 54%, #05070c);
 }
 
@@ -114,6 +115,19 @@ body {
     var(--admin-surface) !important;
   box-shadow: var(--admin-shadow) !important;
   backdrop-filter: blur(22px);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+
+.el-card:hover {
+  border-color: rgba(83, 231, 255, 0.3) !important;
+  transform: translateY(-3px);
+  box-shadow:
+    0 30px 92px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(83, 231, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 .el-card::after {
@@ -198,6 +212,25 @@ body {
   background: rgba(255, 255, 255, 0.07) !important;
 }
 
+.el-button {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease !important;
+}
+
+.el-button:focus-visible,
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused {
+  outline: 2px solid rgba(83, 231, 255, 0.62) !important;
+  outline-offset: 2px;
+}
+
+.el-button:active {
+  transform: translateY(1px) scale(0.985);
+}
+
 @keyframes admin-panel-scan {
   0%,
   42% {
@@ -214,5 +247,15 @@ body {
   .page-header {
     display: grid;
     align-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }

@@ -1,10 +1,13 @@
 <template>
   <el-container class="layout-container">
     <div class="layout-signal" aria-hidden="true"></div>
-    <div class="layout-status-rail" aria-hidden="true">
-      <span>AUTH</span>
-      <span>CMS</span>
-      <span>RECRUIT</span>
+    <div class="layout-status-rail" aria-label="模块状态轨">
+      <strong>Module rail</strong>
+      <span v-for="item in moduleRail" :key="item.name" :class="item.state">
+        <i></i>
+        <small>{{ item.name }}</small>
+        <em>{{ item.label }}</em>
+      </span>
     </div>
     <el-aside :width="isCollapse ? '78px' : '246px'" class="layout-aside">
       <button class="aside-logo" type="button" @click="toggleCollapse">
@@ -75,10 +78,16 @@
           </div>
         </div>
         <div class="header-right">
+          <div class="header-telemetry" aria-label="运行遥测">
+            <span v-for="item in headerSignals" :key="item.label">
+              <small>{{ item.label }}</small>
+              <strong>{{ item.value }}</strong>
+            </span>
+          </div>
           <div class="header-command" aria-label="后台运行状态">
             <span class="header-command__dot"></span>
             <code>admin.guard --role ADMIN</code>
-            <small>LIVE</small>
+            <small>{{ systemTime }}</small>
           </div>
           <el-dropdown trigger="click">
             <span class="user-info">
@@ -155,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
@@ -186,10 +195,45 @@ const userStore = useUserStore();
 
 const isCollapse = ref(false);
 const activeMenu = computed(() => route.path);
+const systemTime = ref("--:--:--");
+let clockTimer = 0;
+
+const headerSignals = [
+  { label: "build", value: "ready" },
+  { label: "queue", value: "clear" },
+  { label: "sync", value: "local" },
+];
+
+const moduleRail = [
+  { name: "web", label: "live", state: "live" },
+  { name: "admin", label: "live", state: "live" },
+  { name: "api", label: "guard", state: "live" },
+  { name: "docs", label: "draft", state: "pending" },
+  { name: "deploy", label: "standby", state: "pending" },
+  { name: "lab", label: "open", state: "live" },
+];
 
 function toggleCollapse() {
   isCollapse.value = !isCollapse.value;
 }
+
+function updateSystemTime() {
+  systemTime.value = new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
+
+onMounted(() => {
+  updateSystemTime();
+  clockTimer = window.setInterval(updateSystemTime, 1000);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(clockTimer);
+});
 
 function handleLogout() {
   userStore.logout();
@@ -272,34 +316,111 @@ async function handleChangePassword() {
   inset: 0;
   pointer-events: none;
   background:
+    radial-gradient(circle at 70% 18%, rgba(83, 231, 255, 0.12), transparent 28rem),
     linear-gradient(115deg, transparent 16%, rgba(83, 231, 255, 0.08), transparent 58%),
     linear-gradient(rgba(83, 231, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(83, 231, 255, 0.035) 1px, transparent 1px);
-  background-size: auto, 76px 76px, 76px 76px;
+  background-size: auto, auto, 76px 76px, 76px 76px;
   mask-image: radial-gradient(circle at 62% 18%, black, transparent 72%);
+}
+
+.layout-signal::before {
+  content: "";
+  position: absolute;
+  inset: auto 4vw -18vh 20vw;
+  height: 42vh;
+  border: 1px solid rgba(83, 231, 255, 0.11);
+  border-radius: 44px 44px 0 0;
+  background:
+    linear-gradient(rgba(83, 231, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 231, 255, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  transform: perspective(1000px) rotateX(68deg);
+  transform-origin: center bottom;
 }
 
 .layout-status-rail {
   position: fixed;
   z-index: 2;
-  right: 18px;
+  right: 16px;
   top: 96px;
   display: grid;
-  gap: 10px;
+  gap: 9px;
+  width: 92px;
   pointer-events: none;
 }
 
+.layout-status-rail strong {
+  color: rgba(216, 247, 255, 0.66);
+  font-family: var(--admin-font-data);
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .layout-status-rail span {
-  writing-mode: vertical-rl;
-  padding: 9px 6px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px;
   border: 1px solid rgba(153, 217, 255, 0.14);
-  border-radius: 999px;
+  border-radius: 13px;
   color: rgba(199, 215, 232, 0.58);
   background: rgba(4, 10, 18, 0.58);
   box-shadow: 0 0 24px rgba(83, 231, 255, 0.05);
   font-family: var(--admin-font-data);
   font-size: 10px;
   letter-spacing: 0;
+}
+
+.layout-status-rail span::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: -10px;
+  bottom: calc(100% - 2px);
+  width: 1px;
+  background: rgba(83, 231, 255, 0.18);
+}
+
+.layout-status-rail span:first-of-type::before {
+  display: none;
+}
+
+.layout-status-rail i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--admin-teal);
+  box-shadow: 0 0 16px rgba(47, 240, 182, 0.58);
+}
+
+.layout-status-rail span.pending i {
+  background: var(--admin-amber);
+  box-shadow: 0 0 16px rgba(255, 211, 106, 0.42);
+}
+
+.layout-status-rail small,
+.layout-status-rail em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-status-rail small {
+  color: rgba(238, 247, 255, 0.84);
+  font-style: normal;
+}
+
+.layout-status-rail em {
+  grid-column: 2;
+  margin-top: -4px;
+  color: rgba(158, 177, 196, 0.72);
+  font-size: 9px;
+  font-style: normal;
 }
 
 .layout-aside {
@@ -477,6 +598,40 @@ async function handleChangePassword() {
   gap: 12px;
 }
 
+.header-telemetry {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(58px, auto));
+  gap: 8px;
+}
+
+.header-telemetry span {
+  display: grid;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid rgba(153, 217, 255, 0.13);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.header-telemetry small,
+.header-telemetry strong {
+  overflow: hidden;
+  font-family: var(--admin-font-data);
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-telemetry small {
+  color: rgba(158, 177, 196, 0.74);
+  font-size: 9px;
+}
+
+.header-telemetry strong {
+  color: rgba(216, 247, 255, 0.9);
+  font-size: 11px;
+}
+
 .header-command {
   display: inline-grid;
   grid-template-columns: 8px minmax(0, auto) auto;
@@ -513,6 +668,7 @@ async function handleChangePassword() {
   color: var(--admin-teal);
   font-family: var(--admin-font-data);
   font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 .user-info {
@@ -548,6 +704,7 @@ async function handleChangePassword() {
   }
 
   .layout-status-rail,
+  .header-telemetry,
   .header-command {
     display: none;
   }
