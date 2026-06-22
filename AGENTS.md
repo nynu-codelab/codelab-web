@@ -508,7 +508,7 @@ bash scripts/verify-recruitment-flow.sh
 bash scripts/verify-article-flow.sh
 bash scripts/verify-project-flow.sh
 
-# 已初始化数据库的增量迁移
-cd deploy
-docker compose --env-file .env exec -T mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < ../backend/sql/migrations/03-add-apply-active-user-unique-key.sql
+	# 已初始化数据库的增量迁移（历史迁移文件已移除，uk_apply_active_user 约束已内置在 deploy/mysql/init/01-init.sql）
+	# 新建环境直接执行 docker compose --env-file .env up -d --build 即可自动初始化完整数据库
+	# 已有生产数据环境不得直接执行 DROP+CREATE 初始化脚本，应单独编写增量迁移
 ```
