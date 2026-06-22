@@ -9,3 +9,8 @@ spring:
     username: ${MYSQL_USER:nynu}
     password: ${MYSQL_PASSWORD:change_me}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+# 生产环境推荐启用 Redis 化认证服务
+app:
+  auth:
+    redis-enabled: ${AUTH_REDIS_ENABLED:true}

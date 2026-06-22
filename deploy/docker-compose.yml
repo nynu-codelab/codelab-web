@@ -48,7 +48,7 @@ services:
     networks:
       - nynu-code-lab-net
 
-  # ==================== Redis（预留，当前后端未使用） ====================
+  # ==================== Redis 7 ====================
   redis:
     image: redis:7-alpine
     container_name: nynu-code-lab-redis
@@ -65,11 +65,6 @@ services:
       retries: 5
     networks:
       - nynu-code-lab-net
-    # 注释：当前后端尚未引入 Redis 业务依赖，此服务为后续功能预留。
-    # 如需禁用 Redis，将不需要的服务注释掉或使用 profile
-    profiles:
-      - all
-      - ""
 
   # ==================== 后端 Spring Boot ====================
   backend:
@@ -88,7 +83,13 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       # 文件上传目录（容器内路径）
-      UPLOAD_DIR: /app/uploads
+      UPLOAD_BASE_PATH: /app/uploads
+      # Redis 连接
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DATABASE: ${REDIS_DATABASE:-0}
+      AUTH_REDIS_ENABLED: "true"
     ports:
       # BACKEND_PORT: 宿主机端口映射，默认 8080
       - "${BACKEND_PORT:-8080}:8080"
@@ -96,6 +97,8 @@ services:
       - uploads-data:/app/uploads
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]

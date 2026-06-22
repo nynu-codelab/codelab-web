@@ -2,6 +2,7 @@ package cn.edu.nynu.codelab.auth.service.impl;
 
 import cn.edu.nynu.codelab.auth.service.LoginAttemptService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
+@ConditionalOnProperty(prefix = "app.auth", name = "redis-enabled", havingValue = "false", matchIfMissing = true)
 public class InMemoryLoginAttemptService implements LoginAttemptService {
 
     /** 最大失败次数 */

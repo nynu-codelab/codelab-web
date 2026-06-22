@@ -22,6 +22,20 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  # 排除 Redis 自动配置，由 app.auth.redis-enabled 手动控制
+  # Redis 连接参数由 cn.edu.nynu.codelab.config.RedisConfig 直接读取
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+# Redis 连接参数（app.auth.redis-enabled=true 时由 RedisConfig 读取）
+# 所有参数均支持环境变量覆盖
+app.redis:
+  host: ${REDIS_HOST:localhost}
+  port: ${REDIS_PORT:6379}
+  password: ${REDIS_PASSWORD:}
+  database: ${REDIS_DATABASE:0}
+  timeout: 3000ms
 
 # ============================================================
 # 应用自定义配置
@@ -30,6 +44,9 @@ app:
   upload:
     base-path: ${UPLOAD_BASE_PATH:uploads}
     url-prefix: /uploads
+  auth:
+    # Redis 化开关：true 使用 Redis 实现（生产推荐），false 使用内存实现（开发默认）
+    redis-enabled: ${AUTH_REDIS_ENABLED:false}
 
 mybatis-plus:
   configuration:

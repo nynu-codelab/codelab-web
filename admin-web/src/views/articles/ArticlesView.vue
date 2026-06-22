@@ -134,8 +134,8 @@
         <el-form-item label="标签">
           <el-input v-model="form.tags" placeholder='可选，JSON数组格式，例如：["Java","Spring"]' maxlength="500" />
         </el-form-item>
-        <el-form-item label="封面URL">
-          <el-input v-model="form.coverUrl" placeholder="可选，封面图片URL" maxlength="500" />
+        <el-form-item label="封面图片">
+          <CoverUpload v-model="form.coverUrl" usage-type="article_cover" placeholder="可选，粘贴URL或点击上传封面图片" />
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="form.sortOrder" :min="0" :max="9999" />
@@ -167,6 +167,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import CoverUpload from '@/components/CoverUpload.vue'
 import {
   getArticles,
   createArticle,
