@@ -21,7 +21,6 @@
 nynu-code-lab/
 ├── backend/                     # Spring Boot 后端
 │   ├── Dockerfile
-│   ├── sql/                     # 数据库初始化脚本
 │   └── src/
 ├── web/                         # 前台 Vue 3
 │   └── Dockerfile
@@ -47,7 +46,7 @@ nynu-code-lab/
 1. 初始化数据库：
 
 ```bash
-mysql -u root -p < backend/sql/init.sql
+mysql -u root -p < deploy/mysql/init/01-init.sql
 ```
 
 2. 启动后端（默认 `local` profile，连接 `localhost:3306`）：
@@ -160,7 +159,7 @@ Docker Compose 首次启动时会自动执行 `deploy/mysql/init/01-init.sql`：
 手动初始化（本地开发）：
 
 ```bash
-mysql -u root -p < backend/sql/init.sql
+mysql -u root -p < deploy/mysql/init/01-init.sql
 ```
 
 ## 从旧项目名迁移
@@ -497,7 +496,7 @@ http://localhost/design-preview
 - 背景由动态网格、扫描线、低强度噪点、自研 Canvas 粒子网络、代码雨和能量流共同组成。
 - Canvas 动效仅在 PC 端（`window.innerWidth >= 1024`）启用，并在组件卸载时取消动画帧、解绑事件监听。
 - 继续支持 `prefers-reduced-motion`，用户偏好减少动画时会关闭主要 Canvas 与入场动画。
-- 本轮不使用 Figma，也不引入 Three.js；3D 视觉主要通过 CSS 透视、玻璃拟态、扫描线和光边框完成。
+- 本轮不使用 Figma；正式首页 Hero 已引入 Three.js 作为 PC 端 WebGL 空间层，`prefers-reduced-motion` 或窄屏下自动降级。
 
 该方向已在 `refine/pc-immersive-frontend` 分支继续深化到正式前台和后台，但 `/design-preview` 仍保留为视觉参考页，便于后续对照设计方向。
 
@@ -519,11 +518,15 @@ http://localhost/design-preview
 
 - 前台沉淀 `web/src/styles/design-tokens.css`、`animations.css`、`markdown.css` 和 `components/app/*` 复用组件。
 - 新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`BuildPipeline`、`LabControlPanel`、`GitBranchMap`、`DataCounter` 等前台组件。
+- 本轮已安装并调用 `taste-skill` / `redesign-skill`，在不推翻当前视觉方向的前提下继续增强审美细节：新增 `LabSignalField` 前景信号场，强化 Hero 终端状态条、逐行启动、光标闪烁、玻璃卡片 cursor spotlight、项目卡片工程 HUD、文章知识库轨道、方向卡片节点路线。
+- 本轮继续使用 `frontend-design` 规则，将首屏“实验室空间”作为唯一高强度签名元素；新增 `LabSpatialScene` Three.js 组件，渲染空间网格、轨道环、节点网络和数据包，相机随鼠标产生轻量视差。
+- `LabSignalField` 从静态装饰升级为 Canvas 信号网络，包含节点连线、脉冲扩散、数据流向和鼠标扰动，并在组件卸载时清理 RAF、resize、pointermove。
 - 视觉组件使用规范已沉淀到 `docs/前端视觉组件规范.md`，后续新增页面优先复用现有 CodeLab 组件，不重新发明一套视觉语言。
 - 首页 Hero 重做为 PC 大屏沉浸式终端控制台：左侧品牌与 CTA，右侧 boot terminal、Lab Control Center 和构建流水线。
-- 项目卡片加入扫描线与 BUILD PASS 视觉；文章卡片加入知识库代码纹理；方向卡片加入节点环绕光效；登录/注册页增强为 Access Console。
+- 项目卡片加入 branch、commit、test、deploy、pipeline、coverage、health 等工程 HUD；文章卡片加入 research log、Markdown 安全和知识库地形线；方向卡片加入研究矩阵和节点路线。
 - 文章详情和项目详情继续使用 `markdown-it`，并保持 `html:false`，不直接渲染未清洗 HTML。
 - 后台通过 `admin-web/src/styles/design-tokens.css` 与 `admin.css` 统一表格、弹窗、表单和按钮质感，并在数据概览页加入 ECharts 模块接入状态图。
+- 本轮后台继续保留 Element Plus 并深度定制，不迁移组件库；管理壳层增加顶部遥测、系统时间、命令状态和右侧模块状态轨，数据概览增加构建通道、测试矩阵、部署监视和工程运行矩阵；表格、表单和弹窗逻辑不变。
 - PC 优先：复杂 Canvas 动效只在 PC 端启用；移动端本轮只保证不严重白屏、不横向崩溃，并关闭或简化重动效。
 - Logo 方向已确认并落地：原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`，前台和后台分别接入 `nynu-code-lab-mark.svg` 与 favicon，并加入轻量状态点呼吸和 hover 扫光效果。
 
@@ -534,12 +537,21 @@ http://localhost/design-preview
 | 前台 `web` | `gsap` | 首页终端 Hero 入场时间线动画 |
 | 前台 `web` | `countup.js` | 指标数字动态计数 |
 | 前台 `web` | `@lucide/vue` | Git、CPU、状态等工程图标 |
+| 前台 `web` | `three` | 首页 Hero 的 PC 端 WebGL 实验室空间、节点网络和相机视差 |
+| 前台 `web` dev | `@types/three` | 为 Three.js 组件提供 TypeScript 类型声明 |
 | 后台 `admin-web` | `echarts` | 数据概览页模块状态可视化 |
+
+本轮后台未新增依赖，继续复用 Element Plus 和 ECharts；前台新增 Three.js 仅用于 Hero 空间层，不改变接口和业务逻辑。
 
 构建与验证：
 
-- `web npm install && npm run build` 已通过。
-- `admin-web npm install && npm run build` 已通过；Vite 对 ECharts 后台图表 chunk 给出大于 500 kB 的体积提醒，但构建成功。
+- 本轮已执行 `web npm install && npm run build && npm run type-check`，通过；Vite 提示异步 `LabSpatialScene` WebGL chunk 约 502 kB，大于 500 kB 提醒阈值，但构建成功，首页主 chunk 已保持拆分。
+- 本轮已执行 `admin-web npm install && npm run build`，通过；后台仍有既有 1 个 moderate、1 个 high audit 提示，Vite 仍提示 ECharts Dashboard chunk 大于 500 kB，并出现 `@vueuse/core` PURE 注释移除提醒，但构建成功。
+- 本轮已执行根目录 `git diff --check`，通过。
+- 本轮已执行 `rg "console.log|debugger" web/src admin-web/src`，无命中。
+- 本轮已通过浏览器验证 `http://127.0.0.1:5173/`：桌面 1440×1000 下 `.lab-spatial-scene` canvas 可见，截图中 canvas 区域像素非空；移动 390×844 下 Three.js 与 `LabSignalField` 均降级隐藏，页面无横向溢出。
+- 前台和后台当前均未配置 `npm run lint` 脚本，本轮未执行 lint。
+- 以下为当前分支既有全量回归记录，非本轮重复执行项：
 - `backend mvn clean package -DskipTests` 已通过。
 - `docker compose --env-file .env config`、`up -d --build`、`ps` 已通过；本轮曾因 Colima Docker socket 失联先重启 Colima，随后 Docker 回归通过。
 - 页面访问验收：前台 `/`、`/design-preview`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact` 和后台 `/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 均返回 200。
@@ -572,22 +584,11 @@ docker compose --env-file .env up -d --build
 
 **方式二：手动执行完整初始化 SQL**
 ```bash
-docker compose exec mysql mysql -u root -p < backend/sql/init.sql
+docker compose exec -T mysql mysql -u root -p < deploy/mysql/init/01-init.sql
 # 输入 MYSQL_ROOT_PASSWORD
 ```
 
-**方式三：仅追加新表（不影响已有数据）**
-```bash
-# 仅创建 lab_article 表
-docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/01-add-article-table.sql
-# 仅创建 lab_project 表
-docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/02-add-project-table.sql
-# 为 lab_apply_record 添加非撤回报名唯一约束
-docker compose exec -T mysql mysql -u root -p nynu_code_lab < backend/sql/migrations/03-add-apply-active-user-unique-key.sql
-# 输入 MYSQL_ROOT_PASSWORD
-```
-
-执行 `03-add-apply-active-user-unique-key.sql` 前，如果历史数据中同一用户已有多条非撤回报名记录，需要先人工合并或将重复记录置为 `WITHDRAWN`，否则唯一索引会创建失败。
+> 注意：该脚本使用 DROP TABLE IF EXISTS，会重建所有表并清空数据。如需保留现有数据，请先导出备份。
 
 ### 接口验证脚本
 
