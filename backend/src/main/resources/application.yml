@@ -27,6 +27,7 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 # Redis 连接参数（app.auth.redis-enabled=true 时由 RedisConfig 读取）
 # 所有参数均支持环境变量覆盖
@@ -35,7 +36,7 @@ app.redis:
   port: ${REDIS_PORT:6379}
   password: ${REDIS_PASSWORD:}
   database: ${REDIS_DATABASE:0}
-  timeout: 3000ms
+  timeout: 3000
 
 # ============================================================
 # 应用自定义配置
