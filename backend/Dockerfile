@@ -21,6 +21,9 @@ RUN mvn package -DskipTests -B -q
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
+# 安装 curl 供 Docker healthcheck 使用
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
 # 创建非 root 用户运行
 RUN addgroup app && adduser --ingroup app --disabled-password app
 USER app
