@@ -2,6 +2,18 @@
   <RouterLink :to="to" class="project-card glass-card is-hoverable">
     <div class="project-card__visual" :style="coverStyle">
       <div class="project-card__scan"></div>
+      <div class="project-card__hud" aria-hidden="true">
+        <span>branch: main</span>
+        <span>commit: staged</span>
+        <span>test: pass</span>
+        <span>deploy: ready</span>
+      </div>
+      <div class="project-card__pipeline" aria-hidden="true">
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+      </div>
       <div class="project-card__terminal" v-if="!coverUrl">
         <span></span>
         <span></span>
@@ -14,6 +26,11 @@
         <span class="status-pill">{{ type || '项目实践' }}</span>
         <span class="project-card__pass" v-if="meta">{{ meta }}</span>
         <span class="project-card__pass" v-else>BUILD PASS</span>
+      </div>
+      <div class="project-card__signal" aria-label="项目工程状态">
+        <span><strong>health</strong><small>green</small></span>
+        <span><strong>pipeline</strong><small>ready</small></span>
+        <span><strong>coverage</strong><small>gated</small></span>
       </div>
       <h3>{{ title }}</h3>
       <p>{{ summary }}</p>
@@ -50,6 +67,7 @@ const coverStyle = computed(() =>
   display: grid;
   min-height: 100%;
   color: inherit;
+  transform-origin: center top;
 }
 
 .project-card__visual {
@@ -65,6 +83,17 @@ const coverStyle = computed(() =>
   border-bottom: 1px solid rgba(153, 217, 255, 0.14);
 }
 
+.project-card__visual::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+  border: 1px solid rgba(153, 217, 255, 0.12);
+  border-radius: 14px;
+  opacity: 0.58;
+  transform: translateZ(0);
+}
+
 .project-card__visual::after {
   content: "";
   position: absolute;
@@ -75,6 +104,11 @@ const coverStyle = computed(() =>
     linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 100% 100%, 100% 10px;
   opacity: 0.74;
+}
+
+.project-card:hover .project-card__visual::before {
+  border-color: rgba(83, 231, 255, 0.32);
+  box-shadow: inset 0 0 34px rgba(83, 231, 255, 0.08);
 }
 
 .project-card__scan {
@@ -89,6 +123,90 @@ const coverStyle = computed(() =>
 .project-card:hover .project-card__scan {
   opacity: 1;
   animation: project-scan 1.4s ease;
+}
+
+.project-card__hud {
+  position: absolute;
+  z-index: 3;
+  right: 18px;
+  bottom: 16px;
+  display: grid;
+  gap: 5px;
+  color: rgba(216, 247, 255, 0.66);
+  font-family: var(--app-font-data);
+  font-size: 10px;
+  text-align: right;
+  transform: translateY(10px);
+  opacity: 0.62;
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
+}
+
+.project-card__hud span {
+  padding: 4px 7px;
+  border: 1px solid rgba(153, 217, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(4, 10, 18, 0.56);
+}
+
+.project-card:hover .project-card__hud {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-card__pipeline {
+  position: absolute;
+  z-index: 3;
+  left: 18px;
+  right: 104px;
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  gap: 0;
+  max-width: 160px;
+}
+
+.project-card__pipeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(83, 231, 255, 0.22), rgba(47, 240, 182, 0.5), rgba(255, 211, 106, 0.28));
+  transform: translateY(-50%);
+}
+
+.project-card__pipeline i {
+  position: relative;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(216, 247, 255, 0.54);
+  border-radius: 999px;
+  background: rgba(4, 10, 18, 0.84);
+  box-shadow: 0 0 18px rgba(83, 231, 255, 0.26);
+  transition:
+    background 240ms ease,
+    box-shadow 240ms ease,
+    transform 240ms ease;
+}
+
+.project-card__pipeline i:nth-child(2),
+.project-card__pipeline i:nth-child(3) {
+  justify-self: center;
+}
+
+.project-card__pipeline i:last-child {
+  justify-self: end;
+}
+
+.project-card:hover .project-card__pipeline i {
+  background: var(--app-cyan);
+  box-shadow: 0 0 22px rgba(83, 231, 255, 0.56);
+  transform: translateY(-2px);
 }
 
 .project-card__terminal {
@@ -133,7 +251,7 @@ const coverStyle = computed(() =>
 
 .project-card__body {
   display: grid;
-  gap: 14px;
+  gap: 13px;
   padding: 24px;
 }
 
@@ -151,6 +269,40 @@ const coverStyle = computed(() =>
   line-height: 1.3;
 }
 
+.project-card__signal {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.project-card__signal span {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(153, 217, 255, 0.12);
+  border-radius: var(--app-radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.project-card__signal strong,
+.project-card__signal small {
+  display: block;
+  overflow: hidden;
+  font-family: var(--app-font-data);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-card__signal strong {
+  color: rgba(216, 247, 255, 0.72);
+  font-size: 10px;
+}
+
+.project-card__signal small {
+  margin-top: 3px;
+  color: var(--app-teal);
+  font-size: 10px;
+}
+
 .project-card p {
   color: var(--app-muted);
   font-size: 14px;
@@ -166,6 +318,16 @@ const coverStyle = computed(() =>
 @keyframes project-scan {
   to {
     transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card:hover .project-card__scan {
+    animation: none;
+  }
+
+  .project-card__hud {
+    transform: none;
   }
 }
 </style>

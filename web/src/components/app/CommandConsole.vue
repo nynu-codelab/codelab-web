@@ -7,16 +7,23 @@
       <strong>{{ title }}</strong>
     </div>
     <div class="command-console__body">
-      <p v-for="command in commands" :key="command">
+      <p
+        v-for="(command, index) in commands"
+        :key="command"
+        :class="{ active: index === activeIndex }"
+      >
         <span>$</span>
         <code>{{ command }}</code>
       </p>
+      <small class="command-console__status">watching pipeline events...</small>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-withDefaults(
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+
+const props = withDefaults(
   defineProps<{
     title?: string
     commands: string[]
@@ -27,6 +34,21 @@ withDefaults(
     framed: true
   }
 )
+
+const activeIndex = ref(0)
+let timer = 0
+
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || props.commands.length <= 1) return
+
+  timer = window.setInterval(() => {
+    activeIndex.value = (activeIndex.value + 1) % props.commands.length
+  }, 1500)
+})
+
+onBeforeUnmount(() => {
+  window.clearInterval(timer)
+})
 </script>
 
 <style scoped>
@@ -79,12 +101,41 @@ withDefaults(
 }
 
 .command-console__body p {
+  position: relative;
   display: flex;
   min-width: 0;
   gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--app-radius-sm);
   color: var(--app-soft);
   font-family: var(--app-font-data);
   font-size: 13px;
+  transition:
+    border-color 220ms ease,
+    background 220ms ease,
+    color 220ms ease,
+    transform 220ms ease;
+}
+
+.command-console__body p.active {
+  border-color: rgba(83, 231, 255, 0.18);
+  color: var(--app-text-strong);
+  background: rgba(83, 231, 255, 0.055);
+  transform: translateX(3px);
+}
+
+.command-console__body p.active::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 6px;
+  height: 14px;
+  background: var(--app-amber);
+  box-shadow: 0 0 14px rgba(255, 211, 106, 0.5);
+  transform: translateY(-50%);
+  animation: command-cursor 1s steps(2, start) infinite;
 }
 
 .command-console__body span {
@@ -94,7 +145,30 @@ withDefaults(
 .command-console__body code {
   min-width: 0;
   overflow: hidden;
+  padding-right: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.command-console__status {
+  color: rgba(158, 177, 196, 0.68);
+  font-family: var(--app-font-data);
+  font-size: 11px;
+}
+
+@keyframes command-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-console__body p.active {
+    transform: none;
+  }
+
+  .command-console__body p.active::after {
+    animation: none;
+  }
 }
 </style>
