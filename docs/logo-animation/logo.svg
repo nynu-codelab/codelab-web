@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1693 929" width="1693" height="929">
+  <defs>
+    <style>
+      /* Base styles */
+      .mark-frame { fill: none; stroke: #00E5FF; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
+      .mark-chevron { fill: #00E5FF; }
+      .mark-underscore { fill: #00E5FF; }
+      .dot { fill: #FFD740; }
+      .wordmark-nynu { fill: #00E5FF; font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -2px; }
+      .wordmark-code { fill: #FFFFFF; font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -2px; }
+      
+      /* Animation classes */
+      .draw-on {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1693" height="929" fill="#0A1628"/>
+  
+  <!-- Main Logo Group -->
+  <g id="logo-main">
+    <!-- Terminal Mark -->
+    <g id="mark">
+      <!-- Frame - rounded rectangle path for draw-on animation -->
+      <path id="mark-frame" class="mark-frame draw-on" pathLength="1"
+            d="M 170 320 
+               L 170 320 
+               Q 140 320 140 350 
+               L 140 550 
+               Q 140 580 170 580 
+               L 420 580 
+               Q 450 580 450 550 
+               L 450 350 
+               Q 450 320 420 320 
+               Z"/>
+      
+      <!-- Chevron > -->
+      <path id="mark-chevron" class="mark-chevron" d="M 210 400 L 270 450 L 210 500"/>
+      
+      <!-- Underscore cursor -->
+      <rect id="mark-underscore" class="mark-underscore" x="290" y="490" width="80" height="14" rx="2"/>
+      
+      <!-- Yellow accent dot -->
+      <circle id="dot" class="dot" cx="430" cy="560" r="18"/>
+    </g>
+    
+    <!-- Wordmark -->
+    <g id="wordmark">
+      <text id="wordmark-nynu" class="wordmark-nynu" x="530" y="500">NYNU</text>
+      <text id="wordmark-code" class="wordmark-code" x="980" y="500">Code Lab</text>
+    </g>
+  </g>
+</svg>
