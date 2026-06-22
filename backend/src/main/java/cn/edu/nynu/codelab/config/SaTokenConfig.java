@@ -45,7 +45,10 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         // 公开阅读接口不需要检查黑名单（不带 token 的请求）
                         "/api/articles/**",
                         "/api/projects/**",
+                        "/api/members/**",
+                        "/api/directions/**",
                         "/api/portal/**",
+                        "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",
                         "/swagger-ui/**"
@@ -61,7 +64,10 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/health",
                         "/api/articles/**",
                         "/api/projects/**",
+                        "/api/members/**",
+                        "/api/directions/**",
                         "/api/portal/**",
+                        "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",
                         "/swagger-ui/**"
@@ -77,7 +83,10 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/api/health",
                         "/api/articles/**",
                         "/api/projects/**",
+                        "/api/members/**",
+                        "/api/directions/**",
                         "/api/portal/**",
+                        "/api/site-config/**",
                         "/doc.html",
                         "/v3/**",
                         "/swagger-ui/**"

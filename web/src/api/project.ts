@@ -23,8 +23,20 @@ export interface ProjectItem {
   updateTime: string
 }
 
-export function getProjects(): Promise<{ code: number; data: ProjectItem[]; message?: string }> {
-  return request.get('/projects')
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export interface ProjectListParams {
+  page?: number
+  pageSize?: number
+}
+
+export function getProjects(params?: ProjectListParams): Promise<{ code: number; data: PageResult<ProjectItem>; message?: string }> {
+  return request.get('/projects', { params })
 }
 
 export function getFeaturedProjects(): Promise<{ code: number; data: ProjectItem[]; message?: string }> {

@@ -14,17 +14,48 @@
         v-model="statusFilter"
         placeholder="按状态筛选"
         clearable
-        @change="fetchList"
-        style="width: 180px"
+        @change="handleFilterChange"
+        style="width: 160px"
       >
         <el-option label="全部" value="" />
-        <el-option label="待审核" value="PENDING" />
-        <el-option label="初筛通过" value="PRELIMINARY_PASSED" />
+        <el-option label="待处理" value="PENDING" />
+        <el-option label="已查看" value="VIEWED" />
+        <el-option label="通过初筛" value="PRELIMINARY_PASSED" />
         <el-option label="面试中" value="INTERVIEWING" />
         <el-option label="已通过" value="PASSED" />
-        <el-option label="未通过" value="REJECTED" />
-        <el-option label="已撤回" value="WITHDRAWN" />
+        <el-option label="已拒绝" value="REJECTED" />
+        <el-option label="已联系" value="CONTACTED" />
       </el-select>
+
+      <el-select
+        v-model="directionFilter"
+        placeholder="按方向筛选"
+        clearable
+        @change="handleFilterChange"
+        style="width: 160px; margin-left: 12px"
+      >
+        <el-option label="全部" value="" />
+        <el-option label="前端" value="frontend" />
+        <el-option label="后端" value="backend" />
+        <el-option label="全栈" value="fullstack" />
+        <el-option label="AI/算法" value="ai" />
+        <el-option label="产品" value="product" />
+        <el-option label="设计" value="design" />
+        <el-option label="其他" value="other" />
+      </el-select>
+
+      <el-input
+        v-model="keyword"
+        placeholder="搜索姓名/手机号"
+        clearable
+        @keyup.enter="handleFilterChange"
+        @clear="handleFilterChange"
+        style="width: 220px; margin-left: 12px"
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+      </el-input>
     </div>
 
     <el-card shadow="never">
@@ -51,6 +82,18 @@
         <el-table-column prop="createTime" label="报名时间" width="170" />
       </el-table>
     </el-card>
+
+    <!-- 分页 -->
+    <div class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="page"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        @change="fetchList"
+      />
+    </div>
 
     <!-- 详情/审核对话框 -->
     <el-dialog
@@ -95,12 +138,13 @@
           <el-form :model="reviewForm" label-width="80px">
             <el-form-item label="审核状态">
               <el-select v-model="reviewForm.status" placeholder="请选择审核结果">
-                <el-option label="待审核" value="PENDING" />
-                <el-option label="初筛通过" value="PRELIMINARY_PASSED" />
+                <el-option label="待处理" value="PENDING" />
+                <el-option label="已查看" value="VIEWED" />
+                <el-option label="通过初筛" value="PRELIMINARY_PASSED" />
                 <el-option label="面试中" value="INTERVIEWING" />
                 <el-option label="已通过" value="PASSED" />
-                <el-option label="未通过" value="REJECTED" />
-                <el-option label="已撤回" value="WITHDRAWN" />
+                <el-option label="已拒绝" value="REJECTED" />
+                <el-option label="已联系" value="CONTACTED" />
               </el-select>
             </el-form-item>
             <el-form-item label="审核备注">
@@ -132,6 +176,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 import {
   getApplications,
   getApplicationDetail,
@@ -144,6 +189,11 @@ import type { ApplyRecord } from '@/api/application'
 const list = ref<ApplyRecord[]>([])
 const loading = ref(false)
 const statusFilter = ref('')
+const directionFilter = ref('')
+const keyword = ref('')
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
 const dialogVisible = ref(false)
 const detail = ref<ApplyRecord | null>(null)
@@ -161,13 +211,25 @@ function statusTagType(status: string): 'warning' | 'primary' | '' | 'success' |
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getApplications(statusFilter.value || undefined)
-    list.value = res.data || []
+    const res = await getApplications({
+      page: page.value,
+      pageSize: pageSize.value,
+      status: statusFilter.value || undefined,
+      direction: directionFilter.value || undefined,
+      keyword: keyword.value || undefined
+    })
+    list.value = res.data.records || []
+    total.value = res.data.total || 0
   } catch {
     // error handled by interceptor
   } finally {
     loading.value = false
   }
+}
+
+function handleFilterChange() {
+  page.value = 1
+  fetchList()
 }
 
 async function showDetail(row: ApplyRecord) {
@@ -230,5 +292,11 @@ onMounted(() => {
   font-weight: 600;
   margin-bottom: 16px;
   color: var(--admin-text-strong);
+}
+
+.pagination-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

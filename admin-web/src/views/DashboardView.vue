@@ -4,7 +4,7 @@
       <div>
         <span class="admin-page-kicker">Overview</span>
         <h2 class="admin-page-title">数据概览</h2>
-        <p class="admin-page-copy">当前统计接口尚未实现，因此保持占位，不编造注册人数、报名人数或内容数量。</p>
+        <p class="admin-page-copy">实时统计 CodeLab 注册用户、内容产出、招新报名与核心成员数据。</p>
       </div>
     </div>
 
@@ -13,7 +13,7 @@
       <div>
         <span class="admin-page-kicker">Admin Console</span>
         <h3>CodeLab 管理控制台</h3>
-        <p>当前后台用于报名审核、文章管理、项目管理；成员、方向、站点配置和上传仍为占位入口。</p>
+        <p>当前后台用于报名审核、文章管理、项目管理、成员管理、方向管理、站点配置与文件上传。</p>
       </div>
       <div class="console-hologram" aria-hidden="true">
         <span></span>
@@ -24,7 +24,7 @@
       <div class="console-terminal">
         <span>admin-console --modules live</span>
         <span>guard --role ADMIN</span>
-        <span>sync --content article project recruit</span>
+        <span>sync --content article project recruit member direction config upload</span>
       </div>
     </section>
 
@@ -37,7 +37,8 @@
             </el-icon>
           </div>
           <div class="stat-info">
-            <p class="stat-value">-</p>
+            <p class="stat-value">{{ item.value ?? '-' }}</p>
+            <p v-if="item.sub" class="stat-sub">{{ item.sub }}</p>
             <p class="stat-label">{{ item.label }}</p>
           </div>
         </div>
@@ -61,18 +62,13 @@
       <el-card shadow="never">
         <div class="panel-title">当前可管理内容</div>
         <div class="pipeline-list">
-          <span>报名审核</span>
-          <span>文章草稿/发布/下架</span>
-          <span>项目草稿/发布/精选</span>
+          <span v-for="item in liveModules" :key="item">{{ item }}</span>
         </div>
       </el-card>
       <el-card shadow="never">
         <div class="panel-title">待接入模块</div>
         <div class="pipeline-list muted">
-          <span>成员管理</span>
-          <span>方向管理</span>
-          <span>站点配置</span>
-          <span>文件上传</span>
+          <span v-for="item in pendingModules" :key="item">{{ item }}</span>
         </div>
       </el-card>
     </div>
@@ -111,7 +107,8 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { ElMessage } from "element-plus";
 import * as echarts from "echarts/core";
 import { BarChart, PieChart } from "echarts/charts";
 import {
@@ -120,36 +117,53 @@ import {
   TooltipComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import { Clock, Document, Reading, User } from "@element-plus/icons-vue";
+import { Document, FolderOpened, Reading, User, UserFilled } from "@element-plus/icons-vue";
+import { getDashboardStats, type DashboardStats } from "@/api/dashboard";
 
 echarts.use([BarChart, PieChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
 
 const moduleChartRef = ref<HTMLElement>();
 let chart: echarts.ECharts | null = null;
 
-const stats = [
-  { label: "注册用户数", icon: User, className: "user-icon" },
-  { label: "报名人数", icon: Document, className: "recruit-icon" },
-  { label: "待审核人数", icon: Clock, className: "pending-icon" },
-  { label: "文章数量", icon: Reading, className: "article-icon" },
-];
+const statsData = ref<DashboardStats | null>(null);
+
+const stats = computed(() => {
+  const d = statsData.value;
+  if (!d) {
+    return [
+      { label: "注册用户", value: null, sub: undefined, icon: User, className: "user-icon" },
+      { label: "文章总数", value: null, sub: undefined, icon: Reading, className: "article-icon" },
+      { label: "项目总数", value: null, sub: undefined, icon: FolderOpened, className: "project-icon" },
+      { label: "招新报名", value: null, sub: undefined, icon: Document, className: "recruit-icon" },
+      { label: "核心成员", value: null, sub: undefined, icon: UserFilled, className: "member-icon" },
+    ];
+  }
+  return [
+    { label: "注册用户", value: d.userCount, icon: User, className: "user-icon" },
+    { label: "文章总数", value: d.articleCount, sub: `已发布 ${d.publishedArticleCount}`, icon: Reading, className: "article-icon" },
+    { label: "项目总数", value: d.projectCount, sub: `已发布 ${d.publishedProjectCount}`, icon: FolderOpened, className: "project-icon" },
+    { label: "招新报名", value: d.recruitTotal, sub: `待处理 ${d.recruitPending}`, icon: Document, className: "recruit-icon" },
+    { label: "核心成员", value: d.memberCount, sub: undefined, icon: UserFilled, className: "member-icon" },
+  ];
+});
 
 const signals = [
   { label: "Recruit", value: "LIVE", className: "is-live" },
   { label: "Articles", value: "LIVE", className: "is-live" },
   { label: "Projects", value: "LIVE", className: "is-live" },
-  { label: "Members", value: "PENDING", className: "is-pending" },
-  { label: "Directions", value: "PENDING", className: "is-pending" },
-  { label: "Upload", value: "PENDING", className: "is-pending" },
+  { label: "Members", value: "LIVE", className: "is-live" },
+  { label: "Directions", value: "LIVE", className: "is-live" },
+  { label: "Site Config", value: "LIVE", className: "is-live" },
+  { label: "Upload", value: "LIVE", className: "is-live" },
 ];
 
 const opsMatrix = [
   { module: "报名审核", detail: "review queue ready", state: "live" },
   { module: "文章发布", detail: "markdown safe render", state: "live" },
   { module: "项目展台", detail: "featured pipeline ready", state: "live" },
-  { module: "成员数据", detail: "waiting api", state: "pending" },
-  { module: "站点配置", detail: "waiting api", state: "pending" },
-  { module: "文件上传", detail: "waiting api", state: "pending" },
+  { module: "成员数据", detail: "crud ready", state: "live" },
+  { module: "站点配置", detail: "crud ready", state: "live" },
+  { module: "文件上传", detail: "crud ready", state: "live" },
 ];
 
 const opsPanels = [
@@ -172,6 +186,29 @@ const opsPanels = [
     steps: ["pack", "image", "nginx", "smoke"],
   },
 ];
+
+const liveModules = [
+  "报名审核",
+  "文章草稿/发布/下架",
+  "项目草稿/发布/精选",
+  "成员管理",
+  "方向管理",
+  "站点配置",
+  "文件上传",
+];
+
+const pendingModules: string[] = [];
+
+async function fetchStats() {
+  try {
+    const res = await getDashboardStats();
+    if (res.code === 200) {
+      statsData.value = res.data;
+    }
+  } catch {
+    ElMessage.error("加载统计数据失败");
+  }
+}
 
 function renderChart() {
   if (!moduleChartRef.value) return;
@@ -202,7 +239,7 @@ function renderChart() {
       {
         type: "bar",
         barWidth: 28,
-        data: [3, 4, 5],
+        data: [7, 0, 5],
         itemStyle: {
           borderRadius: [8, 8, 0, 0],
           color: {
@@ -228,6 +265,7 @@ function resizeChart() {
 }
 
 onMounted(() => {
+  fetchStats();
   renderChart();
   window.addEventListener("resize", resizeChart);
 });
@@ -468,7 +506,7 @@ onBeforeUnmount(() => {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -495,12 +533,16 @@ onBeforeUnmount(() => {
   background: linear-gradient(135deg, var(--admin-teal), #7df5cf);
 }
 
-.pending-icon {
-  background: linear-gradient(135deg, var(--admin-amber), #fff0a8);
+.project-icon {
+  background: linear-gradient(135deg, #a98bff, var(--admin-blue));
 }
 
 .article-icon {
   background: linear-gradient(135deg, #a98bff, var(--admin-cyan));
+}
+
+.member-icon {
+  background: linear-gradient(135deg, var(--admin-amber), #ff8c6b);
 }
 
 .stat-value {
@@ -509,6 +551,13 @@ onBeforeUnmount(() => {
   font-size: 32px;
   font-weight: 820;
   line-height: 1;
+}
+
+.stat-sub {
+  margin-top: 4px;
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-family: var(--admin-font-data);
 }
 
 .stat-label {
@@ -691,7 +740,7 @@ onBeforeUnmount(() => {
 
 @media (max-width: 1100px) {
   .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .console-hero,

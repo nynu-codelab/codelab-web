@@ -3,7 +3,7 @@
     <PageHero
       eyebrow="Technical Tracks"
       title="技术方向"
-      description="以核心方向建立软件工程基础，以拓展方向打开技术视野。每个方向都服务于真实项目训练。"
+      :description="heroDescription"
     >
       <template #actions>
         <AppButton label="加入方向学习" to="/recruit" />
@@ -12,17 +12,33 @@
       <template #visual>
         <CommandConsole
           title="tracks.matrix"
-          :commands="['selectTrack(javaBackend)', 'selectTrack(frontend)', 'selectTrack(miniprogram)', 'extend(aiAndOps)']"
+          :commands="consoleCommands"
         />
       </template>
     </PageHero>
 
     <AnimatedSection>
-      <div class="app-container app-grid three">
+      <div v-if="loading" class="app-container">
+        <p class="status-text">正在装载方向矩阵...</p>
+      </div>
+
+      <div v-else-if="error" class="app-container">
+        <p class="status-text error">装载失败：{{ error }}</p>
+      </div>
+
+      <div v-else-if="directions.length === 0" class="app-container">
+        <p class="status-text">技术方向数据暂未配置，请关注后续更新。</p>
+      </div>
+
+      <div v-else class="app-container app-grid three">
         <DirectionCard
-          v-for="item in directions"
-          :key="item.title"
-          v-bind="item"
+          v-for="(item, idx) in directions"
+          :key="item.id"
+          :index="String(idx + 1).padStart(2, '0')"
+          :title="item.name"
+          :description="item.summary"
+          :badge="item.status === 1 ? '核心方向' : '拓展方向'"
+          :tags="parseTags(item.tags)"
         />
       </div>
     </AnimatedSection>
@@ -30,48 +46,59 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import DirectionCard from '@/components/app/DirectionCard.vue'
 import CommandConsole from '@/components/app/CommandConsole.vue'
+import { getDirections, type DirectionItem } from '@/api/direction'
 
-const directions = [
-  {
-    index: '01',
-    title: 'Java 后端',
-    badge: '核心方向',
-    description: '学习服务端分层、接口设计、认证鉴权、数据库建模和上线前验证。',
-    tags: ['Java 17', 'Spring Boot', 'MyBatis-Plus', 'Sa-Token']
-  },
-  {
-    index: '02',
-    title: '前端开发',
-    badge: '核心方向',
-    description: '学习 Vue 3、TypeScript、路由、状态管理、组件化和响应式体验。',
-    tags: ['Vue 3', 'TypeScript', 'Vite', 'Pinia']
-  },
-  {
-    index: '03',
-    title: '微信小程序',
-    badge: '核心方向',
-    description: '面向移动端场景训练登录态、接口联调、页面组织和发布流程。',
-    tags: ['小程序', '移动端', '接口联调', '体验优化']
-  },
-  {
-    index: '04',
-    title: '人工智能',
-    badge: '拓展方向',
-    description: '探索智能化应用原型、数据处理和模型能力接入。',
-    tags: ['AI 应用', 'Prompt', '数据处理']
-  },
-  {
-    index: '05',
-    title: '数据库与运维',
-    badge: '拓展方向',
-    description: '理解 MySQL、Docker、Nginx、环境变量和部署验证。',
-    tags: ['MySQL', 'Docker', 'Nginx', 'CI 思维']
+const directions = ref<DirectionItem[]>([])
+const loading = ref(true)
+const error = ref('')
+
+const heroDescription = computed(() => {
+  if (loading.value) return '正在加载方向数据...'
+  if (directions.value.length === 0) return '技术方向数据暂未配置，请关注后续更新。'
+  return '以核心方向建立软件工程基础，以拓展方向打开技术视野。每个方向都服务于真实项目训练。'
+})
+
+const consoleCommands = computed(() => {
+  if (directions.value.length === 0) return ['awaitingDirections()']
+  return directions.value.map((d) => `selectTrack(${d.code || d.name})`)
+})
+
+function parseTags(tags: string): string[] {
+  if (!tags) return []
+  return tags.split(',').map((t) => t.trim()).filter(Boolean)
+}
+
+onMounted(async () => {
+  try {
+    const res = await getDirections()
+    if (res.code === 0 && Array.isArray(res.data)) {
+      directions.value = res.data.sort((a, b) => a.sortOrder - b.sortOrder)
+    }
+  } catch (e: any) {
+    error.value = e?.message || '加载方向数据失败，请稍后重试'
+    console.error('[DirectionsView] fetch directions error:', e)
+  } finally {
+    loading.value = false
   }
-]
+})
 </script>
+
+<style scoped>
+.status-text {
+  color: var(--app-muted);
+  text-align: center;
+  padding: 48px 0;
+  font-size: 15px;
+}
+
+.status-text.error {
+  color: var(--app-danger, #ef5350);
+}
+</style>

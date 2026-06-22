@@ -15,7 +15,7 @@
         v-model="statusFilter"
         placeholder="按状态筛选"
         clearable
-        @change="fetchList"
+        @change="handleFilterChange"
         style="width: 160px"
       >
         <el-option label="全部" value="" />
@@ -28,7 +28,7 @@
         v-model="featuredFilter"
         placeholder="按精选筛选"
         clearable
-        @change="fetchList"
+        @change="handleFilterChange"
         style="width: 160px; margin-left: 12px"
       >
         <el-option label="全部" :value="undefined" />
@@ -100,6 +100,18 @@
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 分页 -->
+    <div class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="page"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        @change="fetchList"
+      />
+    </div>
 
     <!-- 新建/编辑对话框 -->
     <el-dialog
@@ -205,6 +217,9 @@ const list = ref<ProjectItem[]>([])
 const loading = ref(false)
 const statusFilter = ref('')
 const featuredFilter = ref<number | undefined>(undefined)
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
 const dialogVisible = ref(false)
 const editingId = ref<number | null>(null)
@@ -256,16 +271,24 @@ function resetForm() {
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getProjects(
-      statusFilter.value || undefined,
-      featuredFilter.value
-    )
-    list.value = res.data || []
+    const res = await getProjects({
+      page: page.value,
+      pageSize: pageSize.value,
+      status: statusFilter.value || undefined,
+      featured: featuredFilter.value
+    })
+    list.value = res.data.records || []
+    total.value = res.data.total || 0
   } catch {
     // error handled by interceptor
   } finally {
     loading.value = false
   }
+}
+
+function handleFilterChange() {
+  page.value = 1
+  fetchList()
 }
 
 function showCreate() {
@@ -276,8 +299,8 @@ function showCreate() {
 
 async function showEdit(row: ProjectItem) {
   try {
-    const res = await getProjects()
-    const project = (res.data || []).find(p => p.id === row.id)
+    const res = await getProjects({ page: 1, pageSize: 100 })
+    const project = (res.data.records || []).find((p: ProjectItem) => p.id === row.id)
     if (project) {
       form.title = project.title
       form.summary = project.summary || ''
@@ -383,5 +406,11 @@ onMounted(() => {
 
 .text-muted {
   color: #c0c4cc;
+}
+
+.pagination-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

@@ -39,8 +39,22 @@ export const STATUS_TAG_TYPE: Record<string, 'warning' | 'primary' | '' | 'succe
   OFFLINE: 'warning'
 }
 
-export function getArticles(status?: string): Promise<{ code: number; data: ArticleItem[]; message?: string }> {
-  return request.get('/admin/articles', { params: status ? { status } : undefined })
+export interface ArticleListParams {
+  page?: number
+  pageSize?: number
+  status?: string
+  keyword?: string
+}
+
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export function getArticles(params?: ArticleListParams): Promise<{ code: number; data: PageResult<ArticleItem>; message?: string }> {
+  return request.get('/admin/articles', { params })
 }
 
 export function getArticle(id: number): Promise<{ code: number; data: ArticleItem; message?: string }> {

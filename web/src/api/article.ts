@@ -17,11 +17,20 @@ export interface ArticleItem {
   updateTime: string
 }
 
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  page: number
+  pageSize: number
+}
+
 export interface ArticleListParams {
+  page?: number
+  pageSize?: number
   category?: string
 }
 
-export function getArticles(params?: ArticleListParams): Promise<{ code: number; data: ArticleItem[]; message?: string }> {
+export function getArticles(params?: ArticleListParams): Promise<{ code: number; data: PageResult<ArticleItem>; message?: string }> {
   return request.get('/articles', { params })
 }
 

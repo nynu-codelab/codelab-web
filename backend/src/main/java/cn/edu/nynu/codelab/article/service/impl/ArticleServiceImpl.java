@@ -5,7 +5,9 @@ import cn.edu.nynu.codelab.article.dto.ArticleCreateRequest;
 import cn.edu.nynu.codelab.article.entity.Article;
 import cn.edu.nynu.codelab.article.mapper.ArticleMapper;
 import cn.edu.nynu.codelab.article.service.ArticleService;
+import cn.edu.nynu.codelab.common.PageResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,20 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public PageResult<Article> listPublishedPaged(int page, int pageSize, String category) {
+        Page<Article> mpPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<Article>()
+                .eq(Article::getStatus, Article.STATUS_PUBLISHED)
+                .orderByDesc(Article::getPublishedAt)
+                .orderByDesc(Article::getSortOrder);
+        if (category != null && !category.isBlank()) {
+            wrapper.eq(Article::getCategory, category);
+        }
+        Page<Article> result = articleMapper.selectPage(mpPage, wrapper);
+        return PageResult.of(result.getRecords(), result.getTotal(), page, pageSize);
+    }
+
+    @Override
     public Article getPublishedById(Long id) {
         Article article = articleMapper.selectOne(
                 new LambdaQueryWrapper<Article>()
@@ -73,6 +89,24 @@ public class ArticleServiceImpl implements ArticleService {
             wrapper.eq(Article::getStatus, status);
         }
         return articleMapper.selectList(wrapper);
+    }
+
+    @Override
+    public PageResult<Article> adminListPaged(int page, int pageSize, String status, String keyword) {
+        Page<Article> mpPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<Article>()
+                .orderByDesc(Article::getCreateTime);
+        if (status != null && !status.isBlank()) {
+            if (!VALID_STATUSES.contains(status)) {
+                throw new RuntimeException("无效的文章状态: " + status);
+            }
+            wrapper.eq(Article::getStatus, status);
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            wrapper.like(Article::getTitle, keyword);
+        }
+        Page<Article> result = articleMapper.selectPage(mpPage, wrapper);
+        return PageResult.of(result.getRecords(), result.getTotal(), page, pageSize);
     }
 
     @Override

@@ -15,6 +15,8 @@ public class ApplyRecord {
     public static final String STATUS_PENDING = "PENDING";
     public static final String STATUS_PRELIMINARY_PASSED = "PRELIMINARY_PASSED";
     public static final String STATUS_INTERVIEWING = "INTERVIEWING";
+    public static final String STATUS_VIEWED = "VIEWED";
+    public static final String STATUS_CONTACTED = "CONTACTED";
     public static final String STATUS_PASSED = "PASSED";
     public static final String STATUS_REJECTED = "REJECTED";
     public static final String STATUS_WITHDRAWN = "WITHDRAWN";

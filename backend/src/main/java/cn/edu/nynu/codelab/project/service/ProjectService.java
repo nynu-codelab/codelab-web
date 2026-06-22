@@ -1,5 +1,6 @@
 package cn.edu.nynu.codelab.project.service;
 
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.project.dto.ProjectCreateRequest;
 import cn.edu.nynu.codelab.project.entity.Project;
 
@@ -18,6 +19,11 @@ public interface ProjectService {
     List<Project> listPublished();
 
     /**
+     * 前台：分页获取已发布项目列表
+     */
+    PageResult<Project> listPublishedPaged(int page, int pageSize);
+
+    /**
      * 前台：获取已发布且精选的项目列表（首页展示）
      */
     List<Project> listFeatured();
@@ -31,6 +37,11 @@ public interface ProjectService {
      * 后台：获取所有项目（可按状态筛选、可按精选筛选）
      */
     List<Project> adminList(String status, Integer featured);
+
+    /**
+     * 后台：分页获取所有项目（可按状态、精选筛选）
+     */
+    PageResult<Project> adminListPaged(int page, int pageSize, String status, Integer featured);
 
     /**
      * 后台：获取项目详情

@@ -1,5 +1,6 @@
 package cn.edu.nynu.codelab.recruit.service;
 
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.recruit.dto.ApplyRequest;
 import cn.edu.nynu.codelab.recruit.dto.ReviewRequest;
 import cn.edu.nynu.codelab.recruit.entity.ApplyRecord;
@@ -27,6 +28,11 @@ public interface ApplyRecordService {
      * 管理员：查看报名列表（可选状态筛选）
      */
     List<ApplyRecord> listApplications(String status);
+
+    /**
+     * 管理员：分页查看报名列表（可按状态、方向、关键词筛选）
+     */
+    PageResult<ApplyRecord> adminListPaged(int page, int pageSize, String status, String direction, String keyword);
 
     /**
      * 管理员：查看报名详情
