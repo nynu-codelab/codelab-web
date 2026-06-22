@@ -4,6 +4,9 @@
     @pointermove="handlePointerMove"
   >
     <PreviewAnimatedBackground />
+    <ParticleUniverse />
+    <CodeRainCanvas />
+    <EnergyFlowBackground />
     <div class="preview-shell">
       <PreviewHeader />
       <main>
@@ -115,6 +118,9 @@ import PreviewHero from '@/components/preview/PreviewHero.vue'
 import PreviewMetricCard from '@/components/preview/PreviewMetricCard.vue'
 import PreviewProjectCard from '@/components/preview/PreviewProjectCard.vue'
 import PreviewRecruitCTA from '@/components/preview/PreviewRecruitCTA.vue'
+import CodeRainCanvas from '@/components/app/CodeRainCanvas.vue'
+import EnergyFlowBackground from '@/components/app/EnergyFlowBackground.vue'
+import ParticleUniverse from '@/components/app/ParticleUniverse.vue'
 
 const metrics = [
   {

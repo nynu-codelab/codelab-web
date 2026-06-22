@@ -9,6 +9,12 @@
         <AppButton label="加入方向学习" to="/recruit" />
         <AppButton label="查看项目成果" to="/projects" variant="secondary" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="tracks.matrix"
+          :commands="['selectTrack(javaBackend)', 'selectTrack(frontend)', 'selectTrack(miniprogram)', 'extend(aiAndOps)']"
+        />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -29,6 +35,7 @@ import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import DirectionCard from '@/components/app/DirectionCard.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 
 const directions = [
   {

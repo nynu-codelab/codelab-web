@@ -43,7 +43,7 @@ const steps = ['注册账号', '登录系统', '填写报名信息', '提交报�
 .recruit-cta__content h2 {
   max-width: 680px;
   color: #f9fcff;
-  font-size: clamp(30px, 4vw, 56px);
+  font-size: 56px;
   line-height: 1.08;
 }
 
@@ -87,11 +87,19 @@ const steps = ['注册账号', '登录系统', '填写报名信息', '提交报�
     grid-template-columns: 1fr;
     padding: 24px;
   }
+
+  .recruit-cta__content h2 {
+    font-size: 38px;
+  }
 }
 
 @media (max-width: 520px) {
   .recruit-cta__steps {
     grid-template-columns: 1fr;
+  }
+
+  .recruit-cta__content h2 {
+    font-size: 32px;
   }
 }
 </style>

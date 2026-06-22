@@ -9,6 +9,11 @@
           <span>NYNU Code Lab</span>
           <strong>项目实战 · 技术分享 · 工程能力培养</strong>
         </div>
+        <CommandConsole
+          class="auth-shell__console"
+          title="access.console"
+          :commands="['requestToken()', 'verifyRole()', 'enterWorkspace()']"
+        />
       </div>
       <div class="auth-shell__card glass-card">
         <slot />
@@ -19,6 +24,7 @@
 
 <script setup lang="ts">
 import AppFrame from './AppFrame.vue'
+import CommandConsole from './CommandConsole.vue'
 
 defineProps<{
   eyebrow: string
@@ -41,7 +47,7 @@ defineProps<{
 
 .auth-shell__intro h1 {
   color: var(--app-text-strong);
-  font-size: clamp(40px, 6vw, 76px);
+  font-size: 72px;
   line-height: 1.04;
 }
 
@@ -72,8 +78,23 @@ defineProps<{
   font-size: 18px;
 }
 
+.auth-shell__console {
+  max-width: 520px;
+  margin-top: 16px;
+}
+
 .auth-shell__card {
+  position: relative;
   padding: clamp(24px, 4vw, 34px);
+}
+
+.auth-shell__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(83, 231, 255, 0.12), transparent 34%);
+  opacity: 0.76;
 }
 
 @media (max-width: 900px) {
@@ -81,6 +102,10 @@ defineProps<{
     min-height: auto;
     grid-template-columns: 1fr;
     padding: 36px 0 58px;
+  }
+
+  .auth-shell__intro h1 {
+    font-size: 42px;
   }
 }
 </style>

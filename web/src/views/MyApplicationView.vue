@@ -8,6 +8,12 @@
       <template #actions>
         <AppButton label="返回个人中心" to="/profile" variant="secondary" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="application.status"
+          :commands="['loadMyApplication()', 'checkReviewRemark()', 'allowEditWhen(PENDING)']"
+        />
+      </template>
     </PageHero>
 
     <main class="application-page app-container narrow">
@@ -208,6 +214,7 @@ import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { getMyApply, updateMyApply, STATUS_MAP } from '@/api/application'
 import type { ApplyRecord } from '@/api/application'
 import { formatDate } from '@/utils/content'

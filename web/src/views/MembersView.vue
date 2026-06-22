@@ -9,6 +9,9 @@
         <AppButton label="招新报名" to="/recruit" />
         <AppButton label="了解实验室" to="/about" variant="secondary" />
       </template>
+      <template #visual>
+        <GitBranchMap />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -29,6 +32,7 @@ import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import MemberCard from '@/components/app/MemberCard.vue'
+import GitBranchMap from '@/components/app/GitBranchMap.vue'
 
 const roles = [
   {

@@ -9,6 +9,12 @@
         <AppButton label="招新报名" to="/recruit" />
         <AppButton label="查看我的报名" to="/my-application" variant="secondary" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="contact.config"
+          :commands="['readSiteConfig()', 'waitForRealContactInfo()', 'routeToRecruitForm()']"
+        />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -41,6 +47,7 @@ import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 </script>
 
 <style scoped>

@@ -1,34 +1,6 @@
 <template>
   <AppFrame>
-    <PageHero
-      eyebrow="NYNU Code Lab"
-      title="南阳师范学院 Code Lab 实验室"
-      description="专注项目实战、技术分享与工程能力培养，在真实开发中提升软件工程能力。"
-    >
-      <template #actions>
-        <AppButton label="立即报名" to="/recruit" size="lg" />
-        <AppButton label="查看项目" to="/projects" variant="secondary" size="lg" />
-        <AppButton label="阅读文章" to="/articles" variant="ghost" size="lg" />
-      </template>
-
-      <template #visual>
-        <div class="hero-terminal glass-card">
-          <div class="hero-terminal__bar">
-            <span></span>
-            <span></span>
-            <span></span>
-            <strong>code-lab.pipeline</strong>
-          </div>
-          <div class="hero-terminal__body">
-            <p><span>$</span> init student-engineering-workflow</p>
-            <p><span>></span> project_practice: active</p>
-            <p><span>></span> tech_sharing: continuous</p>
-            <p><span>></span> recruitment: open</p>
-          </div>
-          <div class="hero-terminal__orbit"></div>
-        </div>
-      </template>
-    </PageHero>
+    <TerminalHero />
 
     <AnimatedSection>
       <div class="app-container app-grid four">
@@ -39,6 +11,30 @@
           :label="metric.label"
           :caption="metric.caption"
         />
+      </div>
+    </AnimatedSection>
+
+    <AnimatedSection>
+      <div class="app-container home-os">
+        <div>
+          <span class="app-eyebrow">Lab Operating System</span>
+          <h2 class="app-title-lg">把学习过程组织成可运行的工程系统</h2>
+          <p class="app-copy">
+            首页不堆虚假运营数字，而是强调真实训练链路：任务拆解、代码实现、评审复盘、部署验证。
+            这也是 CodeLab 与普通展示站拉开质感的核心。
+          </p>
+        </div>
+        <CommandConsole
+          title="recruit.flow"
+          :commands="[
+            'register()',
+            'login()',
+            'submitApplication()',
+            'adminReview()',
+            'joinCodeLab()'
+          ]"
+        />
+        <GitBranchMap />
       </div>
     </AnimatedSection>
 
@@ -192,7 +188,6 @@
 import { onMounted, ref } from 'vue'
 import AppFrame from '@/components/app/AppFrame.vue'
 import AppButton from '@/components/app/AppButton.vue'
-import PageHero from '@/components/app/PageHero.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import MetricCard from '@/components/app/MetricCard.vue'
 import DirectionCard from '@/components/app/DirectionCard.vue'
@@ -201,6 +196,9 @@ import ArticleCard from '@/components/app/ArticleCard.vue'
 import MemberCard from '@/components/app/MemberCard.vue'
 import RecruitCTA from '@/components/app/RecruitCTA.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
+import GitBranchMap from '@/components/app/GitBranchMap.vue'
+import TerminalHero from '@/components/app/TerminalHero.vue'
 import { getArticles, type ArticleItem } from '@/api/article'
 import { getFeaturedProjects, type ProjectItem } from '@/api/project'
 import { fallbackText, parseList } from '@/utils/content'
@@ -310,97 +308,30 @@ onMounted(fetchHomeData)
 </script>
 
 <style scoped>
-.hero-terminal {
-  position: relative;
-  min-height: 360px;
-  padding: 22px;
-}
-
-.hero-terminal__bar {
-  display: grid;
-  grid-template-columns: 10px 10px 10px minmax(0, 1fr);
-  gap: 8px;
-  align-items: center;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(153, 217, 255, 0.12);
-}
-
-.hero-terminal__bar span {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--app-danger);
-}
-
-.hero-terminal__bar span:nth-child(2) {
-  background: var(--app-amber);
-}
-
-.hero-terminal__bar span:nth-child(3) {
-  background: var(--app-success);
-}
-
-.hero-terminal__bar strong {
-  justify-self: end;
-  color: var(--app-muted);
-  font-family: var(--app-font-data);
-  font-size: 12px;
-}
-
-.hero-terminal__body {
-  display: grid;
-  gap: 16px;
-  padding-top: 28px;
-  color: var(--app-soft);
-  font-family: var(--app-font-data);
-  font-size: 14px;
-}
-
-.hero-terminal__body p {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.hero-terminal__body span {
-  margin-right: 12px;
-  color: var(--app-cyan);
-}
-
-.hero-terminal__orbit {
-  position: absolute;
-  right: 28px;
-  bottom: 24px;
-  width: 132px;
-  height: 132px;
-  border: 1px solid rgba(83, 231, 255, 0.28);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(83, 231, 255, 0.34), transparent 44%),
-    conic-gradient(from 90deg, transparent, rgba(83, 231, 255, 0.64), transparent);
-  filter: drop-shadow(0 0 32px rgba(83, 231, 255, 0.28));
-  animation: orb-float 7s ease-in-out infinite;
-}
-
 .section-actions {
   display: grid;
   justify-items: start;
   gap: 16px;
 }
 
-@media (max-width: 640px) {
-  .hero-terminal {
-    min-height: 300px;
-  }
+.home-os {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(300px, 0.62fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  align-items: stretch;
+}
 
-  .hero-terminal__body {
-    font-size: 12px;
-  }
+.home-os > div:first-child {
+  padding: 24px 0;
+}
 
-  .hero-terminal__orbit {
-    width: 96px;
-    height: 96px;
+.home-os .app-copy {
+  margin-top: 16px;
+}
+
+@media (max-width: 1120px) {
+  .home-os {
+    grid-template-columns: 1fr;
   }
 }
 </style>

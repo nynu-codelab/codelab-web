@@ -59,6 +59,13 @@
           <AppButton v-if="project.documentUrl" label="项目文档" :href="project.documentUrl" target="_blank" variant="ghost" />
         </div>
 
+        <CommandConsole
+          class="detail-console"
+          title="project.runtime"
+          :framed="false"
+          :commands="['inspectProjectMetadata()', 'renderMarkdown(html=false)', 'preserveApiContract()']"
+        />
+
         <div class="detail-card__divider"></div>
         <div class="app-markdown" v-html="renderedMarkdown"></div>
         <div class="detail-card__footer">
@@ -76,6 +83,7 @@ import MarkdownIt from 'markdown-it'
 import AppFrame from '@/components/app/AppFrame.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { getProject, type ProjectItem } from '@/api/project'
 import { formatDate, parseList } from '@/utils/content'
 
@@ -146,7 +154,7 @@ onMounted(fetchProject)
 
 .detail-card h1 {
   color: var(--app-text-strong);
-  font-size: clamp(32px, 5vw, 58px);
+  font-size: 58px;
   line-height: 1.12;
 }
 
@@ -195,6 +203,10 @@ onMounted(fetchProject)
   gap: 12px;
 }
 
+.detail-console {
+  margin-top: 24px;
+}
+
 .detail-card__divider {
   height: 1px;
   margin: 34px 0;
@@ -208,6 +220,10 @@ onMounted(fetchProject)
 }
 
 @media (max-width: 760px) {
+  .detail-card h1 {
+    font-size: 34px;
+  }
+
   .project-facts {
     grid-template-columns: 1fr;
   }

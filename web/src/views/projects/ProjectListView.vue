@@ -9,6 +9,12 @@
         <AppButton label="立即报名" to="/recruit" />
         <AppButton label="阅读文章" to="/articles" variant="secondary" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="project.showcase"
+          :commands="['fetchPublishedProjects()', 'scanTechStack()', 'openArchitectureNotes()']"
+        />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -58,6 +64,7 @@ import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import ProjectCard from '@/components/app/ProjectCard.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { getProjects, type ProjectItem } from '@/api/project'
 import { fallbackText, parseList } from '@/utils/content'
 

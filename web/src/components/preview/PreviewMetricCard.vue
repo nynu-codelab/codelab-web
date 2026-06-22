@@ -25,7 +25,7 @@ defineProps<{
   margin-bottom: 8px;
   color: var(--preview-cyan);
   font-family: var(--preview-font-data);
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: 42px;
   font-weight: 800;
   line-height: 1;
   text-shadow: 0 0 28px rgba(83, 231, 255, 0.34);
@@ -43,5 +43,11 @@ defineProps<{
   color: var(--preview-muted);
   font-size: 14px;
   line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+  .metric-card__value {
+    font-size: 32px;
+  }
 }
 </style>

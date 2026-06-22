@@ -1,5 +1,6 @@
 <template>
   <el-container class="layout-container">
+    <div class="layout-signal" aria-hidden="true"></div>
     <el-aside :width="isCollapse ? '78px' : '246px'" class="layout-aside">
       <button class="aside-logo" type="button" @click="toggleCollapse">
         <span class="logo-mark">CL</span>
@@ -132,6 +133,7 @@ function handleLogout() {
 
 <style scoped>
 .layout-container {
+  position: relative;
   height: 100vh;
   color: var(--admin-text);
   background:
@@ -140,8 +142,21 @@ function handleLogout() {
     linear-gradient(135deg, var(--admin-bg), var(--admin-bg-2) 54%, #05070c);
 }
 
+.layout-signal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 16%, rgba(83, 231, 255, 0.08), transparent 58%),
+    linear-gradient(rgba(83, 231, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 231, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, 76px 76px, 76px 76px;
+  mask-image: radial-gradient(circle at 62% 18%, black, transparent 72%);
+}
+
 .layout-aside {
   position: relative;
+  z-index: 1;
   overflow: hidden;
   border-right: 1px solid var(--admin-line);
   background: rgba(6, 11, 20, 0.82);
@@ -231,6 +246,8 @@ function handleLogout() {
 }
 
 .layout-content {
+  position: relative;
+  z-index: 1;
   min-width: 0;
 }
 

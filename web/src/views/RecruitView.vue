@@ -9,6 +9,22 @@
         <AppButton label="查看我的报名" to="/my-application" variant="secondary" />
         <AppButton label="了解技术方向" to="/directions" variant="ghost" />
       </template>
+      <template #visual>
+        <div class="recruit-visual">
+          <CommandConsole
+            title="join.pipeline"
+            :commands="['register()', 'login()', 'submitApplication()', 'adminReview()', 'joinCodeLab()']"
+          />
+          <BuildPipeline
+            :steps="[
+              { label: 'REGISTER', detail: '创建账号' },
+              { label: 'APPLY', detail: '提交报名' },
+              { label: 'REVIEW', detail: '后台审核' },
+              { label: 'JOIN', detail: '进入训练' }
+            ]"
+          />
+        </div>
+      </template>
     </PageHero>
 
     <main class="apply-page app-container narrow">
@@ -147,6 +163,8 @@ import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import StateView from '@/components/app/StateView.vue'
+import BuildPipeline from '@/components/app/BuildPipeline.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { submitApply } from '@/api/application'
 
 const currentYear = new Date().getFullYear()
@@ -216,6 +234,12 @@ async function handleSubmit() {
 <style scoped>
 .apply-page {
   padding: 0 0 92px;
+}
+
+.recruit-visual {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
 }
 
 .apply-form {
