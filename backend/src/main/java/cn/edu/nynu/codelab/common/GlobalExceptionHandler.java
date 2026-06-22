@@ -3,6 +3,7 @@ package cn.edu.nynu.codelab.common;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
+import cn.dev33.satoken.exception.SaTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -61,6 +62,38 @@ public class GlobalExceptionHandler {
     public Result<?> handleForbidden(Exception e) {
         log.warn("权限不足: {}", e.getMessage());
         return Result.error(403, "无权限访问");
+    }
+
+    /**
+     * 处理 Sa-Token 框架异常（兜底）。
+     * <p>
+     * Sa-Token 中所有认证/授权异常均继承 SaTokenException → RuntimeException。
+     * 已单独处理的异常（NotLoginException → 401, NotRoleException/NotPermissionException → 403）
+     * 由对应更具体的 handler 拦截。
+     * <p>
+     * 此 handler 负责兜底，捕获：
+     * <ul>
+     *   <li>JWT 解析异常（SaJwtException 等）→ 401</li>
+     *   <li>其他未知 Sa-Token 异常 → 500（记录日志用于排查）</li>
+     * </ul>
+     */
+    @ExceptionHandler(SaTokenException.class)
+    public Result<?> handleSaTokenException(SaTokenException e) {
+        log.error("Sa-Token 框架异常: code={}, message={}", e.getCode(), e.getMessage());
+        // SaTokenException.getCode() 返回异常对应的状态码，< 500 的按认证失败处理
+        if (e.getCode() > 0 && e.getCode() < 500) {
+            return Result.error(e.getCode(), "认证失败: " + e.getMessage());
+        }
+        return Result.error(500, "系统内部认证错误");
+    }
+
+    /**
+     * 处理业务异常（RuntimeException），返回友好提示。
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public Result<?> handleRuntimeException(RuntimeException e) {
+        log.warn("业务异常: {}", e.getMessage());
+        return Result.error(400, e.getMessage());
     }
 
     /**
