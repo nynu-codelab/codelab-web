@@ -362,7 +362,7 @@ AI 在每次开发任务完成后必须：
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
-| 构建状态 | backend `mvn clean package -DskipTests` ✅（既有全量回归记录）/ web `npm install && npm run build` ✅ / web `npm run type-check` ✅ / admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk 有 Vite 体积提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ docker compose config + up -d --build + ps ✅（既有全量回归记录） |
+| 构建状态 | backend `mvn clean package -DskipTests` ✅（既有全量回归记录）/ web `npm install && npm run build && npm run type-check` ✅（`LabSpatialScene` WebGL chunk > 500 kB 提醒）/ admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk > 500 kB 提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ `git diff --check` ✅ / `rg "console.log\|debugger" web/src admin-web/src` 无命中 / 浏览器验证：Chrome 1440×1000 桌面 Three.js 与 Canvas 可见，dev Frame Budget 面板可见，静止采样约 94fps、平均帧 10.6ms、0 long frame，hover+滚动交互采样约 86fps、平均帧 11.69ms、最大长帧 58.4ms；模拟 `visibilitychange` hidden 后 rAF 请求为 0、恢复可见后重新启动；390×844 移动端 Three.js / LabSignalField / ParticleUniverse / CodeRainCanvas 均隐藏且无横向溢出；reduced-motion 下 Three.js 隐藏、SignalField canvas 隐藏、终端动画降级 / docker compose config + up -d --build + ps ✅（既有全量回归记录） |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
 | 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 经 Nginx 均返回 200 |
 | 稳定 tag | stable-mvp-production-ready-20260622 |
@@ -409,6 +409,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | PC 端沉浸式视觉 60fps 性能优化 | 沿现有“工程指挥舱 + 年轻学生技术团队展台 + CodeLab / 终端 / 代码 / 实验室空间感”方向优化，不推翻设计；新增 `web/src/composables/useFrameBudget.ts` dev-only FPS / average frame time / long frame 调试能力；`LabSpatialScene` 增加 IntersectionObserver、`visibilitychange`、DPR cap、质量分级、delta time、rAF resize 合并、共享几何/材质和 WeakSet dispose，离屏/隐藏页暂停 render loop；`LabSignalField` 增加可见性暂停、Canvas DPR cap、面积质量分级、低分配节点坐标缓存、rAF resize 合并和 reduced-motion canvas 隐藏；`TerminalHero` 鼠标 3D 视差改为 rAF 合并写样式，并挂载 dev Frame Budget 面板；`ParticleUniverse` 降低粒子数量、去除每帧 gradient 分配、低频绘制、页面隐藏暂停；`CodeRainCanvas` 改为低频绘制和隐藏暂停；`AppFrame` 全局 pointer spotlight 改为 rAF 合并；`main.css` 限制 hover 3D 到 fine pointer 并尊重 reduced-motion；未修改后端接口、数据库或业务逻辑；`web npm install` ✅ / `web npm run build` ✅ / `web npm run type-check` ✅ / `admin-web npm install` ✅（既有 audit 1 moderate + 1 high）/ `admin-web npm run build` ✅（Dashboard chunk > 500 kB 提醒）/ `git diff --check` ✅ / debug 语句扫描无命中 / Chrome 1440×1000 和 390×844 浏览器验证通过 |
 | 2026-06-22 | taste-skills 高审美前端优化 | 按用户要求安装并配置 `taste-skill`、`redesign-skill`、`brandkit` 到 `~/.claude/skills`，并通过 `~/.codex/scripts/sync-claude-skills-to-codex` 同步为 Codex symlink；调用 taste-skill 设计读法，保留当前“工程指挥舱 + 年轻学生技术团队展台”方向，不重做风格；前台新增 `LabSignalField`，增强 `TerminalHero` 的 PC 信号场、终端状态条、逐行启动和光标效果，增强 `CommandConsole` 活跃命令、全局玻璃卡片 cursor spotlight、按钮 active/focus、项目卡片工程 HUD、文章卡片知识库轨道、方向卡片节点路线和首页 Lab OS 芯片；后台增强 `AdminLayout` 顶部命令状态、右侧模块状态轨、Element Plus 卡片/按钮交互，并在 `DashboardView` 新增工程运行矩阵；未新增 npm 依赖，未修改后端接口字段、接口路径、数据库字段或业务逻辑；`web npm install && npm run build` ✅ / `web npm run type-check` ✅ / `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high，Dashboard chunk > 500 kB 提醒）；前后台均无 `npm run lint` 脚本，本轮未执行 lint |
 | 2026-06-22 | 阶段 2：认证安全补齐 | 新增 `POST /api/auth/logout`（Token 黑名单机制，登出后 token 失效）、`POST /api/auth/change-password`（BCrypt 校验 + 密码强度 + 成功后强制重新登录）、登录限流（按 IP+username 组合，5 次失败锁 10 分钟）；新增 `TokenBlacklistService`/`InMemoryTokenBlacklistService`、`LoginAttemptService`/`InMemoryLoginAttemptService`、`TokenBlacklistInterceptor`、`ChangePasswordDTO`；`SaTokenConfig` 注册黑名单拦截器（order 1，先于 SaInterceptor）；`GlobalExceptionHandler` 新增 `RuntimeException` 处理（400 友好提示）；`CodelabApplication` 添加 `@EnableScheduling`（黑名单定期清理）；前台 web：`AppHeader`/`UserCenterView` 退出登录接真实 logout 接口，`UserCenterView` 新增修改密码弹层（modal）；后台 admin-web：`AdminLayout` 退出登录接真实 logout 接口，新增修改密码下拉入口 + ElDialog 表单；前后端三模块构建全部通过；未改数据库表结构、未引入新依赖 |
 | 2026-06-22 | 阶段 1：数据库表结构补齐 | 新增 6 张表（`lab_member` / `lab_direction` / `lab_site_config` / `lab_upload_file` / `lab_article_category` / `lab_article_tag`）到 `deploy/mysql/init/01-init.sql`；现有 4 张表结构未修改；初始化 5 个技术方向、4 个文章分类、6 个技术标签、10 项站点配置（联系方式类留空，无虚假数据）；lab_member 无 INSERT；MySQL 8 容器语法验证通过（10 张表全部创建成功）；未修改任何 Java/Vue 代码 |
@@ -433,7 +434,7 @@ docker compose ps                  # 确认所有服务运行
 - `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
 - 本轮 PC 沉浸式增强优先 PC 端视觉表现，移动端只做不严重崩溃与简化动效，不做精细适配
 - 当前工作区存在认证安全补齐、数据库表结构补齐、文档删除等非本轮前端审美改造产生的未提交改动；后续提交前需要按任务来源拆分核对
-- 自研 Canvas 粒子网络、代码雨和能量流仅在 PC 端启用；低端 PC 或浏览器开启减少动画时会降级
+- 自研 Canvas 粒子网络、代码雨、能量流和 Three.js WebGL 实验室空间层仅在 PC 端启用；低端 PC、窄屏或浏览器开启减少动画时会降级，离屏或页面隐藏时会暂停高频循环
 - 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
 - 前台 `/members` 当前只展示能力结构，不编造真实成员姓名；真实成员数据与成员接口尚未实现
 - 前台 `/contact` 当前不展示真实联系方式；需等待站点配置接口接入后维护真实联系方式、二维码等
