@@ -9,13 +9,15 @@ const canvasRef = ref<HTMLCanvasElement | null>(null)
 const glyphs = '01{}[]<>/\\$#includeconstletvarpublicclassCodeLabVueSpringDockerMySQL'
 let ctx: CanvasRenderingContext2D | null = null
 let animationId = 0
+let resizeFrameId = 0
 let columns = 0
 let drops: number[] = []
 let width = 0
 let height = 0
 let dpr = 1
-let frame = 0
 let active = false
+let pageVisible = true
+let lastFrameTime = 0
 
 function shouldAnimate() {
   return window.innerWidth >= 1024 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -38,11 +40,20 @@ function resizeCanvas() {
   drops = Array.from({ length: columns }, () => Math.random() * -height)
 }
 
-function draw() {
+function scheduleResize() {
+  if (resizeFrameId) return
+  resizeFrameId = requestAnimationFrame(() => {
+    resizeFrameId = 0
+    resizeCanvas()
+  })
+}
+
+function draw(time: number) {
   if (!ctx || !active) return
 
-  frame += 1
-  if (frame % 2 === 0) {
+  const deltaMs = lastFrameTime > 0 ? time - lastFrameTime : 42
+  if (deltaMs >= 42) {
+    lastFrameTime = time
     ctx.fillStyle = 'rgba(6, 9, 15, 0.08)'
     ctx.fillRect(0, 0, width, height)
     ctx.font = '13px SFMono-Regular, Cascadia Code, Roboto Mono, Menlo, monospace'
@@ -63,29 +74,64 @@ function draw() {
     }
   }
 
+  if (active) animationId = requestAnimationFrame(draw)
+}
+
+function handleVisibilityChange() {
+  pageVisible = !document.hidden
+  updateLoopState()
+}
+
+function startLoop() {
+  if (active || !ctx || !shouldAnimate() || !pageVisible) return
+
+  active = true
+  lastFrameTime = 0
   animationId = requestAnimationFrame(draw)
 }
 
-function start() {
+function pauseLoop() {
+  if (!active) return
+
+  active = false
+  cancelAnimationFrame(animationId)
+  animationId = 0
+  lastFrameTime = 0
+}
+
+function updateLoopState() {
+  if (pageVisible && shouldAnimate()) {
+    startLoop()
+  } else {
+    pauseLoop()
+  }
+}
+
+function setup() {
   const canvas = canvasRef.value
   if (!canvas || !shouldAnimate()) return
 
   ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  active = true
   resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
-  animationId = requestAnimationFrame(draw)
+  pageVisible = !document.hidden
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('resize', scheduleResize)
+  updateLoopState()
 }
 
 function stop() {
-  active = false
-  cancelAnimationFrame(animationId)
-  window.removeEventListener('resize', resizeCanvas)
+  pauseLoop()
+  cancelAnimationFrame(resizeFrameId)
+  resizeFrameId = 0
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.removeEventListener('resize', scheduleResize)
+  ctx = null
+  drops = []
 }
 
-onMounted(start)
+onMounted(setup)
 onBeforeUnmount(stop)
 </script>
 

@@ -17,12 +17,15 @@ type Particle = {
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 let animationId = 0
+let resizeFrameId = 0
 let particles: Particle[] = []
 let width = 0
 let height = 0
 let dpr = 1
 let pointer = { x: -9999, y: -9999 }
 let active = false
+let pageVisible = true
+let lastFrameTime = 0
 
 function shouldAnimate() {
   return window.innerWidth >= 1024 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -41,7 +44,8 @@ function resizeCanvas() {
   canvas.style.height = `${height}px`
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  const count = Math.min(118, Math.max(74, Math.floor(width / 16)))
+  const areaFactor = Math.sqrt((width * height) / (1440 * 1000))
+  const count = Math.min(82, Math.max(52, Math.floor(62 * areaFactor + width / 44)))
   particles = Array.from({ length: count }, () => ({
     x: Math.random() * width,
     y: Math.random() * height,
@@ -52,9 +56,23 @@ function resizeCanvas() {
   }))
 }
 
+function scheduleResize() {
+  if (resizeFrameId) return
+  resizeFrameId = requestAnimationFrame(() => {
+    resizeFrameId = 0
+    resizeCanvas()
+  })
+}
+
 function draw(time: number) {
   if (!ctx || !active) return
 
+  const deltaMs = lastFrameTime > 0 ? time - lastFrameTime : 33
+  if (deltaMs < 30) {
+    animationId = requestAnimationFrame(draw)
+    return
+  }
+  lastFrameTime = time
   ctx.clearRect(0, 0, width, height)
   ctx.globalCompositeOperation = 'lighter'
 
@@ -85,13 +103,16 @@ function draw(time: number) {
     const a = particles[i]
     for (let j = i + 1; j < particles.length; j += 1) {
       const b = particles[j]
-      const distance = Math.hypot(a.x - b.x, a.y - b.y)
+      const dx = a.x - b.x
+      const dy = a.y - b.y
+      const distanceSq = dx * dx + dy * dy
+      const maxDistance = 118
+      if (distanceSq >= maxDistance * maxDistance) continue
+
+      const distance = Math.sqrt(distanceSq)
       if (distance < 132) {
-        const alpha = (1 - distance / 132) * 0.22
-        const gradient = ctx.createLinearGradient(a.x, a.y, b.x, b.y)
-        gradient.addColorStop(0, `rgba(83, 231, 255, ${alpha})`)
-        gradient.addColorStop(1, `rgba(47, 240, 182, ${alpha * 0.72})`)
-        ctx.strokeStyle = gradient
+        const alpha = (1 - distance / maxDistance) * 0.18
+        ctx.strokeStyle = `rgba(99, 237, 255, ${alpha})`
         ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(a.x, a.y)
@@ -110,35 +131,70 @@ function draw(time: number) {
   }
 
   ctx.globalCompositeOperation = 'source-over'
-  animationId = requestAnimationFrame(draw)
+  if (active) animationId = requestAnimationFrame(draw)
 }
 
 function handlePointerMove(event: PointerEvent) {
   pointer = { x: event.clientX, y: event.clientY }
 }
 
-function start() {
+function handleVisibilityChange() {
+  pageVisible = !document.hidden
+  updateLoopState()
+}
+
+function startLoop() {
+  if (active || !ctx || !shouldAnimate() || !pageVisible) return
+
+  active = true
+  lastFrameTime = 0
+  animationId = requestAnimationFrame(draw)
+}
+
+function pauseLoop() {
+  if (!active) return
+
+  active = false
+  cancelAnimationFrame(animationId)
+  animationId = 0
+  lastFrameTime = 0
+}
+
+function updateLoopState() {
+  if (pageVisible && shouldAnimate()) {
+    startLoop()
+  } else {
+    pauseLoop()
+  }
+}
+
+function setup() {
   const canvas = canvasRef.value
   if (!canvas || !shouldAnimate()) return
 
   ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  active = true
   resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
+  pageVisible = !document.hidden
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('resize', scheduleResize)
   window.addEventListener('pointermove', handlePointerMove)
-  animationId = requestAnimationFrame(draw)
+  updateLoopState()
 }
 
 function stop() {
-  active = false
-  cancelAnimationFrame(animationId)
-  window.removeEventListener('resize', resizeCanvas)
+  pauseLoop()
+  cancelAnimationFrame(resizeFrameId)
+  resizeFrameId = 0
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.removeEventListener('resize', scheduleResize)
   window.removeEventListener('pointermove', handlePointerMove)
+  ctx = null
+  particles = []
 }
 
-onMounted(start)
+onMounted(setup)
 onBeforeUnmount(stop)
 </script>
 

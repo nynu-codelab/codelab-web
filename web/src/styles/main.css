@@ -15,6 +15,7 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -59,7 +60,7 @@ input, textarea, select {
   color: var(--app-text);
   background:
     radial-gradient(circle at 12% 8%, rgba(83, 231, 255, 0.18), transparent 28rem),
-    radial-gradient(circle at 84% 10%, rgba(169, 139, 255, 0.16), transparent 30rem),
+    radial-gradient(circle at 84% 10%, rgba(117, 167, 255, 0.13), transparent 30rem),
     linear-gradient(135deg, var(--app-bg), var(--app-bg-2) 52%, #05070c);
   isolation: isolate;
 }
@@ -165,11 +166,24 @@ input, textarea, select {
   box-shadow: var(--app-shadow);
   backdrop-filter: blur(22px);
   transform-style: preserve-3d;
+  isolation: isolate;
   transition:
     transform 260ms ease,
     border-color 260ms ease,
     box-shadow 260ms ease,
     background 260ms ease;
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(360px circle at var(--app-pointer-x, 50%) var(--app-pointer-y, 40%), rgba(83, 231, 255, 0.16), transparent 42%),
+    linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.08), transparent 54%);
+  opacity: 0;
+  transition: opacity 240ms ease;
 }
 
 .glass-card::after {
@@ -183,15 +197,46 @@ input, textarea, select {
   opacity: 0.6;
 }
 
+.glass-card:focus-visible,
+.glass-card a:focus-visible,
+.glass-card button:focus-visible {
+  outline: 2px solid rgba(83, 231, 255, 0.72);
+  outline-offset: 4px;
+}
+
+.glass-card.is-hoverable:hover::before,
+.glass-card:focus-within::before {
+  opacity: 1;
+}
+
 .glass-card > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .glass-card.is-hoverable:hover {
-  transform: translateY(-8px) rotateX(1.5deg) rotateY(-1.5deg);
+  transform: translateY(-10px) rotateX(2deg) rotateY(-2deg) translateZ(18px);
   border-color: rgba(83, 231, 255, 0.42);
-  box-shadow: 0 34px 98px rgba(0, 0, 0, 0.5), var(--app-glow);
+  box-shadow:
+    0 34px 98px rgba(0, 0, 0, 0.5),
+    0 0 42px rgba(83, 231, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .glass-card.is-hoverable:hover {
+    will-change: transform;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .glass-card.is-hoverable:hover {
+    transform: none;
+  }
 }
 
 .pill-row {
@@ -213,6 +258,17 @@ input, textarea, select {
   font-family: var(--app-font-data);
   font-size: 12px;
   line-height: 1.2;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.is-hoverable:hover .tech-pill {
+  border-color: rgba(83, 231, 255, 0.32);
+  background: rgba(83, 231, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .status-pill.success {
@@ -381,5 +437,20 @@ input, textarea, select {
 
   .glass-card.is-hoverable:hover {
     transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
 }
