@@ -139,8 +139,9 @@ public class UploadFileServiceImpl implements UploadFileService {
             throw new RuntimeException("创建上传目录失败");
         }
 
-        // 9. 保存文件
+        // 9. 保存文件（含路径边界校验）
         Path destPath = uploadDir.resolve(storedName);
+        assertWithinBasePath(destPath);
         try {
             file.transferTo(destPath);
         } catch (IOException e) {
@@ -148,13 +149,14 @@ public class UploadFileServiceImpl implements UploadFileService {
             throw new RuntimeException("文件保存失败");
         }
 
-        // 10. 构建记录
+        // 10. 构建记录（filePath 使用 Path API，避免字符串拼接引入不规范路径）
         String relativePath = dateSubDir + "/" + storedName;
+        Path basePath = Paths.get(uploadBasePath);
         UploadFile record = new UploadFile();
         record.setOriginalName(originalName);
         record.setStoredName(storedName);
         record.setFileUrl("/uploads/" + relativePath);
-        record.setFilePath(uploadBasePath + "/" + relativePath);
+        record.setFilePath(basePath.resolve(relativePath).toString());
         record.setMimeType(mimeType);
         record.setFileSize(file.getSize());
         record.setUsageType(usageType);
@@ -183,9 +185,13 @@ public class UploadFileServiceImpl implements UploadFileService {
         }
 
         // 尝试删除物理文件（失败不影响数据库删除，文件可能已被外部清理）
+        // 安全：校验文件路径在上传根目录内，防止路径穿越删除任意文件
         try {
-            Path filePath = Paths.get(record.getFilePath());
-            if (Files.exists(filePath)) {
+            Path filePath = Paths.get(record.getFilePath()).toAbsolutePath().normalize();
+            Path basePath = Paths.get(uploadBasePath).toAbsolutePath().normalize();
+            if (!filePath.startsWith(basePath)) {
+                log.warn("拒绝删除越界文件: path={}, base={}", filePath, basePath);
+            } else if (Files.exists(filePath)) {
                 Files.delete(filePath);
                 log.info("物理文件已删除: {}", record.getFilePath());
             }
@@ -299,6 +305,18 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (source[i] != prefix[i]) return false;
         }
         return true;
+    }
+
+    /**
+     * 校验目标路径在上传根目录内（纵深防御：防止路径穿越落盘到其他目录）。
+     */
+    private void assertWithinBasePath(Path target) {
+        Path basePath = Paths.get(uploadBasePath).toAbsolutePath().normalize();
+        Path resolved = target.toAbsolutePath().normalize();
+        if (!resolved.startsWith(basePath)) {
+            log.error("文件路径越界: base={}, target={}", basePath, resolved);
+            throw new RuntimeException("文件路径不合法");
+        }
     }
 
     private boolean bytesMatch(byte[] source, int offset, byte[] expected) {
