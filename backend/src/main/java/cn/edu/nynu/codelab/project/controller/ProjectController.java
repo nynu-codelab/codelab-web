@@ -1,5 +1,6 @@
 package cn.edu.nynu.codelab.project.controller;
 
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.common.Result;
 import cn.edu.nynu.codelab.project.entity.Project;
 import cn.edu.nynu.codelab.project.service.ProjectService;
@@ -21,8 +22,10 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public Result<List<Project>> list() {
-        List<Project> projects = projectService.listPublished();
+    public Result<PageResult<Project>> list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        PageResult<Project> projects = projectService.listPublishedPaged(page, pageSize);
         return Result.success(projects);
     }
 

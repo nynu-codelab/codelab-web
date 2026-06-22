@@ -51,10 +51,21 @@ export const STATUS_TAG_TYPE: Record<string, 'warning' | 'primary' | '' | 'succe
   OFFLINE: 'warning'
 }
 
-export function getProjects(status?: string, featured?: number): Promise<{ code: number; data: ProjectItem[]; message?: string }> {
-  const params: any = {}
-  if (status) params.status = status
-  if (featured !== undefined) params.featured = featured
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export interface ProjectListParams {
+  page?: number
+  pageSize?: number
+  status?: string
+  featured?: number
+}
+
+export function getProjects(params?: ProjectListParams): Promise<{ code: number; data: PageResult<ProjectItem>; message?: string }> {
   return request.get('/admin/projects', { params })
 }
 

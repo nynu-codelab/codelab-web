@@ -3,9 +3,11 @@ package cn.edu.nynu.codelab.project.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.nynu.codelab.project.dto.ProjectCreateRequest;
 import cn.edu.nynu.codelab.project.entity.Project;
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.project.mapper.ProjectMapper;
 import cn.edu.nynu.codelab.project.service.ProjectService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,17 @@ public class ProjectServiceImpl implements ProjectService {
                 .orderByDesc(Project::getSortOrder)
                 .orderByDesc(Project::getPublishedAt);
         return projectMapper.selectList(wrapper);
+    }
+
+    @Override
+    public PageResult<Project> listPublishedPaged(int page, int pageSize) {
+        Page<Project> mpPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Project> wrapper = new LambdaQueryWrapper<Project>()
+                .eq(Project::getStatus, Project.STATUS_PUBLISHED)
+                .orderByDesc(Project::getSortOrder)
+                .orderByDesc(Project::getPublishedAt);
+        Page<Project> result = projectMapper.selectPage(mpPage, wrapper);
+        return PageResult.of(result.getRecords(), result.getTotal(), page, pageSize);
     }
 
     @Override
@@ -83,6 +96,24 @@ public class ProjectServiceImpl implements ProjectService {
             wrapper.eq(Project::getFeatured, featured);
         }
         return projectMapper.selectList(wrapper);
+    }
+
+    @Override
+    public PageResult<Project> adminListPaged(int page, int pageSize, String status, Integer featured) {
+        Page<Project> mpPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Project> wrapper = new LambdaQueryWrapper<Project>()
+                .orderByDesc(Project::getCreateTime);
+        if (status != null && !status.isBlank()) {
+            if (!VALID_STATUSES.contains(status)) {
+                throw new RuntimeException("无效的项目状态: " + status);
+            }
+            wrapper.eq(Project::getStatus, status);
+        }
+        if (featured != null) {
+            wrapper.eq(Project::getFeatured, featured);
+        }
+        Page<Project> result = projectMapper.selectPage(mpPage, wrapper);
+        return PageResult.of(result.getRecords(), result.getTotal(), page, pageSize);
     }
 
     @Override

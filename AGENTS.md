@@ -83,9 +83,10 @@ nynu-code-lab/
 │       ├── project/         # 项目模块（第二阶段）
 │       ├── member/          # 成员模块（第二阶段）
 │       ├── direction/       # 技术方向模块（第二阶段）
-│       ├── recruit/         # 招新报名模块（第二阶段）
-│       ├── upload/          # 文件上传模块（第二阶段）
-│       └── site/            # 站点配置模块（第二阶段）
+│       ├── recruit/         # 招新报名模块
+│       ├── upload/          # 文件上传模块
+│       ├── site/            # 站点配置模块
+│       └── dashboard/       # 数据统计模块
 ├── web/                     # 前台 Vue 3（端口 5173）
 │   └── src/
 │       ├── api/             # 接口封装（request.ts, auth.ts）
@@ -233,18 +234,19 @@ Result.error(code, msg)
 | 用户实体 | `sys_user` 表，基础 CRUD |
 | 统一返回 | `Result<T>` + 全局异常处理 |
 
-### 待实现（第二阶段及以后）
+### 已实现（阶段 4 完成，全部闭环）
 
 | 模块 | 内容 |
 |---|---|
-| 招新报名 | 提交报名、查看我的报名、后台审核 |
-| 技术方向 | CRUD + 前台展示 |
-| 核心成员 | CRUD + 前台展示 |
-| 项目成果 | CRUD + 前台展示 + 首页推荐 |
-| 学习文章 | Markdown 编辑/渲染、分类、标签、列表/详情 |
-| 站点配置 | 网站名称、标语、联系方式、二维码 |
-| 文件上传 | 封面、头像、截图、Banner |
-| 数据概览 | 统计数据卡片 |
+| 招新报名 | 提交报名、查看我的报名、后台审核、8 状态流转、招新开关 |
+| 技术方向 | 完整 CRUD + 启用/禁用 + 前台 API 驱动展示 |
+| 核心成员 | 完整 CRUD + 状态管理 + 前台 API 驱动展示 |
+| 项目成果 | 完整 CRUD + 发布/下架/精选 + 前台列表/详情（分页）|
+| 学习文章 | Markdown 编辑/渲染、分类、列表/详情（分页 + 关键词搜索）|
+| 站点配置 | key-value CRUD + 前台/后台 API 驱动，含联系方式、二维码、招新开关 |
+| 文件上传 | UUID 重命名 + 类型/大小校验 + 管理列表 |
+| 数据概览 | 9 项真实统计数据 |
+| 用户管理 | 分页列表/搜索/禁用/角色修改/密码重置 |
 
 ## 角色与权限说明
 
@@ -260,7 +262,7 @@ Result.error(code, msg)
 
 - 必须登录后才能提交报名
 - 一个用户只能存在一条报名记录
-- 报名状态：待审核 → 初筛通过 → 面试中 → 已通过/未通过/已撤回
+- 报名状态：待审核(PENDING) → 已查看(VIEWED) → 已联系(CONTACTED) → 初筛通过(PRELIMINARY_PASSED) → 面试中(INTERVIEWING) → 已通过(PASSED) / 未通过(REJECTED)。用户可撤回(PENDING/VIEWED 状态) → 已撤回(WITHDRAWN)
 - 管理员可修改状态并填写审核备注
 - 第一版不做短信/邮件/QQ 通知
 - 报名表字段见 `docs/requirements.md` 第 6 节
@@ -354,17 +356,17 @@ AI 在每次开发任务完成后必须：
 | 项 | 状态 |
 |---|---|
 | 分支 | `refine/pc-immersive-frontend` |
-| 阶段 | PC 沉浸式视觉增强：在“工程指挥舱 + 年轻学生技术团队展台”方向上继续增强 PC 端动态背景、终端控制台、代码流、节点网络和后台驾驶舱 |
-| 后端 | Spring Boot 项目已初始化，认证闭环已实现（注册/登录/登出/修改密码/限流），招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403；Token 黑名单机制已实现（JWT 模式下登出 token 立即失效） |
-| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；本轮在既有“工程指挥舱 + 年轻学生技术团队展台”方向上做 60fps 性能优化：`LabSpatialScene` Three.js WebGL 空间层增加视口/标签页暂停、DPR 上限、质量分级、delta time、rAF resize 合并和资源 dispose；`LabSignalField` Canvas 信号网络增加可见性暂停、DPR/面积质量分级、低分配绘制和 dev-only Frame Budget 面板；`ParticleUniverse`、`CodeRainCanvas`、`AppFrame` 全局 pointer spotlight 也已做 rAF 合并、低频绘制或隐藏暂停；已新增 `docs/前端视觉组件规范.md` 约束后续组件使用；Logo 已确认并接入前台页眉、页脚和 favicon，原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；本轮决策为保留 Element Plus 并深度定制，不迁移组件库；数据概览新增 ECharts 模块状态图、控制台信号面板、构建通道、测试矩阵、部署监视和工程运行矩阵；后台壳层新增顶部遥测、系统时间、命令状态条与右侧模块状态轨；后台登录和侧栏品牌位已接入确认版 Logo 与 favicon；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
-| 数据库 | 10 张表 DDL 已编写（`sys_user` / `lab_apply_record` / `lab_article` / `lab_project` / `lab_member` / `lab_direction` / `lab_site_config` / `lab_upload_file` / `lab_article_category` / `lab_article_tag`），统一在 `deploy/mysql/init/01-init.sql`；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束；`lab_direction` 已初始化 5 个技术方向种子数据；`lab_article_category` 已初始化 4 个分类；`lab_article_tag` 已初始化 6 个标签；`lab_site_config` 已初始化 10 项站点配置（联系方式类留空，不含虚假数据）；`lab_member` 无虚假成员数据 |
+| 阶段 | 阶段 4：站点完善 / 上线级闭环补齐 |
+| 后端 | Spring Boot 项目已初始化，全部管理模块已实现：认证闭环（注册/登录/登出/修改密码/限流）、招新报名管理（8 种状态流转 + 招新开关）、文章管理（草稿/发布/下架/删除 + 分页 + 关键词搜索）、项目成果管理（草稿/发布/下架/删除 + 分页 + 精选筛选）、站点配置管理（key-value CRUD）、核心成员管理（完整 CRUD + 状态筛选）、技术方向管理（完整 CRUD + 启用/禁用）、文件上传（UUID 重命名 + 类型校验 + 10MB 限制）、数据统计（9 项指标）、用户管理（分页列表/搜索/禁用/角色修改/密码重置）；权限异常统一返回业务码 401/403；Token 黑名单机制已实现（JWT 模式下登出 token 立即失效）；所有公开列表接口均已支持分页（PageResult） |
+| 前台 web | Vue 3 项目已初始化，全部 13 个页面完成：首页/介绍/方向（API 驱动）/成员（API 驱动）/项目列表与详情（分页）/文章列表与详情（分页）/招新报名（含招新开关检测）/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们（API 驱动，真实联系方式）/404；PC 沉浸式视觉增强包括自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图、命令控制台和 Three.js WebGL 空间层；60fps 性能优化已完成（DPR 上限、质量分级、delta time、rAF resize 合并、visibilitychange 暂停、reduced-motion 降级）；Logo 已确认并接入前台页眉、页脚和 favicon；Markdown 渲染使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，全部 11 个页面均接入真实数据：数据概览（9 项真实统计 + ECharts 模块状态图）、用户管理（分页/搜索/禁用/角色/重置密码）、报名管理（分页/关键词搜索/8 种状态流转）、文章管理（分页/关键词搜索/CRUD/发布下架）、项目管理（分页/状态筛选/CRUD/发布下架/精选）、成员管理（完整 CRUD + 状态筛选）、方向管理（完整 CRUD + 启用禁用）、站点配置（分组展示 + 按 key 修改）、文件上传（拖拽上传 + 列表 + 删除）；后台壳层含顶部遥测、系统时间、命令状态条与右侧模块状态轨；已接入确认版 Logo 与 favicon；本地开发端口 5174 |
+| 数据库 | 10 张表 DDL 已编写（`sys_user` / `lab_apply_record` / `lab_article` / `lab_project` / `lab_member` / `lab_direction` / `lab_site_config` / `lab_upload_file` / `lab_article_category` / `lab_article_tag`），统一在 `deploy/mysql/init/01-init.sql`；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束，status 支持 8 种状态（PENDING/VIEWED/CONTACTED/PRELIMINARY_PASSED/INTERVIEWING/PASSED/REJECTED/WITHDRAWN）；`lab_direction` 已初始化 5 个技术方向种子数据；`lab_article_category` 已初始化 4 个分类；`lab_article_tag` 已初始化 6 个标签；`lab_site_config` 已初始化 11 项站点配置（含 recruitOpen 招新开关，联系方式类初始留空）；`lab_member` 无虚假成员数据 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
-| 构建状态 | backend `mvn clean package -DskipTests` ✅（既有全量回归记录）/ web `npm install && npm run build && npm run type-check` ✅（`LabSpatialScene` WebGL chunk > 500 kB 提醒）/ admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk > 500 kB 提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ `git diff --check` ✅ / `rg "console.log\|debugger" web/src admin-web/src` 无命中 / 浏览器验证：Chrome 1440×1000 桌面 Three.js 与 Canvas 可见，dev Frame Budget 面板可见，静止采样约 94fps、平均帧 10.6ms、0 long frame，hover+滚动交互采样约 86fps、平均帧 11.69ms、最大长帧 58.4ms；模拟 `visibilitychange` hidden 后 rAF 请求为 0、恢复可见后重新启动；390×844 移动端 Three.js / LabSignalField / ParticleUniverse / CodeRainCanvas 均隐藏且无横向溢出；reduced-motion 下 Three.js 隐藏、SignalField canvas 隐藏、终端动画降级 / docker compose config + up -d --build + ps ✅（既有全量回归记录） |
-| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
-| 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 经 Nginx 均返回 200 |
+| 构建状态 | backend `mvn clean package -DskipTests` ✅（既有全量回归记录）/ web `npm install && npm run build && npm run type-check` ✅（`LabSpatialScene` WebGL chunk > 500 kB 提醒）/ admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk > 500 kB 提醒，后台 npm audit 仍有既有 1 moderate + 1 high）/ `git diff --check` ✅ / `rg "console.log\|debugger" web/src admin-web/src` 无命中 / 浏览器验证：Chrome 1440×1000 桌面 Three.js 与 Canvas 可见，静止采样约 94fps，hover+滚动交互约 86fps；390×844 移动端复杂层隐藏且无横向溢出；reduced-motion 下动画降级 / docker compose config + up -d --build + ps ✅（既有全量回归记录） |
+| 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ / 站点配置/成员/方向/上传/数据统计/用户管理模块 API 全部可用 ✅ |
+| 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload`、`/admin/users` 经 Nginx 均返回 200 |
 | 稳定 tag | stable-mvp-production-ready-20260622 |
 
 ## 容器化开发规范
@@ -409,6 +411,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 阶段 4：站点完善 / 上线级闭环补齐 | 一次性补全全部缺失的后端管理 API 和前端真实数据对接。后端新增 5 个模块（site 7 文件 / member 7 文件 / direction 7 文件 / upload 5 文件 / dashboard 2 文件）+ 用户管理补齐（6 文件），合计新增 34 个 Java 文件，新增 28 个 API 端点（含公开接口 6 个、管理接口 22 个）。已有 5 个列表接口全部接入分页（新增通用 `PageResult<T>` 实体）。新增 `app.upload` 配置段。前台 4 个静态/占位页面（方向、成员、联系我们、首页标语）改为 API 驱动，文章/项目列表新增分页组件，招新页新增招新开关检测。后台 5 个占位页面（成员/方向/站点配置/上传/用户管理）替换为完整 CRUD，Dashboard 统计卡片接入 9 项真实指标，招新状态流转新增 VIEWED/CONTACTED 中间状态（共 8 种），文章/项目/报名管理页新增分页和搜索。数据库 `lab_site_config` 种子数据新增 `recruitOpen` 招新开关，`lab_apply_record.status` COMMENT 更新为 8 种状态。SaTokenConfig 排除路径新增 `/api/members/**`、`/api/directions/**`、`/api/site-config/**`。新增 docs/阶段4站点完善说明.md、docs/生产环境配置说明.md、docs/上线前验收清单.md、docs/文件上传与静态资源配置.md。更新 AGENTS.md 当前项目状态、已知问题、下一步建议。构建状态未执行（待验收阶段执行）。
 | 2026-06-22 | 部署 / Docker / SQL 清理 | 修复 AGENTS.md 第 513 行失效增量迁移命令引用；`deploy/mysql/init/01-init.sql` 改为唯一权威版本（DROP+CREATE 幂等初始化，含 10 张表完整结构、active_user_id 生成列与唯一约束），新增 6 张表（lab_member / lab_direction / lab_site_config / lab_upload_file / lab_article_category / lab_article_tag）及初始数据（5 方向/10 站点配置/4 分类/6 标签，无虚假成员、联系方式留空）；删除 4 个历史 SQL 文件（backend/sql/init.sql + 3 个 migration），全部已吸收进部署脚本；Docker Compose 增加 backend/nginx healthcheck、uploads 数据卷、nginx 路由重排与 /uploads/ 预留；backend Dockerfile 安装 curl 供 healthcheck 使用；新增 5 个 .dockerignore 文件；新增 scripts/setup-docker.sh 一键初始化脚本；`docker compose config` ✅ / `git diff --check` ✅ / 敏感信息扫描 ✅ / deploy/.env 未被提交 ✅ |
 | 2026-06-22 | PC 端沉浸式视觉 60fps 性能优化 | 沿现有”工程指挥舱 + 年轻学生技术团队展台 + CodeLab / 终端 / 代码 / 实验室空间感”方向优化，不推翻设计；新增 `web/src/composables/useFrameBudget.ts` dev-only FPS / average frame time / long frame 调试能力；`LabSpatialScene` 增加 IntersectionObserver、`visibilitychange`、DPR cap、质量分级、delta time、rAF resize 合并、共享几何/材质和 WeakSet dispose，离屏/隐藏页暂停 render loop；`LabSignalField` 增加可见性暂停、Canvas DPR cap、面积质量分级、低分配节点坐标缓存、rAF resize 合并和 reduced-motion canvas 隐藏；`TerminalHero` 鼠标 3D 视差改为 rAF 合并写样式，并挂载 dev Frame Budget 面板；`ParticleUniverse` 降低粒子数量、去除每帧 gradient 分配、低频绘制、页面隐藏暂停；`CodeRainCanvas` 改为低频绘制和隐藏暂停；`AppFrame` 全局 pointer spotlight 改为 rAF 合并；`main.css` 限制 hover 3D 到 fine pointer 并尊重 reduced-motion；未修改后端接口、数据库或业务逻辑；`web npm install` ✅ / `web npm run build` ✅ / `web npm run type-check` ✅ / `admin-web npm install` ✅（既有 audit 1 moderate + 1 high）/ `admin-web npm run build` ✅（Dashboard chunk > 500 kB 提醒）/ `git diff --check` ✅ / debug 语句扫描无命中 / Chrome 1440×1000 和 390×844 浏览器验证通过 |
 | 2026-06-22 | PC 端 3D Lab Cockpit 视觉升级 | 按用户要求沿现有“工程指挥舱 + 年轻学生技术团队展台”方向继续增强，不推翻现有视觉；读取并使用 `taste-skill`、`redesign-skill`、`brandkit`、`frontend-design`；前台新增 `LabSpatialScene` Three.js WebGL 空间层，Hero 增加空间网格、轨道环、节点网络、数据包、鼠标相机视差和终端遥测；`LabSignalField` 升级为 Canvas 信号网络，包含节点连线、脉冲扩散、数据流向和鼠标扰动，并清理 RAF/resize/pointermove；项目卡片新增 branch/commit/test/deploy/pipeline/coverage/health HUD，文章卡片新增 research log 与知识库地形线，方向卡片新增研究矩阵；后台组件库决策为保留 Element Plus 并深度定制，新增顶部遥测、系统时间、命令状态、右侧模块状态轨、Dashboard 构建通道/测试矩阵/部署监视；新增前台依赖 `three` 与 dev 依赖 `@types/three`，后台未新增依赖；未修改后端 Java、SQL、接口字段、接口路径、数据库或业务逻辑；`web npm install && npm run build && npm run type-check` ✅（WebGL chunk > 500 kB 提醒）/ `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high，Dashboard chunk > 500 kB 提醒）/ `git diff --check` ✅ / debug 语句扫描无命中 / 浏览器验证桌面 canvas 可见且像素非空、移动端复杂层降级隐藏且无横向溢出 |
@@ -435,48 +438,33 @@ docker compose ps                  # 确认所有服务运行
 
 - `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
 - 本轮 PC 沉浸式增强优先 PC 端视觉表现，移动端只做不严重崩溃与简化动效，不做精细适配
-- 当前工作区存在认证安全补齐、数据库表结构补齐、文档删除等非本轮前端审美改造产生的未提交改动；后续提交前需要按任务来源拆分核对
 - 自研 Canvas 粒子网络、代码雨、能量流和 Three.js WebGL 实验室空间层仅在 PC 端启用；低端 PC、窄屏或浏览器开启减少动画时会降级，离屏或页面隐藏时会暂停高频循环
 - 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
-- 前台 `/members` 当前只展示能力结构，不编造真实成员姓名；真实成员数据与成员接口尚未实现
-- 前台 `/contact` 当前不展示真实联系方式；需等待站点配置接口接入后维护真实联系方式、二维码等
 - 后台 `npm install` 后 audit 仍报告既有 1 个 moderate、1 个 high 漏洞；本次未引入后台依赖，未做强制升级
 - 数据库密码和 JWT 密钥已改为环境变量注入，`deploy/.env.example` 中敏感变量留空；`deploy/.env` 需手动填写强密码和强 JWT 密钥
 - Token 黑名单和登录限流为内存实现，服务重启后丢失，多实例不共享；生产建议替换为 Redis
-- 前台/后台用户管理页面仍为占位页面（UsersView.vue），未对接真实 API
 - Redis 服务已在 Docker Compose 中预留，但后端 pom.xml 未引入 Redis 依赖，当前业务未使用
 - Nginx 未配置 HTTPS，生产环境需额外处理 SSL 证书
-- 前端容器构建跳过 `vue-tsc` 类型检查以加速构建，CI 中应单独运行类型检查
 - MyBatis-Plus 与 Spring 6.1+ 存在 `factoryBeanObjectType` 类型不兼容，通过 `MybatisPlusSpringFix`（BeanFactoryPostProcessor）绕过，待上游修复后移除
 - 报名表 `lab_apply_record` 已通过 `uk_apply_active_user` 约束非撤回报名唯一；历史库执行迁移前如果已有重复非撤回记录，需要先人工清理
-- 文章标签使用 JSON 字符串存储，`lab_article_tag` 表已建但尚未与文章表关联或提供独立管理接口
-- 文章封面仅支持 URL 字段，不支持文件上传；Markdown 图片同样依赖外部 URL
-- 文章分类使用自由文本字段，`lab_article_category` 表已建但尚未与文章表关联或提供独立管理接口
-- 文章浏览量直接在详情接口中递增，无防刷机制
-- 前台文章列表未做分页，文章数量较多时性能可能不足
-- 项目封面仅支持 URL 字段，不支持文件上传
-- 项目成员/负责人使用文本字段，未与系统用户表关联
-- 项目浏览量直接在详情接口中递增，无防刷机制
-- 前台项目列表未做分页
-- 后台成员、方向、站点配置、上传页面已补占位路由，对应数据库表已建立但后端接口尚未实现
-- 文件上传模块未实现，当前没有上传目录、上传权限控制或上传静态资源映射
+- 文章标签使用 JSON 字符串存储，`lab_article_category` 和 `lab_article_tag` 表已建但尚未与文章表关联或提供独立管理接口
+- 文章封面和项目封面当前使用 URL 字段，虽然后台已有上传模块，但封面字段尚未与上传记录关联（仍为手动填写 URL）
+- 文章/项目浏览量直接在详情接口中递增，无防刷机制
+- 项目成员/负责人使用文本字段，未与系统用户表或成员表关联
+- 后台 `npm audit` 既有 1 moderate + 1 high 漏洞（非本轮引入，未做强制升级）
 
 ## 下一步建议
 
-1. **阶段 3：后台用户管理** — 实现用户 CRUD API + admin-web UsersView 替换占位页
-3. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认粒子、代码雨、能量流、终端、taste-skills 细节增强和控制台动效强度
-4. 基于确认版 Logo 继续补充深浅色横向 wordmark、社交分享图和更完整的品牌使用规范
-5. 评估后台 ECharts 体积提醒，必要时改为动态拆包或轻量 CSS 图表
-6. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
-7. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
-8. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
-9. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
-10. 后台用户管理页面实现真实数据对接
-11. 文章列表加分页、分类筛选优化
-12. 项目列表加分页优化
-13. 完善报名状态流转（增加更多中间状态约束和校验）
-14. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
-15. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
+1. **阶段 5：封面字段对接** — 将文章/项目封面字段从手动填写 URL 改为从上传记录中选择，关联 `lab_upload_file` 表
+2. **文章分类/标签独立管理** — 将 `lab_article_category` 和 `lab_article_tag` 表与文章表关联，提供独立管理接口，替换当前自由文本字段
+3. **Token 黑名单/限流 Redis 化** — 将 `InMemoryTokenBlacklistService` 和 `InMemoryLoginAttemptService` 替换为 Redis 实现，支持多实例部署
+4. **ECharts 体积优化** — Dashboard chunk 拆包或换轻量图表库，减小后台构建体积
+5. **移动端适配验证** — 系统性地在移动设备上测试核心页面（首页、方向、成员、项目、文章、招新）
+6. **生产环境部署** — 填写生产 `.env`、配置 HTTPS、设置正式域名、文件备份策略、数据库备份
+7. **Logo 品牌扩展** — 补充深浅色横向 wordmark、社交分享图
+8. **浏览量防刷** — 增加 IP/UA 去重或时间窗口限制
+9. **单元测试补齐** — 后端 `src/test` 目录当前不存在，零测试覆盖
+10. **项目成员关联** — 项目成员/负责人字段从自由文本改为关联用户或成员表
 
 ## 验收命令
 
@@ -509,7 +497,30 @@ bash scripts/verify-recruitment-flow.sh
 bash scripts/verify-article-flow.sh
 bash scripts/verify-project-flow.sh
 
-	# 已初始化数据库的增量迁移（历史迁移文件已移除，uk_apply_active_user 约束已内置在 deploy/mysql/init/01-init.sql）
-	# 新建环境直接执行 docker compose --env-file .env up -d --build 即可自动初始化完整数据库
-	# 已有生产数据环境不得直接执行 DROP+CREATE 初始化脚本，应单独编写增量迁移
+# 阶段 4 新增模块 API 快速验证
+# 公开接口
+curl http://localhost/api/site-config
+curl http://localhost/api/members
+curl http://localhost/api/directions
+
+# 管理接口（需登录获取 token）
+TOKEN=$(curl -s -X POST http://localhost/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.data')
+
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/dashboard/stats
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/users?page=1\&pageSize=10
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/site-config
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/members
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/directions
+curl -H "Authorization: Bearer $TOKEN" http://localhost/api/admin/upload
+
+# 分页验证
+curl "http://localhost/api/articles?page=1&pageSize=5"
+curl "http://localhost/api/projects?page=1&pageSize=5"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost/api/admin/applications?page=1&pageSize=10&status=PENDING"
+
+# 已初始化数据库的增量迁移（历史迁移文件已移除，uk_apply_active_user 约束已内置在 deploy/mysql/init/01-init.sql）
+# 新建环境直接执行 docker compose --env-file .env up -d --build 即可自动初始化完整数据库
+# 已有生产数据环境不得直接执行 DROP+CREATE 初始化脚本，应单独编写增量迁移
 ```

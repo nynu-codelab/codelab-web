@@ -2,6 +2,7 @@ package cn.edu.nynu.codelab.article.service;
 
 import cn.edu.nynu.codelab.article.dto.ArticleCreateRequest;
 import cn.edu.nynu.codelab.article.entity.Article;
+import cn.edu.nynu.codelab.common.PageResult;
 
 import java.util.List;
 
@@ -18,6 +19,11 @@ public interface ArticleService {
     List<Article> listPublished(String category);
 
     /**
+     * 前台：分页获取已发布文章列表
+     */
+    PageResult<Article> listPublishedPaged(int page, int pageSize, String category);
+
+    /**
      * 前台：获取已发布文章详情
      */
     Article getPublishedById(Long id);
@@ -26,6 +32,11 @@ public interface ArticleService {
      * 后台：获取所有文章（可按状态筛选）
      */
     List<Article> adminList(String status);
+
+    /**
+     * 后台：分页获取所有文章（可按状态、关键词筛选）
+     */
+    PageResult<Article> adminListPaged(int page, int pageSize, String status, String keyword);
 
     /**
      * 后台：获取文章详情

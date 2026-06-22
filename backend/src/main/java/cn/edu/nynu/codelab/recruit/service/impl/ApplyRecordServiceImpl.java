@@ -4,9 +4,11 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.nynu.codelab.recruit.dto.ApplyRequest;
 import cn.edu.nynu.codelab.recruit.dto.ReviewRequest;
 import cn.edu.nynu.codelab.recruit.entity.ApplyRecord;
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.recruit.mapper.ApplyRecordMapper;
 import cn.edu.nynu.codelab.recruit.service.ApplyRecordService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
             ApplyRecord.STATUS_PENDING,
             ApplyRecord.STATUS_PRELIMINARY_PASSED,
             ApplyRecord.STATUS_INTERVIEWING,
+            ApplyRecord.STATUS_VIEWED,
+            ApplyRecord.STATUS_CONTACTED,
             ApplyRecord.STATUS_PASSED,
             ApplyRecord.STATUS_REJECTED,
             ApplyRecord.STATUS_WITHDRAWN
@@ -35,6 +39,8 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
             ApplyRecord.STATUS_PENDING,
             ApplyRecord.STATUS_PRELIMINARY_PASSED,
             ApplyRecord.STATUS_INTERVIEWING,
+            ApplyRecord.STATUS_VIEWED,
+            ApplyRecord.STATUS_CONTACTED,
             ApplyRecord.STATUS_PASSED,
             ApplyRecord.STATUS_REJECTED
     ));
@@ -123,6 +129,27 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
             wrapper.eq(ApplyRecord::getStatus, status);
         }
         return applyRecordMapper.selectList(wrapper);
+    }
+
+    @Override
+    public PageResult<ApplyRecord> adminListPaged(int page, int pageSize, String status, String direction, String keyword) {
+        Page<ApplyRecord> mpPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<ApplyRecord> wrapper = new LambdaQueryWrapper<ApplyRecord>()
+                .orderByDesc(ApplyRecord::getCreateTime);
+        if (status != null && !status.isBlank()) {
+            if (!VALID_STATUSES.contains(status)) {
+                throw new RuntimeException("无效的审核状态: " + status);
+            }
+            wrapper.eq(ApplyRecord::getStatus, status);
+        }
+        if (direction != null && !direction.isBlank()) {
+            wrapper.eq(ApplyRecord::getDirection, direction);
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            wrapper.like(ApplyRecord::getRealName, keyword);
+        }
+        Page<ApplyRecord> result = applyRecordMapper.selectPage(mpPage, wrapper);
+        return PageResult.of(result.getRecords(), result.getTotal(), page, pageSize);
     }
 
     @Override

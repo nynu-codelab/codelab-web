@@ -15,7 +15,7 @@
         v-model="statusFilter"
         placeholder="按状态筛选"
         clearable
-        @change="fetchList"
+        @change="handleFilterChange"
         style="width: 160px"
       >
         <el-option label="全部" value="" />
@@ -23,6 +23,19 @@
         <el-option label="已发布" value="PUBLISHED" />
         <el-option label="已下架" value="OFFLINE" />
       </el-select>
+
+      <el-input
+        v-model="keyword"
+        placeholder="搜索文章标题"
+        clearable
+        @keyup.enter="handleFilterChange"
+        @clear="handleFilterChange"
+        style="width: 240px; margin-left: 12px"
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+      </el-input>
     </div>
 
     <el-card shadow="never">
@@ -83,6 +96,18 @@
       </el-table>
     </el-card>
 
+    <!-- 分页 -->
+    <div class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="page"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        @change="fetchList"
+      />
+    </div>
+
     <!-- 新建/编辑对话框 -->
     <el-dialog
       v-model="dialogVisible"
@@ -140,6 +165,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import {
   getArticles,
@@ -156,6 +182,10 @@ import type { ArticleItem } from '@/api/article'
 const list = ref<ArticleItem[]>([])
 const loading = ref(false)
 const statusFilter = ref('')
+const keyword = ref('')
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
 const dialogVisible = ref(false)
 const editingId = ref<number | null>(null)
@@ -195,13 +225,24 @@ function resetForm() {
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getArticles(statusFilter.value || undefined)
-    list.value = res.data || []
+    const res = await getArticles({
+      page: page.value,
+      pageSize: pageSize.value,
+      status: statusFilter.value || undefined,
+      keyword: keyword.value || undefined
+    })
+    list.value = res.data.records || []
+    total.value = res.data.total || 0
   } catch {
     // error handled by interceptor
   } finally {
     loading.value = false
   }
+}
+
+function handleFilterChange() {
+  page.value = 1
+  fetchList()
 }
 
 function showCreate() {
@@ -212,8 +253,8 @@ function showCreate() {
 
 async function showEdit(row: ArticleItem) {
   try {
-    const res = await getArticles()
-    const article = (res.data || []).find(a => a.id === row.id)
+    const res = await getArticles({ page: 1, pageSize: 100 })
+    const article = (res.data.records || []).find((a: ArticleItem) => a.id === row.id)
     if (article) {
       form.title = article.title
       form.summary = article.summary || ''
@@ -309,5 +350,11 @@ onMounted(() => {
 
 .filter-bar {
   margin-bottom: 16px;
+}
+
+.pagination-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

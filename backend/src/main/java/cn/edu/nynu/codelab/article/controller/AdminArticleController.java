@@ -4,12 +4,11 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.edu.nynu.codelab.article.dto.ArticleCreateRequest;
 import cn.edu.nynu.codelab.article.entity.Article;
 import cn.edu.nynu.codelab.article.service.ArticleService;
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.common.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 后台文章管理接口（需 ADMIN 权限）
@@ -25,8 +24,12 @@ public class AdminArticleController {
     private final ArticleService articleService;
 
     @GetMapping
-    public Result<List<Article>> list(@RequestParam(required = false) String status) {
-        List<Article> articles = articleService.adminList(status);
+    public Result<PageResult<Article>> list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword) {
+        PageResult<Article> articles = articleService.adminListPaged(page, pageSize, status, keyword);
         return Result.success(articles);
     }
 

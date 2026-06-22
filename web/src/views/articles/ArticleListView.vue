@@ -38,25 +38,47 @@
           title="暂无文章"
           message="后台发布文章后，这里会展示文章标题、标签、摘要和阅读入口。"
         />
-        <div v-else class="app-grid three">
-          <ArticleCard
-            v-for="item in articles"
-            :key="item.id"
-            :title="item.title"
-            :summary="fallbackText(item.summary, '文章摘要待完善')"
-            :category="item.category"
-            :published-at="item.publishedAt || item.createTime"
-            :tags="parseList(item.tags).slice(0, 5)"
-            :to="`/articles/${item.id}`"
-          />
-        </div>
+        <template v-else>
+          <div class="app-grid three">
+            <ArticleCard
+              v-for="item in articles"
+              :key="item.id"
+              :title="item.title"
+              :summary="fallbackText(item.summary, '文章摘要待完善')"
+              :category="item.category"
+              :published-at="item.publishedAt || item.createTime"
+              :tags="parseList(item.tags).slice(0, 5)"
+              :to="`/articles/${item.id}`"
+            />
+          </div>
+
+          <div class="list-pagination">
+            <p class="list-pagination__info">
+              第 {{ page }} 页，共 {{ totalPages }} 页（{{ total }} 篇）
+            </p>
+            <div class="list-pagination__actions">
+              <AppButton
+                label="上一页"
+                variant="secondary"
+                :disabled="page <= 1"
+                @click="goToPage(page - 1)"
+              />
+              <AppButton
+                label="下一页"
+                variant="secondary"
+                :disabled="page >= totalPages"
+                @click="goToPage(page + 1)"
+              />
+            </div>
+          </div>
+        </template>
       </div>
     </AnimatedSection>
   </AppFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
@@ -70,13 +92,33 @@ import { fallbackText, parseList } from '@/utils/content'
 const articles = ref<ArticleItem[]>([])
 const loading = ref(true)
 const error = ref('')
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
+
+function goToPage(p: number) {
+  if (p < 1 || p > totalPages.value) return
+  page.value = p
+  fetchArticles()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 async function fetchArticles() {
   loading.value = true
   error.value = ''
   try {
-    const res = await getArticles()
-    articles.value = res.data || []
+    const res = await getArticles({ page: page.value, pageSize: pageSize.value })
+    const data = res.data
+    // Support both PageResult and legacy array response
+    if (data && 'records' in data) {
+      articles.value = data.records
+      total.value = data.total
+    } else {
+      articles.value = (data as unknown as ArticleItem[]) || []
+      total.value = articles.value.length
+    }
   } catch (err: any) {
     error.value = err?.response?.data?.message || err?.message || '加载失败，请稍后重试'
   } finally {
@@ -86,3 +128,27 @@ async function fetchArticles() {
 
 onMounted(fetchArticles)
 </script>
+
+<style scoped>
+.list-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(153, 217, 255, 0.08);
+}
+
+.list-pagination__info {
+  color: rgba(216, 247, 255, 0.58);
+  font-size: 13px;
+  margin: 0;
+}
+
+.list-pagination__actions {
+  display: flex;
+  gap: 10px;
+}
+</style>

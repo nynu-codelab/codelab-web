@@ -1,5 +1,12 @@
 <template>
   <AppFrame>
+    <!-- Announcement banner -->
+    <div v-if="announcement" class="home-announcement">
+      <div class="app-container">
+        <p class="home-announcement__text">{{ announcement }}</p>
+      </div>
+    </div>
+
     <TerminalHero />
 
     <AnimatedSection>
@@ -18,9 +25,9 @@
       <div class="app-container home-os">
         <div>
           <span class="app-eyebrow">Lab Operating System</span>
-          <h2 class="app-title-lg">把学习过程组织成可运行的工程系统</h2>
+          <h2 class="app-title-lg">{{ siteSlogan || '把学习过程组织成可运行的工程系统' }}</h2>
           <p class="app-copy">
-            从需求拆解到部署验证，训练链路围绕真实项目展开。每一次提交、评审和复盘都沉淀为可复用的工程经验。
+            {{ siteDescription || '从需求拆解到部署验证，训练链路围绕真实项目展开。每一次提交、评审和复盘都沉淀为可复用的工程经验。' }}
           </p>
           <div class="home-os__chips" aria-label="实验室工作模式">
             <span>task.ready</span>
@@ -205,6 +212,7 @@ import GitBranchMap from '@/components/app/GitBranchMap.vue'
 import TerminalHero from '@/components/app/TerminalHero.vue'
 import { getArticles, type ArticleItem } from '@/api/article'
 import { getFeaturedProjects, type ProjectItem } from '@/api/project'
+import { getSiteConfigMap } from '@/api/siteConfig'
 import { fallbackText, parseList } from '@/utils/content'
 
 const metrics = [
@@ -276,6 +284,28 @@ const memberRoles = [
   }
 ]
 
+// Site config from backend
+const siteName = ref('')
+const siteSlogan = ref('')
+const siteDescription = ref('')
+const announcement = ref('')
+const githubUrl = ref('')
+
+async function fetchSiteConfig() {
+  try {
+    const res = await getSiteConfigMap()
+    const map = res.data || {}
+    siteName.value = map.siteName || ''
+    siteSlogan.value = map.siteSlogan || ''
+    siteDescription.value = map.siteDescription || ''
+    announcement.value = map.announcement || ''
+    githubUrl.value = map.githubUrl || ''
+  } catch {
+    // Graceful fallback: config not available, keep hardcoded defaults
+  }
+}
+
+// Article and project data
 const featuredProjects = ref<ProjectItem[]>([])
 const latestArticles = ref<ArticleItem[]>([])
 const projectsLoading = ref(true)
@@ -299,8 +329,14 @@ async function fetchHomeData() {
   }
 
   try {
-    const articleRes = await getArticles()
-    latestArticles.value = (articleRes.data || []).slice(0, 3)
+    const articleRes = await getArticles({ page: 1, pageSize: 3 })
+    const data = articleRes.data
+    // Support both PageResult and legacy array response
+    if (data && 'records' in data) {
+      latestArticles.value = data.records
+    } else {
+      latestArticles.value = (data as unknown as ArticleItem[]) || []
+    }
   } catch (err: any) {
     articleError.value = err?.response?.data?.message || err?.message || '学习文章加载失败'
   } finally {
@@ -308,10 +344,27 @@ async function fetchHomeData() {
   }
 }
 
-onMounted(fetchHomeData)
+onMounted(() => {
+  fetchSiteConfig()
+  fetchHomeData()
+})
 </script>
 
 <style scoped>
+.home-announcement {
+  padding: 10px 0;
+  background: linear-gradient(90deg, rgba(83, 231, 255, 0.08) 0%, rgba(83, 231, 255, 0.04) 50%, rgba(83, 231, 255, 0.08) 100%);
+  border-bottom: 1px solid rgba(83, 231, 255, 0.12);
+}
+
+.home-announcement__text {
+  text-align: center;
+  color: rgba(216, 247, 255, 0.78);
+  font-size: 13px;
+  margin: 0;
+  padding: 0 16px;
+}
+
 .section-actions {
   display: grid;
   justify-items: start;

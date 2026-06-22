@@ -1,6 +1,7 @@
 package cn.edu.nynu.codelab.project.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.common.Result;
 import cn.edu.nynu.codelab.project.dto.ProjectCreateRequest;
 import cn.edu.nynu.codelab.project.entity.Project;
@@ -8,8 +9,6 @@ import cn.edu.nynu.codelab.project.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 后台项目成果管理接口（需 ADMIN 权限）
@@ -25,10 +24,12 @@ public class AdminProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public Result<List<Project>> list(
+    public Result<PageResult<Project>> list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Integer featured) {
-        List<Project> projects = projectService.adminList(status, featured);
+        PageResult<Project> projects = projectService.adminListPaged(page, pageSize, status, featured);
         return Result.success(projects);
     }
 

@@ -59,7 +59,7 @@ CREATE TABLE lab_apply_record (
     reason                VARCHAR(2000) NOT NULL DEFAULT ''    COMMENT '加入实验室的原因',
     weekly_available_time VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '每周可投入时间',
     portfolio_url         VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '项目/作品链接',
-    status                VARCHAR(30)  NOT NULL DEFAULT 'PENDING' COMMENT '审核状态：PENDING/PRELIMINARY_PASSED/INTERVIEWING/PASSED/REJECTED/WITHDRAWN',
+    status                VARCHAR(30)  NOT NULL DEFAULT 'PENDING' COMMENT '审核状态：PENDING/PRELIMINARY_PASSED/INTERVIEWING/VIEWED/CONTACTED/PASSED/REJECTED/WITHDRAWN',
     review_remark         VARCHAR(1000) NOT NULL DEFAULT ''    COMMENT '审核备注',
     reviewer_id           BIGINT       DEFAULT NULL            COMMENT '审核人ID',
     reviewed_at           DATETIME     DEFAULT NULL            COMMENT '审核时间',
@@ -225,7 +225,8 @@ INSERT INTO lab_site_config (config_key, config_value, config_type, group_name, 
 ('contactAddress', '', 'text', 'contact', '实验室地址（由管理员上线后配置）'),
 ('contactQrcodeUrl', '', 'image', 'contact', '招新咨询二维码图片URL（由管理员上线后上传配置）'),
 ('githubUrl', '', 'text', 'social', '实验室 GitHub 组织地址（由管理员上线后配置）'),
-('announcement', '', 'text', 'site', '站点公告（留空则不展示公告栏）');
+('announcement', '', 'text', 'site', '站点公告（留空则不展示公告栏）'),
+('recruitOpen', 'true', 'text', 'recruit', '招新开关：true-开放报名，false-关闭报名');
 
 -- =============================================
 -- 8. 上传文件记录表
