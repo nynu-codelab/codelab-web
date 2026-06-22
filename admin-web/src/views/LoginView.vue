@@ -143,7 +143,7 @@ async function handleLogin() {
 .login-visual h1 {
   max-width: 780px;
   color: var(--admin-text-strong);
-  font-size: clamp(42px, 7vw, 86px);
+  font-size: 78px;
   line-height: 1.04;
 }
 
@@ -216,6 +216,10 @@ async function handleLogin() {
 @media (max-width: 900px) {
   .login-container {
     grid-template-columns: 1fr;
+  }
+
+  .login-visual h1 {
+    font-size: 42px;
   }
 }
 </style>

@@ -9,7 +9,7 @@
 | 中文名称 | 南阳师范学院 Code Lab 实验室 |
 | Git 仓库 | git@gitee.com:zeng-bohan-66/nynu-code-lab.git |
 | 默认分支 | main |
-| 当前工作分支 | refactor/apply-high-impact-frontend |
+| 当前工作分支 | refine/pc-immersive-frontend |
 
 ## 项目定位
 
@@ -353,16 +353,16 @@ AI 在每次开发任务完成后必须：
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `refactor/apply-high-impact-frontend` |
-| 阶段 | 高冲击视觉正式推广：前台 web + 后台 admin-web 已完成视觉重构（当前） |
+| 分支 | `refine/pc-immersive-frontend` |
+| 阶段 | PC 沉浸式视觉增强：在“工程指挥舱 + 年轻学生技术团队展台”方向上继续增强 PC 端动态背景、终端控制台、代码流、节点网络和后台驾驶舱 |
 | 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403 |
-| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用高冲击视觉系统；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
+| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；数据概览新增 ECharts 模块状态图与控制台信号面板；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
 | 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
 | Profile | `local`（本地开发，默认）/ `docker`（容器部署）双 profile 支持 |
-| 构建状态 | backend `mvn clean package -DskipTests` ✅ / web `npm install && npm run build` ✅ / admin-web `npm install && npm run build` ✅ / docker compose config + up -d --build + ps ✅ |
+| 构建状态 | backend `mvn clean package -DskipTests` ✅ / web `npm install && npm run build` ✅ / admin-web `npm install && npm run build` ✅（ECharts Dashboard chunk 有 Vite 体积提醒）/ docker compose config + up -d --build + ps ✅ |
 | 接口验证 | 招新报名闭环 18/18 ✅ / 文章闭环 23/23 ✅ / 项目成果闭环 21/21 ✅ |
 | 页面访问 | `/`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact`、`/design-preview`、`/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 经 Nginx 均返回 200 |
 | 稳定 tag | stable-mvp-production-ready-20260622 |
@@ -409,6 +409,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | PC 沉浸式前端视觉增强 | 新建/切换 `refine/pc-immersive-frontend`；基于 `refactor/apply-high-impact-frontend` 继续保留 Product Design 方向“工程指挥舱 + 年轻学生技术团队展台”，不推翻现有高冲击视觉；使用 Product Design brief 回放与 frontend-design 规则；未使用 Figma（无 Figma 链接）；前台新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`DataCounter`；首页升级为 PC 大屏沉浸式 Hero + Lab OS + 终端控制台 + 构建流水线；/about、/directions、/members、/projects、/projects/:id、/articles、/articles/:id、/recruit、/login、/register、/profile、/my-application、/contact、/design-preview 接入终端、命令、节点、代码流或控制台视觉；项目卡片新增扫描线与 BUILD PASS 视觉，文章卡片新增知识库代码纹理，方向卡片新增节点环绕光效；后台数据概览新增 ECharts 模块接入状态图、控制台信号面板，AdminLayout 和空状态增强动态光栅；新增依赖：前台 `gsap`（Hero 入场动画）、`countup.js`（指标计数）、`@lucide/vue`（工程图标），后台 `echarts`（模块状态可视化）；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm run build` ✅ / `admin-web npm run build` ✅（Dashboard chunk > 500 kB 提醒）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config + up -d --build + ps ✅（先重启 Colima 恢复 Docker daemon）/ 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ / Markdown 安全检查确认文章与项目详情均为 `html:false` ✅ |
 | 2026-06-22 | 高冲击视觉正式推广 | 新建/切换 `refactor/apply-high-impact-frontend`；用户已确认喜欢 `/design-preview` 后，将 Product Design 视觉方向“工程指挥舱 + 学生技术团队展台”推广到正式前台与后台；使用 frontend-design 规则落地正式页面；未使用 Figma（无 Figma 链接）；前台新增正式 `components/app/*` 组件体系（`AppFrame`、`AppHeader`、`AppFooter`、`AppAnimatedBackground`、`AppButton`、`PageHero`、`AnimatedSection`、`MetricCard`、`DirectionCard`、`ProjectCard`、`ArticleCard`、`MemberCard`、`RecruitCTA`、`StateView`、`AuthShell`）；新增 `/about`、`/directions`、`/members`、`/contact`、`/profile`、404；保留 `/design-preview`；后台新增 `design-tokens.css`、`admin.css`，重做 `AdminLayout`、登录、数据概览、用户占位，补齐成员/方向/站点/上传占位路由；无新增依赖；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm install && npm run build` ✅ / `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config 脱敏重定向 + up -d --build + ps ✅ / 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ |
 | 2026-06-22 | 高端动态视觉预览版 | 新建 `prototype/high-impact-frontend-preview`；使用 Product Design brief 回放确定“工程指挥舱 + 学生技术团队展台”方向；使用 frontend-design 规则落地前台 `/design-preview` 独立预览页；新增 `PreviewHeader`、`PreviewAnimatedBackground`、`PreviewHero`、`PreviewMetricCard`、`PreviewDirectionCard`、`PreviewProjectCard`、`PreviewArticleCard`、`PreviewRecruitCTA`、`PreviewFooter`、`GlowButton`、`AnimatedSection` 组件；新增 `design-tokens.css` 与 `preview.css`；无新增依赖；未使用 Figma；未修改后端接口字段、接口路径、业务逻辑或数据库；`web npm install && npm run build` ✅ / `backend mvn clean package -DskipTests` ✅ / `admin-web npm install && npm run build` ✅ / Docker Compose config 输出脱敏重定向 + up -d --build + ps ✅ / `curl -I http://localhost/design-preview` 200 ✅ / `curl http://localhost/api/health` UP ✅ |
 | 2026-06-22 | 第六阶段上线前全量验收 + 安全加固 | 新建 `release/mvp-production-readiness`；补齐 `docs/requirements.md` 并修复需求文档重复命名；权限异常从通用 500 改为统一业务码 401/403；`lab_apply_record` 新增 `active_user_id` 生成列与 `uk_apply_active_user` 唯一约束并新增 `03-add-apply-active-user-unique-key.sql`；同步 `backend/sql/init.sql` 与 `deploy/mysql/init/01-init.sql`；`deploy/.env.example` 敏感变量改为空并补充 `SERVER_PORT`；新增根目录 `.env.example`；本地 Vite 端口统一为 web 5173 / admin-web 5174；修正验证脚本权限断言；README/deploy 文档补齐准生产环境变量、迁移、Markdown、安全和未实现模块说明；Docker Compose、页面访问、三闭环脚本、权限、SQL、Markdown、Nginx 验收通过 |
@@ -425,6 +426,9 @@ docker compose ps                  # 确认所有服务运行
 ## 当前已知问题
 
 - `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
+- 本轮 PC 沉浸式增强优先 PC 端视觉表现，移动端只做不严重崩溃与简化动效，不做精细适配
+- 自研 Canvas 粒子网络、代码雨和能量流仅在 PC 端启用；低端 PC 或浏览器开启减少动画时会降级
+- 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
 - 前台 `/members` 当前只展示能力结构，不编造真实成员姓名；真实成员数据与成员接口尚未实现
 - 前台 `/contact` 当前不展示真实联系方式；需等待站点配置接口接入后维护真实联系方式、二维码等
 - 后台 `npm install` 后 audit 仍报告既有 1 个 moderate、1 个 high 漏洞；本次未引入后台依赖，未做强制升级
@@ -451,19 +455,20 @@ docker compose ps                  # 确认所有服务运行
 
 ## 下一步建议
 
-1. 人工打开正式前台和后台核心页面，确认高冲击视觉推广后的整体观感、动效强度和信息密度
-2. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
-3. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
-4. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
-5. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
-6. 后台用户管理页面实现真实数据对接
-7. 完善修改密码和退出登录接口
-8. 文章列表加分页、分类筛选优化
-9. 项目列表加分页优化
-10. 完善报名状态流转（增加更多中间状态约束和校验）
-11. 引入 Redis 业务依赖（如 Session 共享、缓存）
-12. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
-13. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
+1. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认粒子、代码雨、能量流、终端和控制台动效强度
+2. 如果确认当前方向，继续把 `CommandConsole`、`BuildPipeline`、`LabControlPanel` 等组件沉淀为正式 CodeLab 视觉组件规范
+3. 评估后台 ECharts 体积提醒，必要时改为动态拆包或轻量 CSS 图表
+4. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
+5. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位
+6. 接入站点配置模块，维护真实联系方式、二维码、首页推荐和页脚配置
+7. 实现文件上传功能（文章封面、项目封面、成员头像等）并补齐大小、类型、权限校验
+8. 后台用户管理页面实现真实数据对接
+9. 完善修改密码和退出登录接口
+10. 文章列表加分页、分类筛选优化
+11. 项目列表加分页优化
+12. 完善报名状态流转（增加更多中间状态约束和校验）
+13. 将当前分支合并/部署到服务器准生产环境演示前，先填写生产 `.env` 并修改默认管理员密码
+14. 生产 Nginx 配置 HTTPS、正式域名、证书续期和 HTTP 到 HTTPS 跳转
 
 ## 验收命令
 

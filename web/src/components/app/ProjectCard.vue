@@ -1,6 +1,7 @@
 <template>
   <RouterLink :to="to" class="project-card glass-card is-hoverable">
     <div class="project-card__visual" :style="coverStyle">
+      <div class="project-card__scan"></div>
       <div class="project-card__terminal" v-if="!coverUrl">
         <span></span>
         <span></span>
@@ -11,7 +12,8 @@
     <div class="project-card__body">
       <div class="project-card__meta">
         <span class="status-pill">{{ type || '项目实践' }}</span>
-        <span class="muted" v-if="meta">{{ meta }}</span>
+        <span class="project-card__pass" v-if="meta">{{ meta }}</span>
+        <span class="project-card__pass" v-else>BUILD PASS</span>
       </div>
       <h3>{{ title }}</h3>
       <p>{{ summary }}</p>
@@ -51,6 +53,8 @@ const coverStyle = computed(() =>
 }
 
 .project-card__visual {
+  position: relative;
+  overflow: hidden;
   min-height: 190px;
   background:
     radial-gradient(circle at 24% 20%, rgba(83, 231, 255, 0.24), transparent 28%),
@@ -61,7 +65,35 @@ const coverStyle = computed(() =>
   border-bottom: 1px solid rgba(153, 217, 255, 0.14);
 }
 
+.project-card__visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, transparent 42%, rgba(83, 231, 255, 0.12), transparent 58%),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 10px;
+  opacity: 0.74;
+}
+
+.project-card__scan {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(83, 231, 255, 0.28), transparent);
+  opacity: 0;
+  transform: translateX(-120%);
+}
+
+.project-card:hover .project-card__scan {
+  opacity: 1;
+  animation: project-scan 1.4s ease;
+}
+
 .project-card__terminal {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 8px 8px 8px minmax(0, 1fr);
   gap: 7px;
@@ -123,5 +155,17 @@ const coverStyle = computed(() =>
   color: var(--app-muted);
   font-size: 14px;
   line-height: 1.75;
+}
+
+.project-card__pass {
+  color: var(--app-success);
+  font-family: var(--app-font-data);
+  font-size: 11px;
+}
+
+@keyframes project-scan {
+  to {
+    transform: translateX(120%);
+  }
 }
 </style>

@@ -9,6 +9,12 @@
         <AppButton label="返回首页" to="/" variant="secondary" />
         <AppButton label="招新报名" to="/recruit" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="knowledge.base"
+          :commands="['indexMarkdownNotes()', 'renderCodeBlocks(html=false)', 'publishLearningLog()']"
+        />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -57,6 +63,7 @@ import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
 import ArticleCard from '@/components/app/ArticleCard.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { getArticles, type ArticleItem } from '@/api/article'
 import { fallbackText, parseList } from '@/utils/content'
 

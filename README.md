@@ -493,25 +493,23 @@ http://localhost/design-preview
 
 动效策略：
 
-- CSS 动画优先，不引入 GSAP、Three.js 等重依赖。
-- 背景使用动态网格、光晕、扫描线、低强度噪点纹理和鼠标跟随光效。
-- 卡片使用轻微 hover 浮起和 3D 倾斜，按钮使用流光微交互。
-- 区块使用滚动进入动画，移动端自动降低动效强度。
-- 支持 `prefers-reduced-motion`，用户偏好减少动画时会关闭主要动画和过渡。
+- `/design-preview` 继续保留为视觉参考页，同时接入本轮 PC 沉浸式背景层。
+- 背景由动态网格、扫描线、低强度噪点、自研 Canvas 粒子网络、代码雨和能量流共同组成。
+- Canvas 动效仅在 PC 端（`window.innerWidth >= 1024`）启用，并在组件卸载时取消动画帧、解绑事件监听。
+- 继续支持 `prefers-reduced-motion`，用户偏好减少动画时会关闭主要 Canvas 与入场动画。
+- 本轮不使用 Figma，也不引入 Three.js；3D 视觉主要通过 CSS 透视、玻璃拟态、扫描线和光边框完成。
 
-新增依赖：无。当前预览页完全使用 Vue 3 + CSS 实现，避免为了背景动效引入过重依赖。
+该方向已在 `refine/pc-immersive-frontend` 分支继续深化到正式前台和后台，但 `/design-preview` 仍保留为视觉参考页，便于后续对照设计方向。
 
-该方向已在 `refactor/apply-high-impact-frontend` 分支推广到正式前台和后台，但 `/design-preview` 仍保留为视觉参考页，便于后续对照设计方向。
+### PC 沉浸式前端视觉增强
 
-### 正式高冲击前端视觉系统
-
-当前正式前台已将预览方向推广到以下页面：
+当前正式前台在既有高冲击视觉系统上继续增强 PC 端沉浸式表现，覆盖以下页面：
 
 - `/`、`/about`、`/directions`、`/members`、`/projects`、`/projects/{id}`
 - `/articles`、`/articles/{id}`、`/recruit`、`/my-application`
-- `/login`、`/register`、`/profile`（`/user` 兼容旧路径）、`/contact`、404
+- `/login`、`/register`、`/profile`（`/user` 兼容旧路径）、`/contact`、`/design-preview`、404
 
-后台管理端保留 Element Plus，不混用其他 UI 组件库，并同步改造：
+后台管理端保留 Element Plus，不混用其他 UI 组件库，并同步增强：
 
 - `/admin/login`、`/admin/dashboard`、`/admin/users`
 - `/admin/recruit`、`/admin/articles`、`/admin/projects`
@@ -520,17 +518,38 @@ http://localhost/design-preview
 实现策略：
 
 - 前台沉淀 `web/src/styles/design-tokens.css`、`animations.css`、`markdown.css` 和 `components/app/*` 复用组件。
-- 后台新增 `admin-web/src/styles/design-tokens.css` 与 `admin.css`，通过 Element Plus 变量和全局选择器统一表格、弹窗、表单和按钮质感。
-- 动效继续以 CSS 为主：动态网格、光晕、扫描线、鼠标跟随光效、滚动进入动画、按钮流光、卡片轻微浮起。
-- 所有动效遵守 `prefers-reduced-motion`，移动端降低 hover 和背景动效强度。
-- 未新增运行时依赖；本次没有引入 GSAP、Three.js 或新的 UI 组件库。
+- 新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`BuildPipeline`、`LabControlPanel`、`GitBranchMap`、`DataCounter` 等前台组件。
+- 首页 Hero 重做为 PC 大屏沉浸式终端控制台：左侧品牌与 CTA，右侧 boot terminal、Lab Control Center 和构建流水线。
+- 项目卡片加入扫描线与 BUILD PASS 视觉；文章卡片加入知识库代码纹理；方向卡片加入节点环绕光效；登录/注册页增强为 Access Console。
+- 文章详情和项目详情继续使用 `markdown-it`，并保持 `html:false`，不直接渲染未清洗 HTML。
+- 后台通过 `admin-web/src/styles/design-tokens.css` 与 `admin.css` 统一表格、弹窗、表单和按钮质感，并在数据概览页加入 ECharts 模块接入状态图。
+- PC 优先：复杂 Canvas 动效只在 PC 端启用；移动端本轮只保证不严重白屏、不横向崩溃，并关闭或简化重动效。
+
+新增依赖及用途：
+
+| 模块 | 依赖 | 用途 |
+|---|---|---|
+| 前台 `web` | `gsap` | 首页终端 Hero 入场时间线动画 |
+| 前台 `web` | `countup.js` | 指标数字动态计数 |
+| 前台 `web` | `@lucide/vue` | Git、CPU、状态等工程图标 |
+| 后台 `admin-web` | `echarts` | 数据概览页模块状态可视化 |
+
+构建与验证：
+
+- `web npm install && npm run build` 已通过。
+- `admin-web npm install && npm run build` 已通过；Vite 对 ECharts 后台图表 chunk 给出大于 500 kB 的体积提醒，但构建成功。
+- `backend mvn clean package -DskipTests` 已通过。
+- `docker compose --env-file .env config`、`up -d --build`、`ps` 已通过；本轮曾因 Colima Docker socket 失联先重启 Colima，随后 Docker 回归通过。
+- 页面访问验收：前台 `/`、`/design-preview`、`/about`、`/directions`、`/members`、`/projects`、`/articles`、`/recruit`、`/login`、`/register`、`/profile`、`/my-application`、`/contact` 和后台 `/admin/`、`/admin/login`、`/admin/recruit`、`/admin/articles`、`/admin/projects`、`/admin/members`、`/admin/directions`、`/admin/site`、`/admin/upload` 均返回 200。
+- 业务脚本：招新 18/18、文章 23/23、项目成果 21/21 均通过。
 
 继续推进到全站深水区时建议：
 
-1. 接入成员、方向、站点配置和文件上传真实接口后，把占位页替换为真实管理页面。
-2. 为文章和项目列表增加分页、分类筛选和更稳定的空状态。
-3. 对后台表格密度、批量操作、审核流转和草稿编辑体验做专项 UX 打磨。
-4. 补充 E2E 页面级回归，覆盖登录、报名、文章、项目和后台审核的主要点击路径。
+1. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认动效强度与信息密度。
+2. 评估后台 ECharts chunk 体积，必要时改为更轻的 CSS 图表或动态拆包。
+3. 接入成员、方向、站点配置和文件上传真实接口后，把占位页替换为真实管理页面。
+4. 为文章和项目列表增加分页、分类筛选和更稳定的空状态。
+5. 补充 E2E 页面级回归，覆盖登录、报名、文章、项目和后台审核的主要点击路径。
 
 ### 数据库初始化说明
 

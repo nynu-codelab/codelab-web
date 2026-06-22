@@ -60,7 +60,7 @@
 .preview-section-title {
   max-width: 760px;
   color: #f6fbff;
-  font-size: clamp(28px, 4vw, 54px);
+  font-size: 54px;
   font-weight: 760;
   line-height: 1.08;
 }
@@ -178,6 +178,10 @@
   .preview-grid.five {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .preview-section-title {
+    font-size: 38px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -196,6 +200,10 @@
 
   .preview-card:hover {
     transform: translateY(-4px);
+  }
+
+  .preview-section-title {
+    font-size: 30px;
   }
 }
 

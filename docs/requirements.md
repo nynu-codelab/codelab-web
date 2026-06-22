@@ -285,12 +285,27 @@ HTTPS 证书
 清爽但不寡淡
 ```
 
+本轮在该方向上继续推进 PC 沉浸式视觉增强：
+
+```text
+PC 端视觉效果优先
+PC 端高级动态效果优先
+粒子系统
+Canvas 动效
+节点网络
+能量流
+代码流
+终端扫描
+后台 Admin Console
+```
+
 实现要求：
 
 - 前台使用统一设计 token、动态背景、玻璃卡片、滚动进入动画、按钮流光和 Markdown 阅读样式。
 - 后台继续统一使用 Element Plus，不引入第二套 UI 组件库，通过后台设计 token 统一壳层、表格、弹窗、表单和按钮视觉。
-- 动效优先使用 CSS，不为了背景或装饰引入过重依赖；当前不使用 GSAP、Three.js。
-- 移动端必须可用，不横向溢出，动画可降级。
+- 动效以 CSS + 自研 Canvas 为主，允许少量专用依赖增强 PC 高级感；当前使用 `gsap` 做 Hero 入场时间线、`countup.js` 做指标计数、`@lucide/vue` 做工程图标、`echarts` 做后台模块状态可视化。
+- 当前仍不使用 Three.js，不做过重 3D 场景。
+- 移动端本轮不是重点，只保证不严重白屏、不明显横向崩溃，复杂 Canvas 动效在移动端关闭或降级。
 - 尊重 `prefers-reduced-motion`。
 - 不编造真实成员姓名、真实联系方式、虚假成员数量或虚假项目数据。
 
@@ -1657,9 +1672,9 @@ Token 统一处理
 
 ### 16.8 当前版本信息
 
-- **分支**：`refactor/apply-high-impact-frontend`
+- **分支**：`refine/pc-immersive-frontend`
 - **标签**：`stable-mvp-production-ready-20260622`（稳定基线 tag；当前分支为视觉推广重构分支，未合并 main）
-- **验证状态**：招募 18/18 ✅ / 文章 23/23 ✅ / 项目成果 21/21 ✅ / 前台构建 ✅ / 后台构建 ✅ / 后端打包 ✅ / Docker Compose ✅
+- **验证状态**：前台构建 ✅ / 后台构建 ✅（ECharts Dashboard chunk 有体积提醒）/ 后端打包 ✅ / Docker Compose ✅ / 页面访问 200 ✅ / 招募 18/18 ✅ / 文章 23/23 ✅ / 项目成果 21/21 ✅
 
 ### 16.9 高冲击视觉正式推广（2026-06-22）
 
@@ -1670,4 +1685,22 @@ Token 统一处理
 ✅ 后端接口字段、接口路径、数据库字段、Docker Compose 核心配置未修改
 ✅ 新增依赖：无
 ✅ 无 Figma 链接，未使用 Figma
+```
+
+### 16.10 PC 沉浸式视觉增强（2026-06-22）
+
+```text
+✅ 保留既有“工程指挥舱 + 年轻学生技术团队展台”方向，不重新做普通官网、不改学校门户风
+✅ 前台新增自研 Canvas 粒子网络、代码雨、能量流背景，PC 端启用，移动端降级
+✅ 首页升级为沉浸式 Terminal Hero：品牌标题、CTA、boot 命令、Lab Control Center、构建流水线
+✅ 新增 CommandConsole、BuildPipeline、LabControlPanel、GitBranchMap、DataCounter 等 CodeLab 视觉组件
+✅ /about、/directions、/members、/projects、/articles、/recruit、/login、/register、/profile、/my-application、/contact、/design-preview 均保留现有业务并增强终端/代码/控制台视觉
+✅ 项目详情与文章详情继续使用 markdown-it 且 html:false，Markdown 安全策略不变
+✅ 后台管理端保留 Element Plus，数据概览新增 ECharts 模块状态图，表格/筛选/表单仍保持清晰可用
+✅ 新增依赖：web 使用 gsap、countup.js、@lucide/vue；admin-web 使用 echarts
+✅ 未修改后端接口字段、接口路径、数据库字段、Docker Compose 核心配置
+✅ 前台构建、后台构建、后端打包、Docker Compose、页面访问、招新脚本、文章脚本、项目脚本已通过
+⚠️ 本轮移动端暂非重点，仅保证不严重崩溃；PC 端视觉表现优先
+⚠️ 后台 ECharts 图表导致 Dashboard chunk 出现大于 500 kB 的 Vite 体积提醒，但构建成功
+⚠️ 成员、方向、站点配置、文件上传、用户管理等未实现模块继续保持占位或待实现，不写成已完成
 ```

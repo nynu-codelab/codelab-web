@@ -74,7 +74,7 @@ import GlowButton from './GlowButton.vue'
   max-width: 820px;
   margin-top: 24px;
   color: #f8fcff;
-  font-size: clamp(42px, 7vw, 88px);
+  font-size: 88px;
   font-weight: 820;
   line-height: 0.98;
 }
@@ -83,7 +83,7 @@ import GlowButton from './GlowButton.vue'
   max-width: 760px;
   margin-top: 26px;
   color: #dcecff;
-  font-size: clamp(18px, 2.2vw, 27px);
+  font-size: 24px;
   line-height: 1.55;
 }
 
@@ -254,6 +254,14 @@ import GlowButton from './GlowButton.vue'
   .preview-hero__stage {
     min-height: 470px;
   }
+
+  .preview-hero h1 {
+    font-size: 58px;
+  }
+
+  .preview-hero__lead {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -262,7 +270,12 @@ import GlowButton from './GlowButton.vue'
   }
 
   .preview-hero h1 {
+    font-size: 42px;
     line-height: 1.05;
+  }
+
+  .preview-hero__lead {
+    font-size: 18px;
   }
 
   .preview-hero__actions {

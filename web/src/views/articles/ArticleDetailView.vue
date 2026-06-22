@@ -36,6 +36,12 @@
         <div class="pill-row" v-if="parseList(article.tags).length">
           <span class="tech-pill" v-for="tag in parseList(article.tags)" :key="tag">{{ tag }}</span>
         </div>
+        <CommandConsole
+          class="detail-console"
+          title="markdown.reader"
+          :framed="false"
+          :commands="['loadPublishedArticle()', 'markdownIt({ html: false })', 'renderKnowledgeBase()']"
+        />
         <div class="detail-card__divider"></div>
         <div class="app-markdown" v-html="renderedMarkdown"></div>
         <div class="detail-card__footer">
@@ -53,6 +59,7 @@ import MarkdownIt from 'markdown-it'
 import AppFrame from '@/components/app/AppFrame.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { getArticle, type ArticleItem } from '@/api/article'
 import { formatDate, parseList } from '@/utils/content'
 
@@ -123,7 +130,7 @@ onMounted(fetchArticle)
 
 .detail-card h1 {
   color: var(--app-text-strong);
-  font-size: clamp(32px, 5vw, 58px);
+  font-size: 58px;
   line-height: 1.12;
 }
 
@@ -138,6 +145,10 @@ onMounted(fetchArticle)
   margin-top: 22px;
 }
 
+.detail-console {
+  margin-top: 24px;
+}
+
 .detail-card__divider {
   height: 1px;
   margin: 34px 0;
@@ -148,5 +159,11 @@ onMounted(fetchArticle)
   margin-top: 40px;
   padding-top: 26px;
   border-top: 1px solid rgba(153, 217, 255, 0.12);
+}
+
+@media (max-width: 720px) {
+  .detail-card h1 {
+    font-size: 34px;
+  }
 }
 </style>

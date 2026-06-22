@@ -1,5 +1,10 @@
 <template>
   <RouterLink :to="to" class="article-card glass-card is-hoverable">
+    <div class="article-card__code" aria-hidden="true">
+      <span>function read(note) {</span>
+      <span>  return buildKnowledge(note)</span>
+      <span>}</span>
+    </div>
     <div class="article-card__meta">
       <span class="status-pill">{{ category || '技术文章' }}</span>
       <span>{{ dateLabel }}</span>
@@ -34,12 +39,27 @@ const dateLabel = computed(() => {
 
 <style scoped>
 .article-card {
+  position: relative;
   display: flex;
   min-height: 260px;
   flex-direction: column;
   gap: 16px;
   padding: 24px;
   color: inherit;
+}
+
+.article-card__code {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  display: grid;
+  gap: 3px;
+  pointer-events: none;
+  color: rgba(83, 231, 255, 0.16);
+  font-family: var(--app-font-data);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: right;
 }
 
 .article-card__meta {
@@ -67,5 +87,9 @@ const dateLabel = computed(() => {
 .article-card__link {
   color: var(--app-cyan);
   font-weight: 720;
+}
+
+.article-card:hover .article-card__link {
+  text-shadow: 0 0 20px rgba(83, 231, 255, 0.48);
 }
 </style>

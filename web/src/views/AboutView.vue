@@ -9,6 +9,12 @@
         <AppButton label="立即报名" to="/recruit" />
         <AppButton label="查看项目" to="/projects" variant="secondary" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="lab.manifesto"
+          :commands="['defineMission(projectPractice)', 'shareKnowledge()', 'reviewAndDeploy()']"
+        />
+      </template>
     </PageHero>
 
     <AnimatedSection>
@@ -36,6 +42,7 @@
             </div>
           </div>
         </div>
+        <GitBranchMap class="about-branch" />
       </div>
     </AnimatedSection>
   </AppFrame>
@@ -46,6 +53,8 @@ import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import AnimatedSection from '@/components/app/AnimatedSection.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
+import GitBranchMap from '@/components/app/GitBranchMap.vue'
 
 const values = [
   {
@@ -94,6 +103,10 @@ const systems = [
   grid-template-columns: minmax(0, 0.72fr) minmax(360px, 1fr);
   gap: 32px;
   padding: clamp(28px, 5vw, 46px);
+}
+
+.about-branch {
+  margin-top: 18px;
 }
 
 .about-system__grid {

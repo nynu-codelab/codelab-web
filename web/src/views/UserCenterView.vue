@@ -9,6 +9,12 @@
         <AppButton label="我的报名" to="/my-application" />
         <AppButton label="退出登录" variant="danger" @click="handleLogout" />
       </template>
+      <template #visual>
+        <CommandConsole
+          title="profile.session"
+          :commands="['fetchCurrentUser()', 'readApplicationStatus()', 'protectAccountData()']"
+        />
+      </template>
     </PageHero>
 
     <main class="profile-page app-container" v-if="userStore.userInfo">
@@ -72,6 +78,7 @@ import AppFrame from '@/components/app/AppFrame.vue'
 import PageHero from '@/components/app/PageHero.vue'
 import AppButton from '@/components/app/AppButton.vue'
 import StateView from '@/components/app/StateView.vue'
+import CommandConsole from '@/components/app/CommandConsole.vue'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -130,7 +137,7 @@ onMounted(async () => {
 
 .profile-panel__meta h2 {
   color: var(--app-text-strong);
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: 42px;
 }
 
 .profile-panel__meta p {
@@ -178,6 +185,10 @@ onMounted(async () => {
 @media (max-width: 620px) {
   .profile-panel {
     display: grid;
+  }
+
+  .profile-panel__meta h2 {
+    font-size: 30px;
   }
 }
 </style>
