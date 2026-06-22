@@ -2,7 +2,9 @@
   <header class="app-header" :class="{ 'is-scrolled': scrolled }">
     <div class="app-header__inner">
       <RouterLink to="/" class="app-header__brand" @click="closeMenu">
-        <span class="app-header__mark">CL</span>
+        <span class="app-header__mark">
+          <img :src="brandMark" alt="" aria-hidden="true" />
+        </span>
         <span>
           <strong>NYNU Code Lab</strong>
           <small>南阳师范学院 Code Lab 实验室</small>
@@ -34,6 +36,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import brandMark from '@/assets/brand/nynu-code-lab-mark.svg'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -114,18 +117,42 @@ onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
 }
 
 .app-header__mark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(83, 231, 255, 0.45);
+  flex: 0 0 auto;
+  border: 1px solid rgba(83, 231, 255, 0.28);
   border-radius: 12px;
-  color: #041017;
-  background: linear-gradient(135deg, var(--app-cyan), var(--app-teal));
-  box-shadow: 0 0 36px rgba(83, 231, 255, 0.22);
-  font-family: var(--app-font-data);
-  font-size: 13px;
-  font-weight: 800;
+  background: rgba(4, 10, 18, 0.78);
+  box-shadow:
+    0 0 30px rgba(83, 231, 255, 0.18),
+    inset 0 0 22px rgba(83, 231, 255, 0.06);
+}
+
+.app-header__mark::after {
+  content: "";
+  position: absolute;
+  inset: -40% -70%;
+  z-index: 1;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.28), transparent 60%);
+  transform: translateX(-70%) rotate(8deg);
+  transition: transform 520ms ease;
+}
+
+.app-header__brand:hover .app-header__mark::after {
+  transform: translateX(70%) rotate(8deg);
+}
+
+.app-header__mark img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .app-header__brand strong {

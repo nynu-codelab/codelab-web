@@ -1,7 +1,10 @@
 <template>
   <div class="login-container">
     <div class="login-visual">
-      <span class="admin-page-kicker">NYNU Code Lab</span>
+      <div class="login-brand">
+        <img :src="brandMark" alt="" aria-hidden="true" />
+        <span class="admin-page-kicker">NYNU Code Lab</span>
+      </div>
       <h1>南阳师范学院 Code Lab 实验室</h1>
       <p>后台管理系统用于维护招新报名、学习文章、项目成果和后续站点内容。</p>
       <div class="terminal-panel">
@@ -71,6 +74,7 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { Lock, User } from "@element-plus/icons-vue";
 import { useUserStore } from "@/stores/user";
+import brandMark from "@/assets/brand/nynu-code-lab-mark.svg";
 
 const router = useRouter();
 const route = useRoute();
@@ -138,6 +142,22 @@ async function handleLogin() {
 .login-visual {
   position: relative;
   z-index: 1;
+}
+
+.login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.login-brand img {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  box-shadow:
+    0 0 42px rgba(83, 231, 255, 0.22),
+    0 0 22px rgba(47, 240, 182, 0.12);
 }
 
 .login-visual h1 {

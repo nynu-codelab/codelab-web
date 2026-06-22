@@ -13,7 +13,7 @@
 能融入深色高级科技界面
 ```
 
-本文件记录候选方向，不代表已经替换站点正式 Logo。当前生成图仅作为方向预览，最终落地前还需要单独整理 SVG、favicon、横向 wordmark、深浅色版本和使用规范。
+本文件记录候选方向与最终确认记录。当前用户已确认“终端提示符 + C 形框 + 光标竖线 + 琥珀状态点”的 Logo 方向，并已将该方向落地为站内 SVG mark、favicon 和品牌位展示。
 
 ## 2. 候选方案
 
@@ -101,46 +101,59 @@ favicon
 移动端桌面图标
 ```
 
-## 3. 当前推荐
+## 3. 当前确认方向
 
-如果希望官网第一眼更像 CodeLab 技术实验室，推荐优先选择：
-
-```text
-方案 A：CL 终端提示符
-```
-
-如果希望品牌更稳、更适合长期作为正式站点 Logo，可以选择：
+已确认方向：
 
 ```text
-方案 B：代码括号符号
+终端提示符 + C 形框 + 光标竖线 + 琥珀状态点
 ```
 
-如果当前最想先解决 favicon 和小尺寸识别，可以选择：
+确认原因：
+
+- 与当前官网深色控制台、终端窗口、状态灯、能量光边风格一致。
+- 使用 `#06090f`、`#0b1220`、`#53e7ff`、`#2ff0b6`、`#ffd36a` 等现有前端 token。
+- 小尺寸下仍能识别为 CodeLab 终端 / 代码实验室标识。
+- 适合前台页眉、后台侧栏、后台登录页和 favicon。
+
+## 4. 资产路径
+
+用户确认的原始 PNG 预览图已保存到：
 
 ```text
-方案 C：CL 方形小标
+docs/assets/logo/nynu-code-lab-selected-logo.png
 ```
 
-综合建议：
+前台实际使用的 SVG mark：
 
 ```text
-A 做主 Logo 方向
-C 做 favicon / app icon 方向
-B 作为文档封面或备选品牌方向
+web/src/assets/brand/nynu-code-lab-mark.svg
+web/public/favicon.svg
 ```
 
-## 4. 预览图说明
-
-本轮已生成更简洁的 3 个 Logo 预览候选图，保存在 Codex 本地生成目录：
+后台实际使用的 SVG mark：
 
 ```text
-/Users/zengbohan/.codex/generated_images/019eed8c-0050-79c1-9941-712086ed0ced
+admin-web/src/assets/brand/nynu-code-lab-mark.svg
+admin-web/public/favicon.svg
 ```
 
-这些图片只是设计方向预览，暂不复制进项目仓库，也不替换正式前端资产。用户确认 A / B / C 之后，再进入下一步：
+## 5. 已接入位置
 
-1. 提炼最终 SVG。
-2. 输出深色 / 浅色版本。
-3. 输出 favicon。
-4. 替换前台页眉、后台登录和浏览器图标。
-5. 更新 README、AGENTS 和视觉组件规范中的 Logo 状态。
+```text
+前台页眉 AppHeader
+前台页脚 AppFooter
+前台 favicon
+后台 AdminLayout 侧栏品牌位
+后台 LoginView 品牌位
+后台 favicon
+```
+
+## 6. 动效策略
+
+站内 Logo 只使用轻量效果：
+
+- SVG 内部琥珀状态点轻微呼吸。
+- 页眉和后台侧栏 hover 时出现一次能量扫光。
+- 遵守 `prefers-reduced-motion`，减少动画偏好开启时关闭状态点循环动画。
+- 不使用重 3D、不增加 Canvas、不影响页面性能。
