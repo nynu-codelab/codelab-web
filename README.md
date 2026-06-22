@@ -33,7 +33,7 @@ nynu-code-lab/
 │   ├── mysql/init/              # MySQL 初始化 SQL
 │   ├── nginx/                   # Nginx 配置与 Dockerfile
 │   └── README.md
-├── docs/                        # 需求文档
+├── docs/                        # 需求文档、视觉规范、交接文档
 ├── AGENTS.md
 └── README.md
 ```
@@ -519,11 +519,13 @@ http://localhost/design-preview
 
 - 前台沉淀 `web/src/styles/design-tokens.css`、`animations.css`、`markdown.css` 和 `components/app/*` 复用组件。
 - 新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`BuildPipeline`、`LabControlPanel`、`GitBranchMap`、`DataCounter` 等前台组件。
+- 视觉组件使用规范已沉淀到 `docs/前端视觉组件规范.md`，后续新增页面优先复用现有 CodeLab 组件，不重新发明一套视觉语言。
 - 首页 Hero 重做为 PC 大屏沉浸式终端控制台：左侧品牌与 CTA，右侧 boot terminal、Lab Control Center 和构建流水线。
 - 项目卡片加入扫描线与 BUILD PASS 视觉；文章卡片加入知识库代码纹理；方向卡片加入节点环绕光效；登录/注册页增强为 Access Console。
 - 文章详情和项目详情继续使用 `markdown-it`，并保持 `html:false`，不直接渲染未清洗 HTML。
 - 后台通过 `admin-web/src/styles/design-tokens.css` 与 `admin.css` 统一表格、弹窗、表单和按钮质感，并在数据概览页加入 ECharts 模块接入状态图。
 - PC 优先：复杂 Canvas 动效只在 PC 端启用；移动端本轮只保证不严重白屏、不横向崩溃，并关闭或简化重动效。
+- Logo 简洁化方向已整理到 `docs/Logo方案候选.md`，当前只作为候选预览，不替换正式站点资产。
 
 新增依赖及用途：
 
