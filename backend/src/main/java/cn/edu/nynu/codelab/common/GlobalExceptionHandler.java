@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import cn.dev33.satoken.exception.SaTokenException;
+import cn.edu.nynu.codelab.common.exception.AccountDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -85,6 +86,15 @@ public class GlobalExceptionHandler {
             return Result.error(e.getCode(), "认证失败: " + e.getMessage());
         }
         return Result.error(500, "系统内部认证错误");
+    }
+
+    /**
+     * 处理账号已被禁用异常。
+     */
+    @ExceptionHandler(AccountDisabledException.class)
+    public Result<?> handleAccountDisabled(AccountDisabledException e) {
+        log.warn("账号已被禁用: {}", e.getMessage());
+        return Result.error(403, e.getMessage());
     }
 
     /**
