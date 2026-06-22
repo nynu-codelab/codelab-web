@@ -20,9 +20,13 @@
           <span class="app-eyebrow">Lab Operating System</span>
           <h2 class="app-title-lg">把学习过程组织成可运行的工程系统</h2>
           <p class="app-copy">
-            首页不堆虚假运营数字，而是强调真实训练链路：任务拆解、代码实现、评审复盘、部署验证。
-            这也是 CodeLab 与普通展示站拉开质感的核心。
+            从需求拆解到部署验证，训练链路围绕真实项目展开。每一次提交、评审和复盘都沉淀为可复用的工程经验。
           </p>
+          <div class="home-os__chips" aria-label="实验室工作模式">
+            <span>task.ready</span>
+            <span>commit.review</span>
+            <span>deploy.verify</span>
+          </div>
         </div>
         <CommandConsole
           title="recruit.flow"
@@ -327,6 +331,24 @@ onMounted(fetchHomeData)
 
 .home-os .app-copy {
   margin-top: 16px;
+}
+
+.home-os__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.home-os__chips span {
+  padding: 7px 10px;
+  border: 1px solid rgba(153, 217, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(216, 247, 255, 0.82);
+  background: rgba(83, 231, 255, 0.06);
+  box-shadow: inset 0 0 18px rgba(83, 231, 255, 0.035);
+  font-family: var(--app-font-data);
+  font-size: 12px;
 }
 
 @media (max-width: 1120px) {

@@ -98,6 +98,19 @@ const emit = defineEmits<{
   transform: translateX(-72%);
 }
 
+.app-button::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scaleX(0.82);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
 .app-button span {
   position: relative;
   z-index: 1;
@@ -129,6 +142,21 @@ const emit = defineEmits<{
   transform: translateY(-2px);
   border-color: rgba(83, 231, 255, 0.72);
   box-shadow: 0 22px 70px rgba(83, 231, 255, 0.18);
+}
+
+.app-button:hover:not(:disabled)::after,
+.app-button:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.app-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+
+.app-button:focus-visible {
+  outline: 2px solid rgba(83, 231, 255, 0.72);
+  outline-offset: 3px;
 }
 
 .app-button:hover:not(:disabled)::before {
