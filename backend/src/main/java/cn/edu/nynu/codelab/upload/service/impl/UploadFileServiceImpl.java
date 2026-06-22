@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class UploadFileServiceImpl implements UploadFileService {
 
     private final UploadFileMapper uploadFileMapper;
@@ -162,8 +164,18 @@ public class UploadFileServiceImpl implements UploadFileService {
         record.setUsageType(usageType);
         record.setUploaderId(StpUtil.getLoginIdAsLong());
 
-        // 11. 插入数据库
-        uploadFileMapper.insert(record);
+        // 11. 插入数据库（失败时清理已落盘的文件，避免孤儿文件）
+        try {
+            uploadFileMapper.insert(record);
+        } catch (Exception e) {
+            log.error("数据库插入失败，清理孤儿文件: {}", destPath, e);
+            try {
+                Files.deleteIfExists(destPath);
+            } catch (IOException ignored) {
+                log.warn("清理孤儿文件失败: {}", destPath);
+            }
+            throw new RuntimeException("文件记录保存失败，请重试");
+        }
 
         log.info("文件上传成功: {} -> {} ({} bytes, type={})", originalName, relativePath, file.getSize(), mimeType);
         return record;
@@ -172,9 +184,12 @@ public class UploadFileServiceImpl implements UploadFileService {
     @Override
     public List<UploadFile> listRecent() {
         LambdaQueryWrapper<UploadFile> wrapper = new LambdaQueryWrapper<UploadFile>()
-                .orderByDesc(UploadFile::getCreateTime)
-                .last("LIMIT 50");
-        return uploadFileMapper.selectList(wrapper);
+                .orderByDesc(UploadFile::getCreateTime);
+        // 使用 MyBatis-Plus Page 限制返回条数，避免 .last() 潜在的 SQL 注入风险
+        return uploadFileMapper.selectPage(
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<UploadFile>(1, 50, false),
+                wrapper
+        ).getRecords();
     }
 
     @Override

@@ -41,11 +41,11 @@
       width="560px"
       destroy-on-close
     >
-      <el-form :model="form" label-width="90px">
+      <el-form :model="form" label-width="90px" :rules="formRules" ref="formRef">
         <el-form-item label="配置键">
           <el-input :model-value="form.configKey" disabled />
         </el-form-item>
-        <el-form-item label="配置值">
+        <el-form-item label="配置值" prop="configValue">
           <el-input
             v-if="form.configType !== 'TEXTAREA'"
             v-model="form.configValue"
@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { getSiteConfigs, updateSiteConfig, type SiteConfigItem, type SiteConfigUpdateParams } from '@/api/siteConfig'
 
 const list = ref<SiteConfigItem[]>([])
@@ -85,6 +86,13 @@ const loading = ref(false)
 const dialogVisible = ref(false)
 const saving = ref(false)
 const editingKey = ref('')
+const formRef = ref<FormInstance>()
+
+const formRules: FormRules = {
+  configValue: [
+    { required: true, message: '配置值不能为空', trigger: 'blur' },
+  ],
+}
 
 const form = reactive<SiteConfigUpdateParams & { configType?: string }>({
   configKey: '',
@@ -117,6 +125,10 @@ function showEdit(row: SiteConfigItem) {
 }
 
 async function handleSave() {
+  if (!formRef.value) return
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
+
   saving.value = true
   try {
     const res = await updateSiteConfig(editingKey.value, {

@@ -80,7 +80,7 @@ nynu-code-lab/
 
 ## 核心业务规则
 
-- **报名**: 登录后提交，一个用户一条非撤回记录；8 种状态流转（PENDING → VIEWED → CONTACTED → PRELIMINARY_PASSED → INTERVIEWING → PASSED/REJECTED，可撤回 → WITHDRAWN）；管理员填写审核备注
+- **报名**: 登录后提交，一个用户一条非撤回记录；8 种审核状态（PENDING/VIEWED/CONTACTED/PRELIMINARY_PASSED/INTERVIEWING/PASSED/REJECTED/WITHDRAWN）；后台管理员可直接设置任一有效状态并填写审核备注
 - **文章**: Markdown 存储，状态：草稿/已发布/已下架，支持分类和标签
 - **文件上传**: 7 层纵深防御（Magic Bytes + 路径穿越防护 + 扩展名白名单 + UUID 重命名 + 日期子目录 + 10MB 限制 + 物理删除）
 - **分页**: 所有公开列表接口均使用 `PageResult<T>`
@@ -116,11 +116,11 @@ nynu-code-lab/
 | 项 | 状态 |
 |---|---|
 | 分支 | `refine/pc-immersive-frontend` |
-| 阶段 | 阶段 5.6 完成，待进入 Stage 6 实际生产部署 |
-| 数据库 | 10 张表，`deploy/mysql/init/01-init.sql`（DROP+CREATE 幂等） |
-| 容器化 | Docker Compose（MySQL + Redis + Backend + Nginx），均配置 healthcheck |
-| 文档 | 7 个核心文档：README / AGENTS / 项目说明 / 部署说明 / 接口说明 / 变更记录 / .env.example |
-| 构建 | backend `mvn clean package -DskipTests` ✅ / web `npm run build` ✅ / admin-web `npm run build` ✅ |
+| 阶段 | 阶段 5.7 上线前 P0/P1 收口完成；待进入 Stage 6 生产环境部署 |
+| 数据库 | 10 张表，`deploy/mysql/init/01-init.sql`（哨兵检查 + 首启专用） |
+| 容器化 | Docker Compose（MySQL + Redis + Backend + Nginx），均配置 healthcheck + 资源限制 + 日志轮转；上传 volume 权限、Nginx 模板、MySQL 首启哨兵已验证 |
+| 文档 | 7 个核心文档 |
+| 构建 | backend `mvn test` ✅ / admin-web `npm run build` ✅（2026-06-23 报名详情弹窗对比度 + 全量审核状态修复后复验） / web build ✅ / Docker config/build ✅ / Nginx config ✅ |
 | 稳定 tag | `stable-mvp-production-ready-20260622` |
 
 ## 当前已知问题
@@ -133,7 +133,7 @@ nynu-code-lab/
 - 项目成员/负责人用文本字段，未关联用户表
 - 文章/项目浏览量无防刷机制
 - 后端零单元测试覆盖
-- Nginx 未配置 HTTPS（方案已备，见部署文档）
+- Nginx HTTPS 配置已完成（注释状态），待证书部署后启用
 - 备份脚本仅提供模板
 
 ## 下一步建议

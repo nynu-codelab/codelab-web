@@ -51,6 +51,12 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
         <!-- Sa-Token (Spring Boot 3 starter) -->
         <dependency>
             <groupId>cn.dev33</groupId>

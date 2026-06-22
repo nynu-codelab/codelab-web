@@ -1,4 +1,5 @@
 import axios, { type AxiosError } from 'axios'
+import router from '@/router'
 
 const request = axios.create({
   baseURL: '/api',
@@ -29,14 +30,16 @@ request.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('userInfo')
-      const currentPath = window.location.pathname
-      if (currentPath !== '/login') {
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      const currentRoute = router.currentRoute.value
+      // 仅在当前不是登录页时跳转，避免死循环；使用 router.push 而非 window.location.href
+      if (currentRoute.name !== 'login') {
+        router.push({ name: 'login', query: { redirect: currentRoute.fullPath } })
       }
     }
 
     const message =
       error.response?.data?.message || error.message || '请求失败，请稍后重试'
+    // console.error 在 production build 中被 esbuild drop 移除（见 vite.config.ts）
     console.error('[API Error]', message)
 
     return Promise.reject(error)

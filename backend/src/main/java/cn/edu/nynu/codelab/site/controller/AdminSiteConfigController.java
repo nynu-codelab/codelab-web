@@ -5,6 +5,7 @@ import cn.edu.nynu.codelab.common.Result;
 import cn.edu.nynu.codelab.site.dto.SiteConfigUpdateDTO;
 import cn.edu.nynu.codelab.site.entity.SiteConfig;
 import cn.edu.nynu.codelab.site.service.SiteConfigService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class AdminSiteConfigController {
     }
 
     @PutMapping("/{key}")
-    public Result<SiteConfig> update(@PathVariable String key, @RequestBody SiteConfigUpdateDTO dto) {
+    public Result<SiteConfig> update(@PathVariable String key, @Valid @RequestBody SiteConfigUpdateDTO dto) {
         SiteConfig config = siteConfigService.updateByKey(key, dto.getConfigValue());
         return Result.success(config);
     }

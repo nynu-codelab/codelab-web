@@ -3,6 +3,7 @@ package cn.edu.nynu.codelab.user.service.impl;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.nynu.codelab.auth.service.TokenBlacklistService;
+import cn.edu.nynu.codelab.common.PageQuery;
 import cn.edu.nynu.codelab.common.PageResult;
 import cn.edu.nynu.codelab.user.dto.AdminUserQueryDTO;
 import cn.edu.nynu.codelab.user.dto.ResetPasswordDTO;
@@ -17,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class UserAdminServiceImpl implements UserAdminService {
 
     private final UserMapper userMapper;
@@ -37,8 +40,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public PageResult<AdminUserVO> listUsers(AdminUserQueryDTO query) {
-        int pageNum = query.getPage() != null && query.getPage() > 0 ? query.getPage() : 1;
-        int pageSize = query.getPageSize() != null && query.getPageSize() > 0 ? query.getPageSize() : 10;
+        int pageNum = PageQuery.normalizePage(query.getPage());
+        int pageSize = PageQuery.normalizePageSize(query.getPageSize());
 
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
 
@@ -66,12 +69,11 @@ public class UserAdminServiceImpl implements UserAdminService {
         // 按创建时间倒序
         wrapper.orderByDesc(User::getCreateTime);
 
-        // 先查总数（selectPage 需要分页插件，此处手动 count 避免依赖插件）
+        // 先查总数，避免不同分页插件版本下 searchCount 行为差异影响后台展示。
         long total = userMapper.selectCount(wrapper);
 
         // 分页查询记录
         Page<User> page = new Page<>(pageNum, pageSize);
-        // 不依赖分页插件，仅用 Page 做 LIMIT/OFFSET
         page.setSearchCount(false);
         Page<User> result = userMapper.selectPage(page, wrapper);
 

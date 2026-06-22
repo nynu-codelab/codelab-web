@@ -1,9 +1,10 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import router from "@/router";
+import { useUserStore } from "@/stores/user";
 
 const request = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   timeout: 15000,
 });
 
@@ -31,12 +32,14 @@ request.interceptors.response.use(
 
     return res;
   },
-  (error) => {
+  async (error) => {
     if (error.response) {
       const { status, data } = error.response;
 
       if (status === 401) {
-        localStorage.removeItem("token");
+        // 同时清理 localStorage 和 Pinia store，避免路由守卫状态不一致导致死循环
+        const userStore = useUserStore();
+        await userStore.logout();
         router.push({ name: "Login" });
         ElMessage.error("登录已过期，请重新登录");
       } else if (data && data.message) {

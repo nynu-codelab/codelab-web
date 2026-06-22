@@ -170,6 +170,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import CoverUpload from '@/components/CoverUpload.vue'
 import {
   getArticles,
+  getArticle,
   createArticle,
   updateArticle,
   publishArticle,
@@ -254,8 +255,8 @@ function showCreate() {
 
 async function showEdit(row: ArticleItem) {
   try {
-    const res = await getArticles({ page: 1, pageSize: 100 })
-    const article = (res.data.records || []).find((a: ArticleItem) => a.id === row.id)
+    const res = await getArticle(row.id)
+    const article = res.data
     if (article) {
       form.title = article.title
       form.summary = article.summary || ''

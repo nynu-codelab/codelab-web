@@ -212,6 +212,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 import {
   getUsers,
   getUserDetail,
@@ -302,6 +304,12 @@ async function showDetail(row: AdminUserVO) {
 
 // ---- 启用/禁用 ----
 async function handleToggleStatus(row: AdminUserVO) {
+  // 防止管理员禁用自己
+  const userStore = useUserStore()
+  if (userStore.userInfo && row.id === userStore.userInfo.id) {
+    ElMessage.warning('不能禁用当前登录的管理员账号')
+    return
+  }
   const newStatus = row.status === 1 ? 0 : 1
   try {
     await updateUserStatus(row.id, newStatus)
@@ -314,6 +322,12 @@ async function handleToggleStatus(row: AdminUserVO) {
 
 // ---- 角色修改 ----
 function showRoleDialog(row: AdminUserVO) {
+  // 防止管理员降级自己
+  const userStore = useUserStore()
+  if (userStore.userInfo && row.id === userStore.userInfo.id) {
+    ElMessage.warning('不能修改当前登录管理员的角色')
+    return
+  }
   roleTarget.value = row
   roleForm.role = ''
   roleVisible.value = true
@@ -366,7 +380,17 @@ async function handleResetPassword() {
     const res = await resetUserPassword(resetPwdTarget.value.id, resetPwdForm.newPassword)
     ElMessage.success(res.data || '密码重置成功')
     resetPwdVisible.value = false
-    // 如果重置的是自己，token 已失效，需要重新登录
+
+    // 如果重置的是自己的密码，token 已失效 → 强制登出并跳转登录页
+    const userStore = useUserStore()
+    if (userStore.userInfo && resetPwdTarget.value.id === userStore.userInfo.id) {
+      ElMessage.warning('密码已重置，请重新登录')
+      await userStore.logout()
+      const router = useRouter()
+      router.push({ name: 'Login' })
+      return
+    }
+
     await fetchList()
   } catch {
     // error handled by interceptor

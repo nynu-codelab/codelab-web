@@ -5,12 +5,14 @@ import cn.edu.nynu.codelab.article.dto.ArticleCreateRequest;
 import cn.edu.nynu.codelab.article.entity.Article;
 import cn.edu.nynu.codelab.article.mapper.ArticleMapper;
 import cn.edu.nynu.codelab.article.service.ArticleService;
+import cn.edu.nynu.codelab.common.PageQuery;
 import cn.edu.nynu.codelab.common.PageResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -26,6 +28,7 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class ArticleServiceImpl implements ArticleService {
 
     private static final Set<String> VALID_STATUSES = new HashSet<>(Arrays.asList(
@@ -50,6 +53,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public PageResult<Article> listPublishedPaged(int page, int pageSize, String category) {
+        page = PageQuery.normalizePage(page);
+        pageSize = PageQuery.normalizePageSize(pageSize);
         Page<Article> mpPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<Article>()
                 .eq(Article::getStatus, Article.STATUS_PUBLISHED)
@@ -72,9 +77,9 @@ public class ArticleServiceImpl implements ArticleService {
         if (article == null) {
             throw new RuntimeException("文章不存在或未发布");
         }
-        // 增加浏览次数
+        // 原子增加浏览量，避免读-改-写竞态条件
+        articleMapper.incrementViewCount(id);
         article.setViewCount(article.getViewCount() + 1);
-        articleMapper.updateById(article);
         return article;
     }
 
@@ -93,6 +98,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public PageResult<Article> adminListPaged(int page, int pageSize, String status, String keyword) {
+        page = PageQuery.normalizePage(page);
+        pageSize = PageQuery.normalizePageSize(pageSize);
         Page<Article> mpPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<Article>()
                 .orderByDesc(Article::getCreateTime);
@@ -176,6 +183,21 @@ public class ArticleServiceImpl implements ArticleService {
         article.setStatus(Article.STATUS_OFFLINE);
         articleMapper.updateById(article);
         log.info("文章 {} 已下架", id);
+        return article;
+    }
+
+    @Override
+    public Article returnToDraft(Long id) {
+        Article article = articleMapper.selectById(id);
+        if (article == null) {
+            throw new RuntimeException("文章不存在");
+        }
+        if (!Article.STATUS_OFFLINE.equals(article.getStatus())) {
+            throw new RuntimeException("只有已下架状态的文章才能退回草稿");
+        }
+        article.setStatus(Article.STATUS_DRAFT);
+        articleMapper.updateById(article);
+        log.info("文章 {} 已退回草稿", id);
         return article;
     }
 

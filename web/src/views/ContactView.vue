@@ -142,7 +142,7 @@ const heroDescription = computed(() => {
 onMounted(async () => {
   try {
     const res = await getSiteConfigMap()
-    if (res.code === 0 && res.data) {
+    if (res.code === 200 && res.data) {
       contactEmail.value = res.data.contactEmail || ''
       contactPhone.value = res.data.contactPhone || ''
       contactAddress.value = res.data.contactAddress || ''

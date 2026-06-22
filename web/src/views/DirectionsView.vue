@@ -78,7 +78,7 @@ function parseTags(tags: string): string[] {
 onMounted(async () => {
   try {
     const res = await getDirections()
-    if (res.code === 0 && Array.isArray(res.data)) {
+    if (res.code === 200 && Array.isArray(res.data)) {
       directions.value = res.data.sort((a, b) => a.sortOrder - b.sortOrder)
     }
   } catch (e: any) {

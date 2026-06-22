@@ -65,7 +65,7 @@ sa-token:
   timeout: 604800
   token-style: tik
   is-print: false
-  jwt-secret-key: ${JWT_SECRET:nynu_code_lab_jwt_secret_key_2026}
+  jwt-secret-key: ${JWT_SECRET}
   token-prefix: "Bearer"
 
 knife4j:

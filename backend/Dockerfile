@@ -24,8 +24,12 @@ WORKDIR /app
 # 安装 curl 供 Docker healthcheck 使用
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# 创建非 root 用户运行
-RUN addgroup app && adduser --ingroup app --disabled-password app
+# 创建非 root 用户运行，并预置上传目录权限。
+# Docker named volume 首次挂载会继承镜像内挂载点权限，避免 /app/uploads 归 root 导致上传失败。
+RUN addgroup app \
+    && adduser --ingroup app --disabled-password app \
+    && mkdir -p /app/uploads \
+    && chown -R app:app /app/uploads
 USER app
 
 # 复制构建产物

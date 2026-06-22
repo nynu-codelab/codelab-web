@@ -14,3 +14,8 @@ spring:
 app:
   auth:
     redis-enabled: ${AUTH_REDIS_ENABLED:true}
+
+# 生产环境禁止打印 SQL 到 stdout（避免日志泄露敏感查询）
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl

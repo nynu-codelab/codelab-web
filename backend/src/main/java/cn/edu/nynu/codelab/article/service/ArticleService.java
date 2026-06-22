@@ -64,6 +64,11 @@ public interface ArticleService {
     Article offline(Long id);
 
     /**
+     * 后台：将已下架文章退回草稿状态（解决 OFFLINE 后无返回 DRAFT 路径的死胡同问题）
+     */
+    Article returnToDraft(Long id);
+
+    /**
      * 后台：删除文章（软删除）
      */
     void delete(Long id);

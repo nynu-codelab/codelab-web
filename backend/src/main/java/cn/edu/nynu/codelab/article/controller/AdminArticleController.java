@@ -63,6 +63,12 @@ public class AdminArticleController {
         return Result.success(article);
     }
 
+    @PutMapping("/{id}/return-to-draft")
+    public Result<Article> returnToDraft(@PathVariable Long id) {
+        Article article = articleService.returnToDraft(id);
+        return Result.success(article);
+    }
+
     @DeleteMapping("/{id}")
     public Result<?> delete(@PathVariable Long id) {
         articleService.delete(id);

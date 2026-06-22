@@ -1,0 +1,9 @@
+# MySQL 字符集配置 — 强制所有连接默认使用 utf8mb4
+# 解决 JDBC 连接读取中文乱码（UTF-8 双重编码）问题
+
+[mysqld]
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+
+[client]
+default-character-set=utf8mb4

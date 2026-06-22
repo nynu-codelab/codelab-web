@@ -145,6 +145,7 @@ import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import {
   getMembers,
+  getMember,
   createMember,
   updateMember,
   deleteMember
@@ -216,8 +217,8 @@ function showCreate() {
 
 async function showEdit(row: MemberItem) {
   try {
-    const res = await getMembers()
-    const member = (res.data || []).find(m => m.id === row.id)
+    const res = await getMember(row.id)
+    const member = res.data
     if (member) {
       form.name = member.name
       form.roleTitle = member.roleTitle

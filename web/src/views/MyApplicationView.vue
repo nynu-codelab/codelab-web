@@ -313,7 +313,8 @@ async function handleUpdate() {
   submitting.value = true
   try {
     await updateMyApply({ ...editForm })
-    record.value = await getMyApply()
+    const res = await getMyApply()
+    record.value = res.data || null
     editing.value = false
   } catch (errObj: any) {
     formError.value = errObj?.response?.data?.message || errObj?.message || '修改失败'
@@ -324,7 +325,10 @@ async function handleUpdate() {
 
 onMounted(async () => {
   try {
-    record.value = await getMyApply()
+    const res = await getMyApply()
+    // 后端统一返回 Result<T> 包裹：{ code, message, data: ApplyRecord }
+    // data 为 null 时表示无报名记录
+    record.value = res.data || null
   } catch {
     record.value = null
   } finally {

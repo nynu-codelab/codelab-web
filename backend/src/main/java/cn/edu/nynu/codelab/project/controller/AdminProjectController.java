@@ -63,6 +63,12 @@ public class AdminProjectController {
         return Result.success(project);
     }
 
+    @PutMapping("/{id}/return-to-draft")
+    public Result<Project> returnToDraft(@PathVariable Long id) {
+        Project project = projectService.returnToDraft(id);
+        return Result.success(project);
+    }
+
     @DeleteMapping("/{id}")
     public Result<?> delete(@PathVariable Long id) {
         projectService.delete(id);

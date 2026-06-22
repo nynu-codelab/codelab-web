@@ -2,6 +2,25 @@
 -- NYNU Code Lab 数据库初始化脚本（唯一权威版本）
 -- Docker Compose 首次启动时自动执行
 -- =============================================
+-- ⚠️ 此脚本仅用于首次初始化！
+--    若需变更 Schema，请使用独立的迁移脚本，禁止修改本文件后重跑。
+--    生产环境强烈建议使用 Flyway / Liquibase 进行版本化迁移。
+--
+-- 关于外键约束（FOREIGN KEY）：
+--    本脚本有意不使用 FOREIGN KEY 约束，原因如下：
+--    1. 首次初始化会重建表结构，FK 会使建表顺序复杂化
+--    2. Docker Compose 首次启动场景下，MySQL 默认按文件名顺序加载 init 脚本
+--    3. 应用层（MyBatis-Plus + Service 层）负责维护引用完整性
+--    4. 逻辑删除（deleted 标志位）与 FK 的 CASCADE 语义冲突——
+--       逻辑删除不应级联删除关联数据
+--    逻辑外键映射（应用层维护）：
+--      lab_apply_record.user_id        → sys_user.id
+--      lab_apply_record.reviewer_id    → sys_user.id
+--      lab_article.author_id           → sys_user.id
+--      lab_project.author_id           → sys_user.id
+--      lab_member.direction_id         → lab_direction.id
+--      lab_upload_file.uploader_id     → sys_user.id
+-- =============================================
 
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS nynu_code_lab
@@ -9,6 +28,36 @@ CREATE DATABASE IF NOT EXISTS nynu_code_lab
     DEFAULT COLLATE utf8mb4_unicode_ci;
 
 USE nynu_code_lab;
+
+-- =============================================
+-- 哨兵检查：核心表 sys_user 已有数据时拒绝重新初始化，防止数据丢失
+-- =============================================
+-- 如果表不存在，视为首次启动；若存在且已有数据，立即中止，避免继续 DROP TABLE
+DROP PROCEDURE IF EXISTS abort_if_initialized;
+DELIMITER //
+CREATE PROCEDURE abort_if_initialized()
+BEGIN
+    DECLARE table_exists INT DEFAULT 0;
+    DECLARE user_count BIGINT DEFAULT 0;
+
+    SELECT COUNT(*) INTO table_exists
+    FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = 'nynu_code_lab' AND TABLE_NAME = 'sys_user';
+
+    IF table_exists > 0 THEN
+        SELECT COUNT(*) INTO user_count FROM sys_user;
+    END IF;
+
+    IF user_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Database already contains sys_user data; refusing to run destructive init script';
+    END IF;
+END//
+DELIMITER ;
+
+CALL abort_if_initialized();
+DROP PROCEDURE abort_if_initialized;
+SELECT '开始数据库初始化...' AS '';
 
 -- =============================================
 -- 1. 系统用户表
@@ -30,7 +79,8 @@ CREATE TABLE sys_user (
     update_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     UNIQUE KEY uk_username (username),
-    UNIQUE KEY uk_phone (phone),
+    -- 函数索引：仅对非空手机号建立唯一约束，避免 DEFAULT '' 导致多用户冲突
+    UNIQUE KEY uk_phone ((CASE WHEN phone <> '' THEN phone END)),
     KEY idx_status (status),
     KEY idx_deleted (deleted)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统用户表';
@@ -66,12 +116,14 @@ CREATE TABLE lab_apply_record (
     deleted               TINYINT      NOT NULL DEFAULT 0      COMMENT '逻辑删除：0-未删除，1-已删除',
     create_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    active_user_id        BIGINT GENERATED ALWAYS AS (CASE WHEN deleted = 0 AND status <> 'WITHDRAWN' THEN user_id ELSE NULL END) STORED COMMENT '用于限制非撤回报名唯一',
+    active_user_id        BIGINT GENERATED ALWAYS AS (CASE WHEN deleted = 0 AND status <> 'WITHDRAWN' THEN user_id ELSE NULL END) STORED COMMENT '用于限制非撤回报名唯一（需 MySQL 5.7.6+ 支持 GENERATED ALWAYS AS ... STORED；迁移到 MariaDB 需改造为触发器实现）',
     PRIMARY KEY (id),
     UNIQUE KEY uk_apply_active_user (active_user_id),
     KEY idx_user_id (user_id),
     KEY idx_status (status),
-    KEY idx_deleted (deleted)
+    KEY idx_deleted (deleted),
+    -- 用户查询自己的报名记录（最高频：user_id + 有效状态）
+    KEY idx_user_id_status (user_id, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='招新报名表';
 
 -- =============================================
@@ -98,7 +150,9 @@ CREATE TABLE lab_article (
     KEY idx_status (status),
     KEY idx_author_id (author_id),
     KEY idx_published_at (published_at),
-    KEY idx_deleted (deleted)
+    KEY idx_deleted (deleted),
+    -- 已发布文章按时间倒序列表（最高频查询）
+    KEY idx_status_published_at (status, published_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文章表';
 
 -- =============================================
@@ -132,7 +186,9 @@ CREATE TABLE lab_project (
     KEY idx_status (status),
     KEY idx_featured (featured),
     KEY idx_published_at (published_at),
-    KEY idx_deleted (deleted)
+    KEY idx_deleted (deleted),
+    -- 首页精选项目列表（高频查询：已发布 + 精选）
+    KEY idx_status_featured (status, featured)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='项目成果表';
 
 -- =============================================
@@ -207,11 +263,13 @@ CREATE TABLE lab_site_config (
     config_type  VARCHAR(20)  NOT NULL DEFAULT 'text' COMMENT '配置类型：text-文本，image-图片，richtext-富文本',
     group_name   VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '配置分组（如 site、contact、social）',
     remark       VARCHAR(200) NOT NULL DEFAULT ''     COMMENT '配置说明',
+    deleted      TINYINT      NOT NULL DEFAULT 0      COMMENT '逻辑删除：0-未删除，1-已删除',
     create_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     UNIQUE KEY uk_config_key (config_key),
-    KEY idx_group_name (group_name)
+    KEY idx_group_name (group_name),
+    KEY idx_deleted (deleted)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='站点配置表';
 
 -- 初始化非敏感站点配置（联系方式等敏感信息留空，由管理员上线后自行配置）
@@ -242,15 +300,19 @@ CREATE TABLE lab_upload_file (
     file_size     BIGINT       NOT NULL DEFAULT 0      COMMENT '文件大小（字节）',
     usage_type    VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '用途类型：avatar-头像，cover-封面，qrcode-二维码，other-其他',
     uploader_id   BIGINT       DEFAULT NULL            COMMENT '上传人ID，关联 sys_user.id',
+    deleted       TINYINT      NOT NULL DEFAULT 0      COMMENT '逻辑删除：0-未删除，1-已删除',
     create_time   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     KEY idx_usage_type (usage_type),
     KEY idx_uploader_id (uploader_id),
-    KEY idx_create_time (create_time)
+    KEY idx_create_time (create_time),
+    KEY idx_deleted (deleted)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='上传文件记录表';
 
 -- =============================================
--- 9. 文章分类表
+-- 9. 文章分类表（预留——后端尚未关联此表，当前文章分类存储在 lab_article.category 字段）
+--    TODO: 后续版本将文章分类从字符串字段迁移为外键关联此表。
 -- =============================================
 DROP TABLE IF EXISTS lab_article_category;
 CREATE TABLE lab_article_category (
@@ -278,7 +340,8 @@ INSERT INTO lab_article_category (name, code, description, sort_order, status) V
 ('项目复盘', 'project-review', '项目完成后的总结复盘和经验沉淀', 10, 1);
 
 -- =============================================
--- 10. 文章标签表
+-- 10. 文章标签表（预留——后端尚未关联此表，当前文章标签存储在 lab_article.tags JSON 字段）
+--    TODO: 后续版本将文章标签从 JSON 字符串迁移为多对多关联此表。
 -- =============================================
 DROP TABLE IF EXISTS lab_article_tag;
 CREATE TABLE lab_article_tag (

@@ -39,10 +39,8 @@ public class DashboardService {
     public Map<String, Object> getStats() {
         Map<String, Object> stats = new LinkedHashMap<>();
 
-        // 用户总数（手动过滤已删除）
-        LambdaQueryWrapper<User> userWrapper = new LambdaQueryWrapper<>();
-        userWrapper.eq(User::getDeleted, 0);
-        stats.put("userCount", userMapper.selectCount(userWrapper));
+        // 用户总数（@TableLogic 自动过滤已删除）
+        stats.put("userCount", userMapper.selectCount(null));
 
         // 文章总数（@TableLogic 自动过滤已删除）
         stats.put("articleCount", articleMapper.selectCount(null));
