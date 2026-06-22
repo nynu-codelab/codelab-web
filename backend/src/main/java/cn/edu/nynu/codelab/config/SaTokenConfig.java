@@ -3,6 +3,8 @@ package cn.edu.nynu.codelab.config;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.edu.nynu.codelab.auth.interceptor.TokenBlacklistInterceptor;
+import cn.edu.nynu.codelab.auth.interceptor.UserStatusInterceptor;
+import cn.edu.nynu.codelab.common.exception.AccountDisabledException;
 import cn.edu.nynu.codelab.user.entity.User;
 import cn.edu.nynu.codelab.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Sa-Token 配置 + Token 黑名单拦截器注册
+ * Sa-Token 配置 + 拦截器注册
  *
  * @author NYNU Code Lab
  */
@@ -27,6 +29,9 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
 
     @Autowired
     private TokenBlacklistInterceptor tokenBlacklistInterceptor;
+
+    @Autowired
+    private UserStatusInterceptor userStatusInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -62,6 +67,22 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
                         "/swagger-ui/**"
                 )
                 .order(2);
+
+        // 3. 用户状态拦截器 — 在鉴权之后执行，检查账号是否被禁用
+        registry.addInterceptor(userStatusInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns(
+                        "/api/auth/register",
+                        "/api/auth/login",
+                        "/api/health",
+                        "/api/articles/**",
+                        "/api/projects/**",
+                        "/api/portal/**",
+                        "/doc.html",
+                        "/v3/**",
+                        "/swagger-ui/**"
+                )
+                .order(3);
     }
 
     @Override
@@ -75,6 +96,10 @@ public class SaTokenConfig implements WebMvcConfigurer, StpInterface {
         User user = userMapper.selectById(userId);
         if (user == null) {
             return new ArrayList<>();
+        }
+        // 检查账号是否已被禁用，禁用用户视为无角色
+        if (user.getStatus() == 0) {
+            throw new AccountDisabledException();
         }
         return Collections.singletonList(user.getRole());
     }

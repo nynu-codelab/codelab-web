@@ -8,6 +8,7 @@ import cn.edu.nynu.codelab.auth.dto.RegisterDTO;
 import cn.edu.nynu.codelab.auth.service.AuthService;
 import cn.edu.nynu.codelab.auth.service.LoginAttemptService;
 import cn.edu.nynu.codelab.auth.service.TokenBlacklistService;
+import cn.edu.nynu.codelab.common.exception.AccountDisabledException;
 import cn.edu.nynu.codelab.user.entity.User;
 import cn.edu.nynu.codelab.user.mapper.UserMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -119,6 +120,10 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new RuntimeException("用户不存在");
+        }
+        // 检查账号是否已被禁用
+        if (user.getStatus() == 0) {
+            throw new AccountDisabledException();
         }
         user.setPassword(null);
         return user;
