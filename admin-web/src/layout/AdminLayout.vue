@@ -3,7 +3,9 @@
     <div class="layout-signal" aria-hidden="true"></div>
     <el-aside :width="isCollapse ? '78px' : '246px'" class="layout-aside">
       <button class="aside-logo" type="button" @click="toggleCollapse">
-        <span class="logo-mark">CL</span>
+        <span class="logo-mark">
+          <img :src="brandMark" alt="" aria-hidden="true" />
+        </span>
         <span v-show="!isCollapse" class="logo-text">
           <strong>NYNU Code Lab</strong>
           <small>Admin Console</small>
@@ -113,6 +115,7 @@ import {
   UserFilled,
 } from "@element-plus/icons-vue";
 import { useUserStore } from "@/stores/user";
+import brandMark from "@/assets/brand/nynu-code-lab-mark.svg";
 
 const route = useRoute();
 const router = useRouter();
@@ -194,18 +197,42 @@ function handleLogout() {
 }
 
 .logo-mark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: grid;
   place-items: center;
   width: 42px;
   height: 42px;
   flex: 0 0 auto;
-  border: 1px solid rgba(83, 231, 255, 0.45);
+  border: 1px solid rgba(83, 231, 255, 0.28);
   border-radius: 14px;
-  color: #041017;
-  background: linear-gradient(135deg, var(--admin-cyan), var(--admin-teal));
-  font-family: var(--admin-font-data);
-  font-weight: 860;
-  box-shadow: 0 0 32px rgba(83, 231, 255, 0.22);
+  background: rgba(4, 10, 18, 0.78);
+  box-shadow:
+    0 0 32px rgba(83, 231, 255, 0.18),
+    inset 0 0 24px rgba(83, 231, 255, 0.06);
+}
+
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  inset: -40% -70%;
+  z-index: 1;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.26), transparent 60%);
+  transform: translateX(-72%) rotate(8deg);
+  transition: transform 520ms ease;
+}
+
+.aside-logo:hover .logo-mark::after {
+  transform: translateX(72%) rotate(8deg);
+}
+
+.logo-mark img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .logo-text strong,

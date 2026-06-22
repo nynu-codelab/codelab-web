@@ -303,7 +303,7 @@ Canvas 动效
 
 - 前台使用统一设计 token、动态背景、玻璃卡片、滚动进入动画、按钮流光和 Markdown 阅读样式。
 - 当前已新增 `docs/前端视觉组件规范.md`，用于约束后续 `TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`ParticleUniverse` 等组件的使用场景和动效边界。
-- 当前已新增 `docs/Logo方案候选.md`，记录更简洁的 Logo 方向候选；Logo 尚未最终确定，也尚未替换正式站点资产。
+- 当前已新增 `docs/Logo方案候选.md`，并确认“终端提示符 + C 形框 + 光标竖线 + 琥珀状态点”作为站点 Logo 方向；Logo 已接入前台页眉、前台页脚、后台登录、后台侧栏和 favicon。
 - 后台继续统一使用 Element Plus，不引入第二套 UI 组件库，通过后台设计 token 统一壳层、表格、弹窗、表单和按钮视觉。
 - 动效以 CSS + 自研 Canvas 为主，允许少量专用依赖增强 PC 高级感；当前使用 `gsap` 做 Hero 入场时间线、`countup.js` 做指标计数、`@lucide/vue` 做工程图标、`echarts` 做后台模块状态可视化。
 - 当前仍不使用 Three.js，不做过重 3D 场景。
@@ -1707,11 +1707,13 @@ Token 统一处理
 ⚠️ 成员、方向、站点配置、文件上传、用户管理等未实现模块继续保持占位或待实现，不写成已完成
 ```
 
-### 16.11 视觉组件规范与 Logo 候选（2026-06-22）
+### 16.11 视觉组件规范与 Logo 确认（2026-06-22）
 
 ```text
 ✅ 已新增 docs/前端视觉组件规范.md，沉淀 PC 沉浸式视觉组件的使用场景、动效边界、性能策略和内容真实性要求
-✅ 已新增 docs/Logo方案候选.md，将 Logo 收敛为更简洁的 A「CL 终端提示符」、B「代码括号符号」、C「CL 方形小标」三类候选
-✅ 本轮仅整理规范和候选方向，不修改业务页面代码、不修改后端接口、不修改数据库
-⚠️ Logo 尚未最终确定，当前生成图只是方向预览，尚未作为正式 SVG / favicon / 站点资产提交
+✅ 已新增 docs/Logo方案候选.md，并确认“终端提示符 + C 形框 + 光标竖线 + 琥珀状态点”为 Logo 方向
+✅ 已保存用户确认的原始 PNG 到 docs/assets/logo/nynu-code-lab-selected-logo.png
+✅ 已接入前台页眉、前台页脚、前台 favicon、后台登录、后台侧栏和后台 favicon
+✅ Logo 使用现有官网配色 token，不再使用泛蓝白科技风
+✅ 未修改后端接口字段、接口路径、数据库字段或 Docker Compose 核心配置
 ```

@@ -525,7 +525,7 @@ http://localhost/design-preview
 - 文章详情和项目详情继续使用 `markdown-it`，并保持 `html:false`，不直接渲染未清洗 HTML。
 - 后台通过 `admin-web/src/styles/design-tokens.css` 与 `admin.css` 统一表格、弹窗、表单和按钮质感，并在数据概览页加入 ECharts 模块接入状态图。
 - PC 优先：复杂 Canvas 动效只在 PC 端启用；移动端本轮只保证不严重白屏、不横向崩溃，并关闭或简化重动效。
-- Logo 简洁化方向已整理到 `docs/Logo方案候选.md`，当前只作为候选预览，不替换正式站点资产。
+- Logo 方向已确认并落地：原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`，前台和后台分别接入 `nynu-code-lab-mark.svg` 与 favicon，并加入轻量状态点呼吸和 hover 扫光效果。
 
 新增依赖及用途：
 

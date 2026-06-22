@@ -356,8 +356,8 @@ AI 在每次开发任务完成后必须：
 | 分支 | `refine/pc-immersive-frontend` |
 | 阶段 | PC 沉浸式视觉增强：在“工程指挥舱 + 年轻学生技术团队展台”方向上继续增强 PC 端动态背景、终端控制台、代码流、节点网络和后台驾驶舱 |
 | 后端 | Spring Boot 项目已初始化，认证闭环已实现，招新报名模块已实现，文章管理模块已实现（草稿/发布/下架/删除全流程），项目成果模块已实现（草稿/发布/下架/删除全流程）；权限异常已统一返回业务码 401/403 |
-| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；已新增 `docs/前端视觉组件规范.md` 约束后续组件使用；Logo 简洁化候选记录在 `docs/Logo方案候选.md`，尚未替换正式站点资产；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
-| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；数据概览新增 ECharts 模块状态图与控制台信号面板；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
+| 前台 web | Vue 3 项目已初始化，首页/介绍/方向/成员/项目列表与详情/文章列表与详情/招新报名/我的报名/登录/注册/个人中心(`/profile` + `/user`兼容)/联系我们/404 已应用 PC 沉浸式视觉增强；新增自研 Canvas 粒子网络、代码雨、能量流背景、终端 Hero、控制面板、构建流水线、Git 分支图和命令控制台；已新增 `docs/前端视觉组件规范.md` 约束后续组件使用；Logo 已确认并接入前台页眉、页脚和 favicon，原始确认稿保存于 `docs/assets/logo/nynu-code-lab-selected-logo.png`；Markdown 渲染继续使用 `markdown-it` 且 `html:false`；`/design-preview` 保留为视觉参考页；本地开发端口 5173 |
+| 后台 admin-web | Vue 3 + Element Plus 已初始化，登录/管理壳层/数据概览/用户管理/报名管理/文章管理/项目管理已应用高冲击后台视觉；数据概览新增 ECharts 模块状态图与控制台信号面板；后台登录和侧栏品牌位已接入确认版 Logo 与 favicon；成员/方向/站点配置/上传已补占位路由；本地开发端口 5174 |
 | 数据库 | `sys_user` + `lab_apply_record` + `lab_article` + `lab_project` 表 DDL 已编写，init.sql 已更新；`lab_apply_record` 已增加 `uk_apply_active_user` 非撤回报名唯一约束 |
 | 容器化 | Docker Compose + Nginx 统一托管方案已完成，MySQL/Redis/Backend/Nginx 均已配置 |
 | 健康检查 | `GET /api/health` 已实现，免鉴权 |
@@ -409,6 +409,7 @@ docker compose ps                  # 确认所有服务运行
 
 | 日期 | 任务 | 变更 |
 |---|---|---|
+| 2026-06-22 | 确认版 Logo 保存与站内接入 | 使用 Product Design 重新按当前官网 token 校准 Logo 方向，用户确认“终端提示符 + C 形框 + 光标竖线 + 琥珀状态点”版本；保存原始 PNG 到 `docs/assets/logo/nynu-code-lab-selected-logo.png`；新增前台 `web/src/assets/brand/nynu-code-lab-mark.svg` 与 `web/public/favicon.svg`；新增后台 `admin-web/src/assets/brand/nynu-code-lab-mark.svg` 与 `admin-web/public/favicon.svg`；前台 `AppHeader`、`AppFooter` 接入确认版 Logo，后台 `AdminLayout`、`LoginView` 接入确认版 Logo；增加轻量状态点呼吸和 hover 能量扫光效果，并遵守 `prefers-reduced-motion`；同步更新 README.md、docs/requirements.md、docs/Logo方案候选.md、docs/前端视觉组件规范.md；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm run build` ✅ / `admin-web npm run build` ✅（既有 Dashboard chunk > 500 kB 提醒）/ `git diff --check` ✅ |
 | 2026-06-22 | 视觉组件规范沉淀 + Logo 简洁候选 | 基于用户确认的 PC 沉浸式视觉方向，新增 `docs/前端视觉组件规范.md`，沉淀 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`DataCounter`、内容卡片和后台 Admin Console 的使用场景、动效边界、PC 优先策略、内容真实性约束和后续扩展检查清单；新增 `docs/Logo方案候选.md`，将 Logo 方向收敛为更简洁的 A「CL 终端提示符」、B「代码括号符号」、C「CL 方形小标」三类候选；本轮仅生成候选预览图并记录本地生成目录，不复制进仓库、不替换正式站点资产；同步更新 README.md 与 docs/requirements.md；未修改前端业务代码、后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；文档变更执行 `git diff --check` ✅ |
 | 2026-06-22 | PC 沉浸式前端视觉增强 | 新建/切换 `refine/pc-immersive-frontend`；基于 `refactor/apply-high-impact-frontend` 继续保留 Product Design 方向“工程指挥舱 + 年轻学生技术团队展台”，不推翻现有高冲击视觉；使用 Product Design brief 回放与 frontend-design 规则；未使用 Figma（无 Figma 链接）；前台新增 `ParticleUniverse`、`CodeRainCanvas`、`EnergyFlowBackground`、`TerminalHero`、`CommandConsole`、`LabControlPanel`、`BuildPipeline`、`GitBranchMap`、`DataCounter`；首页升级为 PC 大屏沉浸式 Hero + Lab OS + 终端控制台 + 构建流水线；/about、/directions、/members、/projects、/projects/:id、/articles、/articles/:id、/recruit、/login、/register、/profile、/my-application、/contact、/design-preview 接入终端、命令、节点、代码流或控制台视觉；项目卡片新增扫描线与 BUILD PASS 视觉，文章卡片新增知识库代码纹理，方向卡片新增节点环绕光效；后台数据概览新增 ECharts 模块接入状态图、控制台信号面板，AdminLayout 和空状态增强动态光栅；新增依赖：前台 `gsap`（Hero 入场动画）、`countup.js`（指标计数）、`@lucide/vue`（工程图标），后台 `echarts`（模块状态可视化）；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm run build` ✅ / `admin-web npm run build` ✅（Dashboard chunk > 500 kB 提醒）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config + up -d --build + ps ✅（先重启 Colima 恢复 Docker daemon）/ 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ / Markdown 安全检查确认文章与项目详情均为 `html:false` ✅ |
 | 2026-06-22 | 高冲击视觉正式推广 | 新建/切换 `refactor/apply-high-impact-frontend`；用户已确认喜欢 `/design-preview` 后，将 Product Design 视觉方向“工程指挥舱 + 学生技术团队展台”推广到正式前台与后台；使用 frontend-design 规则落地正式页面；未使用 Figma（无 Figma 链接）；前台新增正式 `components/app/*` 组件体系（`AppFrame`、`AppHeader`、`AppFooter`、`AppAnimatedBackground`、`AppButton`、`PageHero`、`AnimatedSection`、`MetricCard`、`DirectionCard`、`ProjectCard`、`ArticleCard`、`MemberCard`、`RecruitCTA`、`StateView`、`AuthShell`）；新增 `/about`、`/directions`、`/members`、`/contact`、`/profile`、404；保留 `/design-preview`；后台新增 `design-tokens.css`、`admin.css`，重做 `AdminLayout`、登录、数据概览、用户占位，补齐成员/方向/站点/上传占位路由；无新增依赖；未修改后端接口字段、接口路径、业务逻辑、数据库字段或 Docker Compose 核心配置；`web npm install && npm run build` ✅ / `admin-web npm install && npm run build` ✅（既有 audit 1 moderate + 1 high）/ `backend mvn clean package -DskipTests` ✅ / Docker Compose config 脱敏重定向 + up -d --build + ps ✅ / 页面 curl -I 全部 200 ✅ / 招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅ |
@@ -427,7 +428,6 @@ docker compose ps                  # 确认所有服务运行
 ## 当前已知问题
 
 - `/design-preview` 仍保留为视觉方向参考页，使用静态预览数据，不接真实接口
-- Logo 当前仅有 A / B / C 简洁候选方向，尚未确定最终 SVG、favicon、深浅色版本，也尚未替换正式站点资产
 - 本轮 PC 沉浸式增强优先 PC 端视觉表现，移动端只做不严重崩溃与简化动效，不做精细适配
 - 自研 Canvas 粒子网络、代码雨和能量流仅在 PC 端启用；低端 PC 或浏览器开启减少动画时会降级
 - 后台引入 ECharts 后 `admin-web npm run build` 会提示 Dashboard chunk 大于 500 kB，当前构建通过，后续可做拆包或轻量化图表替换
@@ -458,7 +458,7 @@ docker compose ps                  # 确认所有服务运行
 ## 下一步建议
 
 1. 人工在 PC 大屏打开首页、项目、文章、招新、登录和后台数据概览，确认粒子、代码雨、能量流、终端和控制台动效强度
-2. 从 `docs/Logo方案候选.md` 中确认 A / B / C 方向，再输出正式 SVG、favicon 和站点替换方案
+2. 基于确认版 Logo 继续补充深浅色横向 wordmark、社交分享图和更完整的品牌使用规范
 3. 评估后台 ECharts 体积提醒，必要时改为动态拆包或轻量 CSS 图表
 4. 接入技术方向 CRUD + 前台真实展示，替换当前方向静态内容
 5. 接入核心成员 CRUD + 前台真实展示，替换当前成员能力结构占位

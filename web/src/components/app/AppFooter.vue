@@ -2,7 +2,10 @@
   <footer class="app-footer">
     <div class="app-footer__inner app-container">
       <div>
-        <strong>NYNU Code Lab</strong>
+        <div class="app-footer__brand">
+          <img :src="brandMark" alt="" aria-hidden="true" />
+          <strong>NYNU Code Lab</strong>
+        </div>
         <p>南阳师范学院 Code Lab 实验室</p>
       </div>
       <p class="app-footer__notice">
@@ -11,6 +14,10 @@
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+import brandMark from '@/assets/brand/nynu-code-lab-mark.svg'
+</script>
 
 <style scoped>
 .app-footer {
@@ -25,6 +32,19 @@
   display: flex;
   justify-content: space-between;
   gap: 30px;
+}
+
+.app-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-footer__brand img {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  box-shadow: 0 0 28px rgba(83, 231, 255, 0.16);
 }
 
 .app-footer strong {
