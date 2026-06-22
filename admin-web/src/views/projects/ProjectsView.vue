@@ -145,8 +145,8 @@
         <el-form-item label="参与成员">
           <el-input v-model="form.membersText" placeholder="参与成员，文本描述" maxlength="1000" />
         </el-form-item>
-        <el-form-item label="封面URL">
-          <el-input v-model="form.coverUrl" placeholder="可选，封面图片URL" maxlength="500" />
+        <el-form-item label="封面图片">
+          <CoverUpload v-model="form.coverUrl" usage-type="project_cover" placeholder="可选，粘贴URL或点击上传封面图片" />
         </el-form-item>
         <el-form-item label="代码仓库">
           <el-input v-model="form.repoUrl" placeholder="可选，GitHub/Gitee 链接" maxlength="500" />
@@ -201,6 +201,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
+import CoverUpload from '@/components/CoverUpload.vue'
 import {
   getProjects,
   createProject,

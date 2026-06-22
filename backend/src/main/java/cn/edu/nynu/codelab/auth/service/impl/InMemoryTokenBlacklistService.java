@@ -3,6 +3,7 @@ package cn.edu.nynu.codelab.auth.service.impl;
 import cn.edu.nynu.codelab.auth.service.TokenBlacklistService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
+@ConditionalOnProperty(prefix = "app.auth", name = "redis-enabled", havingValue = "false", matchIfMissing = true)
 public class InMemoryTokenBlacklistService implements TokenBlacklistService {
 
     /**
