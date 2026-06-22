@@ -115,7 +115,7 @@ nynu-code-lab/
 
 | 项 | 状态 |
 |---|---|
-| 分支 | `refine/pc-immersive-frontend` |
+| 分支 | `dev` |
 | 阶段 | 阶段 5.7 上线前 P0/P1 收口完成；待进入 Stage 6 生产环境部署 |
 | 数据库 | 10 张表，`deploy/mysql/init/01-init.sql`（哨兵检查 + 首启专用） |
 | 容器化 | Docker Compose（MySQL + Redis + Backend + Nginx），均配置 healthcheck + 资源限制 + 日志轮转；上传 volume 权限、Nginx 模板、MySQL 首启哨兵已验证 |
