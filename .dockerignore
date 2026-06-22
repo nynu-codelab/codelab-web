@@ -1,0 +1,34 @@
+# ============================================================
+# 项目根目录 .dockerignore — 供 deploy/nginx/Dockerfile 使用
+# 构建上下文: .
+# ============================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Docs & AGENTS (不需要进入镜像)
+docs
+AGENTS.md
+提示词.md
+
+# Deploy 配置（deploy/nginx/ 自身由 Dockerfile 显式 COPY）
+deploy/.env
+deploy/.env.example
+deploy/README.md
+
+# Scripts — 运维脚本，不进入镜像
+scripts
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Node (各前端子目录 node_modules 由自身 .dockerignore 控制)
+node_modules

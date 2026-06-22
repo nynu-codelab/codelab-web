@@ -1,0 +1,24 @@
+# ============================================================
+# 前台 Web .dockerignore
+# ============================================================
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+
+# Dependencies
+node_modules
+
+# Build output (构建在容器内完成)
+dist
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# 不需要的文档
+*.md
