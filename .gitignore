@@ -39,3 +39,10 @@ deploy/.env
 *.jks
 *.keystore
 *.truststore
+
+# === Project-specific excluded docs / assets ===
+提示词.md
+AGENTS.md
+CLAUDE.md
+IT项目运维培训经验.docx
+deploy-images.tar
