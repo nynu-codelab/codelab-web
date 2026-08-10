@@ -10,6 +10,8 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # 先复制 pom.xml 并下载依赖（利用 Docker 缓存层）
+# 配置阿里云 Maven 镜像加速
+RUN mkdir -p /root/.m2 && echo '<?xml version="1.0" encoding="UTF-8"?>\n<settings><mirrors>\n<mirror><id>aliyun</id><mirrorOf>central</mirrorOf><name>Aliyun Maven</name><url>https://maven.aliyun.com/repository/public</url></mirror>\n</mirrors></settings>' > /root/.m2/settings.xml
 COPY pom.xml .
 RUN mvn dependency:go-offline -B -q
 
@@ -21,8 +23,9 @@ RUN mvn package -DskipTests -B -q
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# 安装 curl 供 Docker healthcheck 使用
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+# 安装 curl 供 Docker healthcheck 使用（用阿里云镜像加速）
+RUN sed -i 's|http://archive.ubuntu.com|http://mirrors.aliyun.com|g; s|http://security.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null; \
+    apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 # 创建非 root 用户运行，并预置上传目录权限。
 # Docker named volume 首次挂载会继承镜像内挂载点权限，避免 /app/uploads 归 root 导致上传失败。

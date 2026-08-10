@@ -91,6 +91,7 @@ services:
 
   # ==================== 后端 Spring Boot ====================
   backend:
+    image: nynu-code-lab-backend:latest
     build:
       context: ../backend
     container_name: nynu-code-lab-backend
@@ -146,6 +147,7 @@ services:
 
   # ==================== Nginx 统一入口 ====================
   nginx:
+    image: nynu-code-lab-nginx:latest
     build:
       context: ..
       dockerfile: deploy/nginx/Dockerfile
