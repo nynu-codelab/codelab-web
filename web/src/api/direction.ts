@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface DirectionItem {
   id: number
@@ -13,6 +13,6 @@ export interface DirectionItem {
   status: number
 }
 
-export function getDirections(): Promise<{ code: number; data: DirectionItem[]; message?: string }> {
+export function getDirections(): Promise<ApiResult<DirectionItem[]>> {
   return request.get('/directions')
 }

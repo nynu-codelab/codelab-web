@@ -25,7 +25,6 @@ nynu-code-lab/
 ├── deploy/                      # Docker Compose + Nginx + MySQL 初始化
 ├── scripts/                     # 运维与验证脚本
 ├── docs/                        # 项目文档
-├── AGENTS.md                    # AI 编程助手上下文
 └── README.md
 ```
 
@@ -107,11 +106,17 @@ bash scripts/verify-project-flow.sh       # 项目成果闭环 21 项
 | `local`（默认） | `localhost:3306` | 内存实现 | 本地开发 |
 | `docker` | `mysql:3306` | Redis 实现 | Docker Compose 部署 |
 
+## 工程规范
+
+- 统一协作流程：[CodeLab CONTRIBUTING](https://github.com/nynu-codelab/.github/blob/main/CONTRIBUTING.md)
+- 技术与代码规范：[CodeLab Docs](https://github.com/nynu-codelab/docs)
+- 当前仓库必须通过 `Backend Test`、`Web Build` 和 `Admin Web Build` 三项 CI
+- 前台与后台的 lint / 自动化测试仍在补齐，跟踪于 [#2](https://github.com/nynu-codelab/codelab-web/issues/2)
+
 ## 文档索引
 
 | 文档 | 说明 |
 |------|------|
-| [AGENTS.md](AGENTS.md) | AI 编程助手上下文（技术栈、开发规范、当前状态、任务历史） |
 | [docs/项目说明.md](docs/项目说明.md) | 项目背景、目标用户、角色权限、功能清单、业务流程 |
 | [docs/部署运行说明.md](docs/部署运行说明.md) | 环境要求、本地/Docker 启动、数据库初始化、备份恢复、HTTPS、生产部署 |
 | [docs/接口说明.md](docs/接口说明.md) | 接口规范、认证方式、响应格式、核心接口清单 |
@@ -120,7 +125,7 @@ bash scripts/verify-project-flow.sh       # 项目成果闭环 21 项
 
 ## 当前状态
 
-- **分支**：`refine/pc-immersive-frontend`
+- **分支**：`main`
 - **阶段**：阶段 5.7 上线前 P0/P1 收口完成，待进入 Stage 6 实际生产部署
 - **构建**：backend ✅ / web ✅ / admin-web ✅ / Docker Compose ✅
 - **验证**：招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅
