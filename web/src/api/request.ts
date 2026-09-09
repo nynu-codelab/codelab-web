@@ -1,6 +1,12 @@
 import axios, { type AxiosError } from 'axios'
 import router from '@/router'
 
+export interface ApiResult<T> {
+  code: number
+  message: string
+  data: T
+}
+
 const request = axios.create({
   baseURL: '/api',
   timeout: 15000,

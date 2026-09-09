@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface LoginParams {
   username: string
@@ -38,22 +38,22 @@ export interface LoginResult {
   user: UserInfo
 }
 
-export function login(data: LoginParams): Promise<LoginResult> {
+export function login(data: LoginParams): Promise<ApiResult<LoginResult>> {
   return request.post('/auth/login', data)
 }
 
-export function register(data: RegisterParams): Promise<void> {
+export function register(data: RegisterParams): Promise<ApiResult<void>> {
   return request.post('/auth/register', data)
 }
 
-export function getMe(): Promise<UserInfo> {
+export function getMe(): Promise<ApiResult<UserInfo>> {
   return request.get('/auth/me')
 }
 
-export function logout(): Promise<void> {
+export function logout(): Promise<ApiResult<void>> {
   return request.post('/auth/logout')
 }
 
-export function changePassword(data: ChangePasswordParams): Promise<void> {
+export function changePassword(data: ChangePasswordParams): Promise<ApiResult<void>> {
   return request.post('/auth/change-password', data)
 }

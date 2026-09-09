@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface MemberItem {
   id: number
@@ -15,6 +15,6 @@ export interface MemberItem {
   sortOrder: number
 }
 
-export function getMembers(): Promise<{ code: number; data: MemberItem[]; message?: string }> {
+export function getMembers(): Promise<ApiResult<MemberItem[]>> {
   return request.get('/members')
 }
