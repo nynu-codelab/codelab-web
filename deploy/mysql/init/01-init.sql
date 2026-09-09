@@ -102,7 +102,7 @@ CREATE TABLE lab_apply_record (
     class_name            VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '班级',
     phone                 VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT '手机号',
     qq                    VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT 'QQ号',
-    direction             VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '意向技术方向',
+    direction             VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '意向方向（部门/组）',
     has_programming_basis TINYINT      NOT NULL DEFAULT 0      COMMENT '是否有编程基础：0-否，1-是',
     skills                VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '已掌握技术',
     introduction          VARCHAR(2000) NOT NULL DEFAULT ''    COMMENT '个人介绍',
@@ -199,8 +199,8 @@ CREATE TABLE lab_member (
     id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     name          VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '成员姓名',
     avatar_url    VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '头像URL',
-    role_title    VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '角色/职位（如：后端负责人、前端成员）',
-    direction_id  BIGINT       DEFAULT NULL            COMMENT '所属技术方向ID，关联 lab_direction.id',
+    role_title    VARCHAR(100) NOT NULL DEFAULT ''     COMMENT '角色/职位（如：全栈开发组组长、测试成员）',
+    direction_id  BIGINT       DEFAULT NULL            COMMENT '所属方向ID，关联 lab_direction.id',
     grade         VARCHAR(20)  NOT NULL DEFAULT ''     COMMENT '年级',
     bio           VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '个人简介',
     skills        VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '技能标签（JSON数组字符串）',
@@ -226,7 +226,7 @@ DROP TABLE IF EXISTS lab_direction;
 CREATE TABLE lab_direction (
     id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     name        VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '方向名称',
-    code        VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '方向编码（用于前端引用，如 java-backend）',
+    code        VARCHAR(50)  NOT NULL DEFAULT ''     COMMENT '方向编码（用于前端引用，如 fullstack）',
     summary     VARCHAR(200) NOT NULL DEFAULT ''     COMMENT '一句话简介',
     description VARCHAR(2000) NOT NULL DEFAULT ''    COMMENT '方向详细介绍',
     tags        VARCHAR(500) NOT NULL DEFAULT ''     COMMENT '技术标签（JSON数组字符串）',
@@ -244,13 +244,12 @@ CREATE TABLE lab_direction (
     KEY idx_deleted (deleted)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='技术方向表';
 
--- 初始化 5 个技术方向（与前台当前展示一致）
+-- 初始化 4 个方向：软件研发部三个组 + 成果中心（与实验室组织架构一致）
 INSERT INTO lab_direction (name, code, summary, description, tags, sort_order, status) VALUES
-('Java 后端', 'java-backend', '学习服务端分层、接口设计、认证鉴权、数据库建模和上线前验证', '围绕 Spring Boot、接口设计、权限认证、数据库建模和部署链路进行项目实战。从单体应用到服务拆分，覆盖企业级后端开发的核心技能。', '["Java 17","Spring Boot","MyBatis-Plus","JWT"]', 50, 1),
-('前端开发', 'frontend', '学习 Vue 3、TypeScript、路由、状态管理、组件化和响应式体验', '从 Vue 3、TypeScript、组件化、状态管理到可访问的交互体验，面向真实产品构建页面。重视工程化思维和用户体验打磨。', '["Vue 3","TypeScript","Vite","Pinia"]', 40, 1),
-('微信小程序', 'miniprogram', '面向移动端场景训练登录态、接口联调、页面组织和发布流程', '面向移动端场景完成界面、接口、登录态和发布链路的完整训练。理解小程序生态的限制与优势，培养移动端产品思维。', '["小程序","移动端","接口联调","发布流程"]', 30, 1),
-('人工智能', 'ai', '以应用实践为目标，探索数据处理、模型调用与智能化功能原型', '以应用实践为目标，探索数据处理、模型调用与智能化功能原型。不追求算法理论深度，注重将 AI 能力落地到实际项目中。', '["AI 应用","数据处理","原型验证"]', 20, 1),
-('数据库与运维', 'devops', '理解 MySQL、Docker、Nginx、环境变量和上线前验证，补齐工程交付能力', '理解 MySQL、Docker、Nginx、环境变量和上线前验证，补齐工程交付能力。建立从开发到部署的完整认知链路。', '["MySQL","Docker","Nginx","部署"]', 10, 1);
+('全栈开发', 'fullstack', '软件研发部·全栈开发组：Java 后端、前端、小程序与 AI 应用开发', '负责前端与后端完整功能开发，覆盖 Java / Spring Boot、Vue / React / TypeScript、微信小程序与 AI / Agent 应用。以真实项目为载体，训练从接口设计到功能交付的完整工程能力。', '["Java 17","Spring Boot","Vue 3","TypeScript","小程序","AI 应用"]', 40, 1),
+('产品测试', 'product-test', '软件研发部·产品测试组：需求分析、原型、测试用例与质量保障', '负责需求拆解、原型设计、测试用例设计、提测验收、回归测试与质量报告。以质量视角保障项目交付，培养需求分析与工程化测试能力。', '["需求分析","原型","测试用例","回归测试","质量报告"]', 30, 1),
+('运维与部署', 'devops', '软件研发部·运维组：部署、CI/CD、服务器与监控、上线执行', '负责部署与发布、CI/CD 流水线维护、服务器与数据库管理、监控告警，以及上线执行与回滚。补齐从开发到交付的完整工程链路。', '["Docker","Nginx","CI/CD","MySQL","监控"]', 20, 1),
+('成果中心', 'achievement', '成果转化与归档：论文、专利、软件著作权、竞赛与企业合作', '统筹竞赛、论文、专利、软件著作权等成果的登记、归档与对外申报，对接企业合作项目，负责项目归档与成果清单管理。', '["论文","专利","软著","竞赛","企业合作"]', 10, 1);
 
 -- =============================================
 -- 7. 站点配置表
