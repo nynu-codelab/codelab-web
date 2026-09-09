@@ -53,11 +53,11 @@
       <div class="app-container">
         <div class="app-section-header">
           <div>
-            <span class="app-eyebrow">Technical Tracks</span>
-            <h2 class="app-title-lg">围绕真实开发组织学习路径</h2>
+            <span class="app-eyebrow">Departments & Tracks</span>
+            <h2 class="app-title-lg">部门与方向</h2>
           </div>
           <p class="app-copy">
-            以 Java 后端、前端开发、微信小程序为核心方向，人工智能与数据库运维作为拓展方向，
+            软件研发部设全栈开发、产品测试、运维三组，成果中心承接成果转化与对外合作，
             让同学在真实项目里建立工程化思维。
           </p>
         </div>
@@ -216,7 +216,7 @@ import { getSiteConfigMap } from '@/api/siteConfig'
 import { fallbackText, parseList } from '@/utils/content'
 
 const metrics = [
-  { value: '3', label: '核心方向', caption: 'Java 后端、前端开发、微信小程序' },
+  { value: '3', label: '研发小组', caption: '软件研发部：全栈开发、产品测试、运维' },
   { value: '多个', label: '真实项目', caption: '以项目成果和工程训练驱动成长' },
   { value: '持续', label: '学习分享', caption: '通过文章和复盘沉淀实践经验' },
   { value: '开放', label: '招新通道', caption: '注册登录后可提交报名并查看审核状态' }
@@ -225,62 +225,55 @@ const metrics = [
 const directions = [
   {
     index: '01',
-    title: 'Java 后端',
-    badge: '核心方向',
-    description: '围绕 Spring Boot、接口设计、权限认证、数据库建模和部署链路进行项目实战。',
-    tags: ['Java 17', 'Spring Boot', 'MyBatis-Plus', 'JWT']
+    title: '全栈开发',
+    badge: '软件研发部',
+    description: '负责前端与后端完整功能开发，覆盖 Java / Spring Boot、Vue / React、微信小程序与 AI / Agent 应用，训练从接口设计到功能交付的完整工程能力。',
+    tags: ['Java 17', 'Spring Boot', 'Vue 3', 'AI 应用']
   },
   {
     index: '02',
-    title: '前端开发',
-    badge: '核心方向',
-    description: '从 Vue 3、TypeScript、组件化、状态管理到可访问的交互体验，面向真实产品构建页面。',
-    tags: ['Vue 3', 'TypeScript', 'Vite', 'Pinia']
+    title: '产品测试',
+    badge: '软件研发部',
+    description: '负责需求拆解、原型设计、测试用例、提测验收与回归测试，以质量视角为项目交付把关。',
+    tags: ['需求分析', '测试用例', '回归测试', '质量报告']
   },
   {
     index: '03',
-    title: '微信小程序',
-    badge: '核心方向',
-    description: '面向移动端场景完成界面、接口、登录态和发布链路的完整训练。',
-    tags: ['小程序', '移动端', '接口联调', '发布流程']
+    title: '运维与部署',
+    badge: '软件研发部',
+    description: '负责部署发布、CI/CD 流水线、服务器与监控、上线执行与回滚，补齐工程交付链路。',
+    tags: ['Docker', 'Nginx', 'CI/CD', '监控']
   },
   {
     index: '04',
-    title: '人工智能',
-    badge: '拓展方向',
-    description: '以应用实践为目标，探索数据处理、模型调用与智能化功能原型。',
-    tags: ['AI 应用', '数据处理', '原型验证']
-  },
-  {
-    index: '05',
-    title: '数据库与运维',
-    badge: '拓展方向',
-    description: '理解 MySQL、Docker、Nginx、环境变量和上线前验证，补齐工程交付能力。',
-    tags: ['MySQL', 'Docker', 'Nginx', '部署']
+    title: '成果中心',
+    badge: '成果中心',
+    description: '统筹论文、专利、软件著作权、竞赛与企业合作，负责成果登记、归档与对外申报。',
+    tags: ['论文', '专利', '软著', '竞赛']
   }
 ]
 
 const memberRoles = [
   {
-    initials: 'BE',
-    role: '能力结构',
-    title: '后端与接口协作',
-    summary: '负责服务端设计、权限边界、数据模型和接口稳定性，支撑项目从功能到可部署。',
-    tags: ['API', 'Auth', 'Database']
+    initials: 'FS',
+    role: '软件研发部',
+    title: '全栈开发组',
+    summary: '负责前后端完整功能开发与 AI 应用，从接口设计到功能交付，支撑项目从想法到可部署。',
+    tags: ['Java', 'Vue', 'Agent']
   },
   {
-    initials: 'FE',
-    role: '能力结构',
-    title: '前端与体验实现',
-    summary: '负责页面工程、组件抽象、交互状态和响应式适配，让项目具备完整展示与使用体验。',
-    tags: ['UI', 'State', 'Responsive']
+    initials: 'QA',
+    role: '软件研发部',
+    title: '产品测试组',
+    summary: '负责需求拆解、测试用例与质量报告，以质量视角保障项目交付。',
+    tags: ['需求', '用例', '质量']
   },
   {
-    initials: 'PM',
-    role: '能力结构',
-    title: '项目推进与复盘',
-    summary: '围绕需求拆解、任务推进、代码评审和项目复盘建立团队协作节奏。',
-    tags: ['Planning', 'Review', 'Delivery']
+    initials: 'OPS',
+    role: '软件研发部',
+    title: '运维组',
+    summary: '负责部署、CI/CD、监控与上线执行，保障项目稳定交付与回滚。',
+    tags: ['Docker', 'CI/CD', '监控']
   }
 ]
 
