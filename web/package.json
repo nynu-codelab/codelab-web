@@ -11,7 +11,7 @@
     "type-check": "vue-tsc -b --noEmit"
   },
   "dependencies": {
-    "@lucide/vue": "^1.21.0",
+    "@lucide/vue": "^1.41.0",
     "axios": "^1.7.9",
     "countup.js": "^2.10.0",
     "gsap": "^3.15.0",
