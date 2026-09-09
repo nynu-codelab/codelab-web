@@ -46,7 +46,7 @@ const scrolled = ref(false)
 const navItems = [
   { label: '首页', to: '/' },
   { label: '实验室介绍', to: '/about' },
-  { label: '技术方向', to: '/directions' },
+  { label: '部门与方向', to: '/directions' },
   { label: '核心成员', to: '/members' },
   { label: '项目成果', to: '/projects' },
   { label: '学习文章', to: '/articles' },
