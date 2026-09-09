@@ -96,7 +96,7 @@ echo "--- 5. 提交报名 ---"
 APPLY=$(curl -s -X POST "$BASE_URL/api/applications" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $USER_TOKEN" \
-    -d '{"realName":"验证用户","grade":"2024","major":"计算机科学与技术","className":"计科2401","phone":"13900000000","qq":"12345678","direction":"前端开发","hasProgrammingBasis":1,"skills":"HTML,CSS,JS","introduction":"验证脚本测试","reason":"测试报名流程","weeklyAvailableTime":"10小时","portfolioUrl":""}')
+    -d '{"realName":"验证用户","grade":"2024","major":"计算机科学与技术","className":"计科2401","phone":"13900000000","qq":"12345678","direction":"全栈开发","hasProgrammingBasis":1,"skills":"HTML,CSS,JS","introduction":"验证脚本测试","reason":"测试报名流程","weeklyAvailableTime":"10小时","portfolioUrl":""}')
 check_code "$APPLY" "200" "POST /api/applications"
 
 # ---- 6. 查看我的报名 ----
@@ -117,7 +117,7 @@ echo "--- 7. 待审核状态下修改报名 ---"
 UPDATE=$(curl -s -X PUT "$BASE_URL/api/applications/my" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $USER_TOKEN" \
-    -d '{"realName":"验证用户(修改)","grade":"2024","major":"计算机科学与技术","className":"计科2401","phone":"13900000000","qq":"12345678","direction":"后端开发","hasProgrammingBasis":1,"skills":"Java,Python","introduction":"修改后的介绍","reason":"修改后的原因","weeklyAvailableTime":"15小时","portfolioUrl":""}')
+    -d '{"realName":"验证用户(修改)","grade":"2024","major":"计算机科学与技术","className":"计科2401","phone":"13900000000","qq":"12345678","direction":"产品测试","hasProgrammingBasis":1,"skills":"Java,Python","introduction":"修改后的介绍","reason":"修改后的原因","weeklyAvailableTime":"15小时","portfolioUrl":""}')
 check_code "$UPDATE" "200" "PUT /api/applications/my（待审核状态下修改）"
 
 # ---- 8. 管理员登录 ----
