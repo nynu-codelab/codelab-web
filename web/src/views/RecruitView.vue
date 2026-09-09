@@ -7,7 +7,7 @@
     >
       <template #actions>
         <AppButton label="查看我的报名" to="/my-application" variant="secondary" />
-        <AppButton label="了解技术方向" to="/directions" variant="ghost" />
+        <AppButton label="了解部门与方向" to="/directions" variant="ghost" />
       </template>
       <template #visual>
         <div class="recruit-visual">
@@ -100,7 +100,7 @@
         <fieldset class="apply-section">
           <legend>技术背景</legend>
           <div class="form-field">
-            <label>意向技术方向 <span class="required">*</span></label>
+            <label>意向方向（部门/组） <span class="required">*</span></label>
             <select v-model="form.direction" :disabled="recruitClosed">
               <option value="" disabled>请选择意向方向</option>
               <option v-for="item in directionOptions" :key="item" :value="item">{{ item }}</option>
@@ -177,11 +177,10 @@ import { getSiteConfigMap } from '@/api/siteConfig'
 const currentYear = new Date().getFullYear()
 const gradeOptions = Array.from({ length: 4 }, (_, i) => `${currentYear - i}级`)
 const directionOptions = [
-  'Java 后端',
-  '前端开发',
-  '微信小程序',
-  '人工智能（拓展方向）',
-  '数据库与运维（拓展方向）',
+  '全栈开发',
+  '产品测试',
+  '运维与部署',
+  '成果中心',
   '其它'
 ]
 
@@ -235,7 +234,7 @@ function validate(): boolean {
   else if (!/^1[3-9]\d{9}$/.test(form.phone)) { errors.phone = '手机号格式不正确'; valid = false }
   if (!form.qq) { errors.qq = '请输入 QQ 号'; valid = false }
   else if (!/^\d{5,11}$/.test(form.qq)) { errors.qq = 'QQ号格式不正确（5-11位数字）'; valid = false }
-  if (!form.direction) { errors.direction = '请选择意向技术方向'; valid = false }
+  if (!form.direction) { errors.direction = '请选择意向方向'; valid = false }
 
   return valid
 }
