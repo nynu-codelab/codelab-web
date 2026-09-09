@@ -67,7 +67,7 @@
           <section>
             <h3>技术背景</h3>
             <dl>
-              <div><dt>意向方向</dt><dd>{{ record.direction }}</dd></div>
+              <div><dt>意向方向（部门/组）</dt><dd>{{ record.direction }}</dd></div>
               <div><dt>编程基础</dt><dd>{{ record.hasProgrammingBasis ? '有' : '无' }}</dd></div>
               <div v-if="record.skills" class="wide"><dt>已掌握技术</dt><dd>{{ record.skills }}</dd></div>
             </dl>
@@ -151,7 +151,7 @@
         <fieldset class="edit-section">
           <legend>技术背景</legend>
           <div class="form-field">
-            <label>意向技术方向 <span class="required">*</span></label>
+            <label>意向方向（部门/组） <span class="required">*</span></label>
             <select v-model="editForm.direction">
               <option value="" disabled>请选择意向方向</option>
               <option v-for="item in directionOptions" :key="item" :value="item">{{ item }}</option>
@@ -222,11 +222,10 @@ import { formatDate } from '@/utils/content'
 const currentYear = new Date().getFullYear()
 const gradeOptions = Array.from({ length: 4 }, (_, i) => `${currentYear - i}级`)
 const directionOptions = [
-  'Java 后端',
-  '前端开发',
-  '微信小程序',
-  '人工智能（拓展方向）',
-  '数据库与运维（拓展方向）',
+  '全栈开发',
+  '产品测试',
+  '运维与部署',
+  '成果中心',
   '其它'
 ]
 
@@ -301,7 +300,7 @@ function validate(): boolean {
   if (!editForm.phone) { err.phone = '请输入手机号'; valid = false }
   else if (!/^1[3-9]\d{9}$/.test(editForm.phone)) { err.phone = '手机号格式不正确'; valid = false }
   if (!editForm.qq) { err.qq = '请输入 QQ 号'; valid = false }
-  if (!editForm.direction) { err.direction = '请选择意向技术方向'; valid = false }
+  if (!editForm.direction) { err.direction = '请选择意向方向'; valid = false }
 
   return valid
 }
