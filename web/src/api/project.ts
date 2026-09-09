@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface ProjectItem {
   id: number
@@ -35,14 +35,14 @@ export interface ProjectListParams {
   pageSize?: number
 }
 
-export function getProjects(params?: ProjectListParams): Promise<{ code: number; data: PageResult<ProjectItem>; message?: string }> {
+export function getProjects(params?: ProjectListParams): Promise<ApiResult<PageResult<ProjectItem>>> {
   return request.get('/projects', { params })
 }
 
-export function getFeaturedProjects(): Promise<{ code: number; data: ProjectItem[]; message?: string }> {
+export function getFeaturedProjects(): Promise<ApiResult<ProjectItem[]>> {
   return request.get('/projects/featured')
 }
 
-export function getProject(id: number): Promise<{ code: number; data: ProjectItem; message?: string }> {
+export function getProject(id: number): Promise<ApiResult<ProjectItem>> {
   return request.get(`/projects/${id}`)
 }

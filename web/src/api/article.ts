@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface ArticleItem {
   id: number
@@ -30,10 +30,10 @@ export interface ArticleListParams {
   category?: string
 }
 
-export function getArticles(params?: ArticleListParams): Promise<{ code: number; data: PageResult<ArticleItem>; message?: string }> {
+export function getArticles(params?: ArticleListParams): Promise<ApiResult<PageResult<ArticleItem>>> {
   return request.get('/articles', { params })
 }
 
-export function getArticle(id: number): Promise<{ code: number; data: ArticleItem; message?: string }> {
+export function getArticle(id: number): Promise<ApiResult<ArticleItem>> {
   return request.get(`/articles/${id}`)
 }

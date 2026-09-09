@@ -1,4 +1,4 @@
-import request from './request'
+import request, { type ApiResult } from './request'
 
 export interface ApplyParams {
   realName: string
@@ -58,14 +58,14 @@ export const STATUS_COLORS: Record<string, string> = {
   WITHDRAWN: '#78909c'
 }
 
-export function submitApply(data: ApplyParams): Promise<ApplyRecord> {
+export function submitApply(data: ApplyParams): Promise<ApiResult<ApplyRecord>> {
   return request.post('/applications', data)
 }
 
-export function getMyApply(): Promise<ApplyRecord> {
+export function getMyApply(): Promise<ApiResult<ApplyRecord | null>> {
   return request.get('/applications/my')
 }
 
-export function updateMyApply(data: ApplyParams): Promise<ApplyRecord> {
+export function updateMyApply(data: ApplyParams): Promise<ApiResult<ApplyRecord>> {
   return request.put('/applications/my', data)
 }
