@@ -94,25 +94,25 @@ const heroDescription = computed(() => {
 
 const fallbackRoles = [
   {
-    initials: 'BE',
-    role: '后端能力',
-    title: '服务端与数据建模',
-    summary: '关注接口设计、权限控制、数据一致性和服务端构建验证。',
-    tags: ['Java', 'API', 'Database']
+    initials: 'FS',
+    role: '软件研发部',
+    title: '全栈开发组',
+    summary: '负责前后端完整功能开发与 AI 应用，从接口设计到功能交付，支撑项目从想法到可部署。',
+    tags: ['Java', 'Vue', 'Agent']
   },
   {
-    initials: 'FE',
-    role: '前端能力',
-    title: '界面工程与体验',
-    summary: '关注组件化、状态管理、页面性能、响应式适配和交互质感。',
-    tags: ['Vue', 'TypeScript', 'Motion']
+    initials: 'QA',
+    role: '软件研发部',
+    title: '产品测试组',
+    summary: '负责需求拆解、测试用例与质量报告，以质量视角保障项目交付。',
+    tags: ['需求', '用例', '质量']
   },
   {
     initials: 'OPS',
-    role: '交付能力',
-    title: '部署、验证与复盘',
-    summary: '关注环境配置、Docker、Nginx、验收脚本和项目复盘。',
-    tags: ['Docker', 'Nginx', 'QA']
+    role: '软件研发部',
+    title: '运维组',
+    summary: '负责部署、CI/CD、监控与上线执行，保障项目稳定交付与回滚。',
+    tags: ['Docker', 'Nginx', 'CI/CD']
   }
 ]
 
