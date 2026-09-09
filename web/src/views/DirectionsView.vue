@@ -1,8 +1,8 @@
 <template>
   <AppFrame>
     <PageHero
-      eyebrow="Technical Tracks"
-      title="技术方向"
+      eyebrow="Departments & Tracks"
+      title="部门与方向"
       :description="heroDescription"
     >
       <template #actions>
@@ -27,7 +27,7 @@
       </div>
 
       <div v-else-if="directions.length === 0" class="app-container">
-        <p class="status-text">技术方向数据暂未配置，请关注后续更新。</p>
+        <p class="status-text">方向数据暂未配置，请关注后续更新。</p>
       </div>
 
       <div v-else class="app-container app-grid three">
@@ -37,7 +37,7 @@
           :index="String(idx + 1).padStart(2, '0')"
           :title="item.name"
           :description="item.summary"
-          :badge="item.status === 1 ? '核心方向' : '拓展方向'"
+          :badge="item.status === 1 ? (item.code === 'achievement' ? '成果中心' : '软件研发部') : '拓展方向'"
           :tags="parseTags(item.tags)"
         />
       </div>
@@ -61,8 +61,8 @@ const error = ref('')
 
 const heroDescription = computed(() => {
   if (loading.value) return '正在加载方向数据...'
-  if (directions.value.length === 0) return '技术方向数据暂未配置，请关注后续更新。'
-  return '以核心方向建立软件工程基础，以拓展方向打开技术视野。每个方向都服务于真实项目训练。'
+  if (directions.value.length === 0) return '方向数据暂未配置，请关注后续更新。'
+  return '软件研发部设全栈开发、产品测试、运维三组，成果中心承接成果转化与对外合作。每个组都服务于真实项目训练。'
 })
 
 const consoleCommands = computed(() => {
