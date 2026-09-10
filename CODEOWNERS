@@ -1,11 +1,4 @@
-# 默认：业务代码由研发团队审批
-* @nynu-codelab/software
+# CODEOWNERS —— 审批线：所有改动统一由 codelab-admin 批准
+# 只认 GitHub login / team，不写中文名
 
-# CI、部署与脚本：当前由 codelab-admin（运维负责人）把关
-/.github/workflows/ @nynu-codelab/codelab-admin
-/deploy/             @nynu-codelab/codelab-admin
-/scripts/            @nynu-codelab/codelab-admin
-
-# 测试资产：当前由 codelab-admin（测试负责人）把关；
-# 出现专职测试负责人后，替换为具体 GitHub 用户名
-**/tests/            @nynu-codelab/codelab-admin
+* @nynu-codelab/codelab-admin
