@@ -1,138 +1,200 @@
-# NYNU Code Lab — 南阳师范学院 Code Lab 实验室
+<div align="center">
 
-官网与招新管理系统。
+<img src="admin-web/src/assets/brand/nynu-code-lab-mark.svg" width="96" alt="NYNU CodeLab" />
 
-> 本网站为南阳师范学院 Code Lab 实验室自建展示站，非学校官方门户网站。
+# NYNU CodeLab Website
 
-## 技术栈
+**The official website and recruitment management system of NYNU CodeLab.**
 
-| 层 | 技术 |
-|---|---|
-| 后端 | Java 17, Spring Boot 3.x, Maven, MyBatis-Plus, Sa-Token (JWT) |
-| 数据库 | MySQL 8 |
-| 缓存 | Redis 7（Token 黑名单 + 登录限流） |
-| 前台 | Vue 3, TypeScript, Vite, Pinia, Vue Router 4 |
-| 后台 | Vue 3, TypeScript, Vite, Element Plus |
-| 反向代理 | Nginx |
+A full-stack platform that runs the lab's public presence and its member recruitment end to end — public site, eight-state application review pipeline, and an admin console for content, members and site configuration.
 
-## 项目结构
+[![CI](https://github.com/nynu-codelab/codelab-web/actions/workflows/ci.yml/badge.svg)](https://github.com/nynu-codelab/codelab-web/actions/workflows/ci.yml)
+![Java](https://img.shields.io/badge/Java-17-3776AB?style=flat-square&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=flat-square&logo=springboot&logoColor=white)
+![Vue](https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/License-MIT-4EB1BA?style=flat-square)](LICENSE)
 
+English | [简体中文](./README.zh-CN.md)
+
+[Quick start](#quick-start) · [Architecture](#architecture) · [Verification](#verification) · [Contributing](#contributing)
+
+</div>
+
+---
+
+## What this is
+
+NYNU CodeLab is a student lab, and recruiting new members is one of the things it does every year. This repository is the system that runs that process — and it doubles as a reference full-stack codebase that lab members can read, extend and be reviewed against.
+
+Three surfaces, one deployment:
+
+- **Public site** — lab introduction, articles, project showcases and an online application form.
+- **Admin console** — reviewing applications through an eight-state pipeline, publishing articles, managing members, projects, technical directions and site configuration.
+- **API** — a documented REST surface shared by both front ends.
+
+## Features
+
+**Recruitment pipeline**
+
+- Online application with a full review workflow: submitted → viewed → contacted → preliminary review → interview → final decision, plus withdrawal.
+- Applicants see their own status at any time; reviewers see the queue with state transitions and history.
+- Token blacklist and login rate limiting on the auth surface.
+
+**Content management**
+
+- Markdown article editing and publishing with draft/published states.
+- Project showcase and member profiles managed as first-class entities.
+- Technical directions (the lab's tracks) managed separately from content.
+- Key-value site configuration driving contact details and feature switches, without a redeploy.
+
+**Admin console**
+
+- Vue 3 + Element Plus console with dashboard, per-entity views and upload management.
+- Role-scoped: everything admin-facing lives behind JWT auth.
+
+**Platform**
+
+- Hardened file upload: magic-byte validation, path-traversal protection and UUID renaming — seven defensive layers in total.
+- Prometheus-style operational hygiene: health endpoints, structured logging and a documented environment contract.
+- PC-first immersive front end: Three.js WebGL spatial layer, canvas particle network and a terminal-console visual style.
+- Scripted end-to-end verification — **62 automated checks** across the three core flows (see [Verification](#verification)).
+
+## Architecture
+
+```text
+┌──────────────┐     ┌──────────────────┐     ┌─────────────┐
+│  web (5173)  │     │  backend (8080)  │     │  MySQL 8    │
+│  Vue 3 + TS  │◄────┤  Spring Boot 3   │────►│  Redis 7    │
+└──────────────┘     │  MyBatis-Plus    │     └─────────────┘
+┌──────────────┐     │  Sa-Token (JWT)  │            ▲
+│ admin-web    │◄────┘                  │            │
+│ (5174)       │     ┌──────────────────┐     ┌────┴────────┐
+│ Element Plus │     │  nginx (80)      │────►│ uploads /   │
+└──────────────┘     │  reverse proxy   │     │ static      │
+                     └──────────────────┘     └─────────────┘
 ```
-nynu-code-lab/
-├── backend/                     # Spring Boot 后端 (端口 8080)
-├── web/                         # 前台 Vue 3 SPA (端口 5173)
-├── admin-web/                   # 后台管理 Vue 3 + Element Plus (端口 5174)
-├── deploy/                      # Docker Compose + Nginx + MySQL 初始化
-├── scripts/                     # 运维与验证脚本
-├── docs/                        # 项目文档
-└── README.md
-```
 
-## 快速开始
+| Layer | Technologies |
+| --- | --- |
+| Backend | Java 17, Spring Boot 3.x, Maven, MyBatis-Plus, Sa-Token (JWT) |
+| Database / cache | MySQL 8, Redis 7 (token blacklist + login rate limiting) |
+| Public front end | Vue 3, TypeScript, Vite, Pinia, Vue Router 4 |
+| Admin console | Vue 3, TypeScript, Vite, Element Plus |
+| Delivery | Docker Compose, Nginx, GitHub Actions CI |
 
-### 本地开发
+## Quick start
 
-**前置条件：** Java 17, Maven 3.9+, Node.js 20+, MySQL 8
+### Docker Compose (recommended)
 
 ```bash
-# 1. 初始化数据库
-mysql -u root -p < deploy/mysql/init/01-init.sql
-
-# 2. 启动后端
-cd backend && mvn spring-boot:run
-
-# 3. 启动前台 (端口 5173)
-cd web && npm install && npm run dev
-
-# 4. 启动后台 (端口 5174)
-cd admin-web && npm install && npm run dev
-```
-
-访问：
-- 前台：http://localhost:5173
-- 后台：http://localhost:5174/admin/
-- API 文档：http://localhost:8080/doc.html
-
-### Docker Compose
-
-**前置条件：** Docker Desktop / Docker Engine + Docker Compose v2
-
-```bash
-cd deploy
-cp .env.example .env          # 编辑 .env 填写密码和密钥
+git clone https://github.com/nynu-codelab/codelab-web.git
+cd codelab-web/deploy
+cp .env.example .env          # set the passwords and JWT secret
 docker compose --env-file .env up -d --build
 ```
 
-访问：
-- 前台：http://localhost
-- 后台：http://localhost/admin/
-- API 文档：http://localhost/doc.html
+| Surface | URL |
+| --- | --- |
+| Public site | http://localhost |
+| Admin console | http://localhost/admin/ |
+| API docs | http://localhost/doc.html |
 
-## 环境变量
+### Local development
 
-复制 `deploy/.env.example` 为 `deploy/.env`，必填项：
-
-| 变量 | 说明 | 生成方式 |
-|------|------|----------|
-| `MYSQL_ROOT_PASSWORD` | MySQL root 密码 | `openssl rand -base64 24` |
-| `MYSQL_PASSWORD` | 数据库用户密码 | `openssl rand -base64 20` |
-| `JWT_SECRET` | JWT 签名密钥 | `openssl rand -base64 64` |
-
-> ⚠️ 默认管理员 `admin`/`admin123` 仅用于本地开发。生产环境必须修改密码。
-
-## 核心功能
-
-- **用户认证**：注册/登录/登出/修改密码，BCrypt 加密，JWT Token
-- **招新报名**：在线报名 → 8 种状态流转审核 → 报名状态查询
-- **内容管理**：文章 Markdown 编辑/发布、项目成果展示、成员管理、技术方向管理
-- **站点配置**：key-value 动态配置，含联系方式、招新开关
-- **文件上传**：7 层纵深防御（Magic Bytes + 路径穿越防护 + UUID 重命名）
-- **PC 沉浸式视觉**：Three.js WebGL 空间层 + Canvas 粒子网络 + 终端控制台风格
-
-详细功能说明见 [docs/项目说明.md](docs/项目说明.md)。
-
-## 验证脚本
+Prerequisites: Java 17, Maven 3.9+, Node.js 20+, MySQL 8.
 
 ```bash
-bash scripts/verify-recruitment-flow.sh   # 招新报名闭环 18 项
-bash scripts/verify-article-flow.sh       # 文章闭环 23 项
-bash scripts/verify-project-flow.sh       # 项目成果闭环 21 项
+# 1. Initialise the database
+mysql -u root -p < deploy/mysql/init/01-init.sql
+
+# 2. Backend (port 8080)
+cd backend && mvn spring-boot:run
+
+# 3. Public front end (port 5173)
+cd web && npm install && npm run dev
+
+# 4. Admin console (port 5174)
+cd admin-web && npm install && npm run dev
 ```
 
-## Profile
+## Configuration
 
-| Profile | 数据库 | Redis 认证 | 使用场景 |
-|---|---|---|---|
-| `local`（默认） | `localhost:3306` | 内存实现 | 本地开发 |
-| `docker` | `mysql:3306` | Redis 实现 | Docker Compose 部署 |
+Copy `deploy/.env.example` to `deploy/.env` and fill in the required values:
 
-## 工程规范
+| Variable | Purpose | How to generate |
+| --- | --- | --- |
+| `MYSQL_ROOT_PASSWORD` | MySQL root password | `openssl rand -base64 24` |
+| `MYSQL_PASSWORD` | Application database password | `openssl rand -base64 20` |
+| `JWT_SECRET` | JWT signing secret | `openssl rand -base64 64` |
 
-- 统一协作流程：[CodeLab CONTRIBUTING](https://github.com/nynu-codelab/.github/blob/main/CONTRIBUTING.md)
-- 技术与代码规范：[CodeLab Docs](https://github.com/nynu-codelab/docs)
-- 当前仓库必须通过 `Backend Test`、`Web Build` 和 `Admin Web Build` 三项 CI
-- 前台与后台的 lint / 自动化测试仍在补齐，跟踪于 [#2](https://github.com/nynu-codelab/codelab-web/issues/2)
+Spring profiles: `local` (default — `localhost:3306`, in-memory Redis behaviour) and `docker` (`mysql:3306`, real Redis).
 
-## 文档索引
+## Verification
 
-| 文档 | 说明 |
-|------|------|
-| [docs/项目说明.md](docs/项目说明.md) | 项目背景、目标用户、角色权限、功能清单、业务流程 |
-| [docs/部署运行说明.md](docs/部署运行说明.md) | 环境要求、本地/Docker 启动、数据库初始化、备份恢复、HTTPS、生产部署 |
-| [docs/接口说明.md](docs/接口说明.md) | 接口规范、认证方式、响应格式、核心接口清单 |
-| [docs/变更记录.md](docs/变更记录.md) | 阶段变更记录、当前状态、已知问题、下一步计划 |
-| [docs/前端视觉组件规范.md](docs/前端视觉组件规范.md) | 视觉方向、组件使用规范、动效原则 |
+Three scripts exercise the core flows end to end against a running deployment — **62 checks in total**:
 
-## 当前状态
+```bash
+bash scripts/verify-recruitment-flow.sh   # recruitment pipeline, 18 checks
+bash scripts/verify-article-flow.sh       # article lifecycle, 23 checks
+bash scripts/verify-project-flow.sh       # project showcase, 21 checks
+```
 
-- **分支**：`main`
-- **阶段**：阶段 5.7 上线前 P0/P1 收口完成，待进入 Stage 6 实际生产部署
-- **构建**：backend ✅ / web ✅ / admin-web ✅ / Docker Compose ✅
-- **验证**：招新 18/18 ✅ / 文章 23/23 ✅ / 项目 21/21 ✅
+Every check asserts a specific behaviour, and a failure fails the script — the suite is meant to be a regression gate, not a demo.
 
-## 安全提示
+## Project structure
 
-- 默认管理员密码仅用于本地开发，生产必须修改
-- `deploy/.env` 不提交 Git，生产必须填写强密码
-- 生产环境必须启用 HTTPS
-- 证书、私钥、真实密码不得写入 README、AGENTS 或提交到 Git
+```text
+codelab-web/
+├── backend/        # Spring Boot 3 API (port 8080)
+├── web/            # public Vue 3 SPA (port 5173)
+├── admin-web/      # admin Vue 3 + Element Plus (port 5174)
+├── deploy/         # Docker Compose, Nginx, MySQL init scripts
+├── scripts/        # ops and end-to-end verification scripts
+└── docs/           # project, deployment, API and design documents
+```
+
+## Documentation
+
+| Document | Contents |
+| --- | --- |
+| [docs/项目说明.md](docs/项目说明.md) | Background, users, roles, feature list, business flows |
+| [docs/部署运行说明.md](docs/部署运行说明.md) | Environments, local/Docker startup, database init, backup, HTTPS, production |
+| [docs/接口说明.md](docs/接口说明.md) | API conventions, auth, response format, endpoint list |
+| [docs/变更记录.md](docs/变更记录.md) | Change log and known issues |
+| [docs/前端视觉组件规范.md](docs/前端视觉组件规范.md) | Visual direction and component usage rules |
+
+> The documentation is written in Chinese — it is the working language of the lab.
+
+## Security
+
+- The default administrator account (`admin` / `admin123`) exists **for local development only**; change it before any real deployment.
+- `deploy/.env` is never committed, and production requires strong passwords.
+- Production deployments must serve over HTTPS; certificates and private keys never enter the repository.
+- See [SECURITY policy](https://github.com/nynu-codelab/.github/blob/main/SECURITY.md) for reporting a vulnerability.
+
+## Contributing
+
+Contributions are welcome — from lab members and from outside. The lab runs the same pipeline for every change:
+
+> requirement → technical design → interface contract → pull request → CI → code review → merge
+
+1. Pick or open an [issue](https://github.com/nynu-codelab/codelab-web/issues).
+2. Create a branch (`feature/...` or `fix/...`).
+3. Follow [Conventional Commits](https://www.conventionalcommits.org) for commit messages.
+4. Open a pull request and make CI pass — `Backend Test`, `Web Build` and `Admin Web Build` are required.
+5. A code owner reviews and merges.
+
+Standards and conventions: [nynu-codelab/docs](https://github.com/nynu-codelab/docs) ·
+[CONTRIBUTING](https://github.com/nynu-codelab/.github/blob/main/CONTRIBUTING.md)
+
+## Disclaimer
+
+This project is maintained by the CodeLab student lab. It is **not** an official portal of Nanyang Normal University.
+
+## License
+
+[MIT](LICENSE)
