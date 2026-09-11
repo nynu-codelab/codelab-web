@@ -1,2 +1,4 @@
-# Core maintainers review changes to the lab website.
+# CODEOWNERS —— 审批线：所有改动统一由 codelab-admin 批准
+# 只认 GitHub login / team，不写中文名
+
 * @nynu-codelab/codelab-admin
